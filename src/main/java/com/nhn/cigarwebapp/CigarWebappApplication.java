@@ -11,7 +11,7 @@ public class CigarWebappApplication {
 
     @GetMapping("/hello")
     public String hello() {
-        return "Hello Azure!!!";
+        return "Hello Hoang Nam day!!!";
     }
 
     public static void main(String[] args) {
