@@ -9,7 +9,7 @@ RUN mvn clean package -DskipTests
 # Package stage
 #
 FROM openjdk:17.0.1-jdk-slim
-COPY --from=build /target/demo-0.0.1-SNAPSHOT.jar demo.jar
+COPY --from=build /target/cigar-webapp-0.0.1-SNAPSHOT.jar cicar-webapp.jar
 # ENV PORT=8080
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","demo.jar"]
+ENTRYPOINT ["java","-jar","cicar-webapp.jar"]
