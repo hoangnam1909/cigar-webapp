@@ -1,78 +1,62 @@
 package com.nhn.cigarwebapp.controller;
 
+import com.nhn.cigarwebapp.mapper.request.CategoryRequestMapper;
 import com.nhn.cigarwebapp.model.common.ResponseObject;
-import com.nhn.cigarwebapp.model.entity.Category;
-import com.nhn.cigarwebapp.model.request.category.CategoryCreationRequest;
-import com.nhn.cigarwebapp.repository.CategoryRepository;
-import org.modelmapper.ModelMapper;
+import com.nhn.cigarwebapp.model.request.category.CategoryRequest;
+import com.nhn.cigarwebapp.model.response.category.CategoryResponse;
+import com.nhn.cigarwebapp.service.CategoryService;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/categories")
 public class CategoryController {
 
     @Autowired
-    private ModelMapper modelMapper;
+    private CategoryRequestMapper categoryRequestMapper;
 
     @Autowired
-    private CategoryRepository categoryRepository;
+    private CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<ResponseObject> getCategories(){
+    public ResponseEntity<ResponseObject> getCategories() {
 
-        List<Category> categoryList = categoryRepository.findAll();
+        List<CategoryResponse> categoryList = categoryService.getCategories();
 
         if (!categoryList.isEmpty())
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
                             .msg("Categories founds")
-                            .data(categoryList)
+                            .result(categoryList)
                             .build());
         else
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
-                            .msg("Categories not found")
-                            .data(List.of())
+                            .msg("No content")
+                            .result(List.of())
                             .build());
-
     }
 
     @PostMapping
-    public ResponseEntity<ResponseObject> insertCategories(@RequestBody List<CategoryCreationRequest> request) {
+    public ResponseEntity<ResponseObject> insertCategories(@RequestBody CategoryRequest request) {
         try {
-            List<Category> categories = request.stream()
-                    .map(c -> {
-                        Category cate = modelMapper.map(c, Category.class);
-
-                        if (c.getParentCategoryId() != null) {
-                            Optional<Category> parentCategory = categoryRepository.findById(c.getParentCategoryId());
-                            if (parentCategory.isPresent())
-                                cate.setParentCategory(parentCategory.get());
-                            else
-                                cate.setParentCategory(null);
-                        }
-
-                        return cate;
-                    })
-                    .collect(Collectors.toList());
-            categoryRepository.saveAll(categories);
+            categoryService.addCategory(request);
 
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
-                            .msg("Your categories have been saved.")
-                            .data(categories)
+                            .msg("Your category have been saved")
+                            .result("")
                             .build());
         } catch (Exception e) {
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
-                            .msg("We could not save your categories.")
-                            .data(e.getMessage())
+                            .msg("We could not save your category")
+                            .result(e.getMessage())
                             .build());
         }
     }

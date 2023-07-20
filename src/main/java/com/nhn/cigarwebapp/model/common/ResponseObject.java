@@ -11,7 +11,7 @@ public class ResponseObject {
 
     private String msg;
 
-    private Object data;
+    private Object result;
 
 }
 

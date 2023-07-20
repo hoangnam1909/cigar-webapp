@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CigarWebappApplication {
 
-    @GetMapping("/hello")
+    @GetMapping("/keep-server_on")
     public String hello() {
-        return "Hello Hoang Nam day!!!";
+        return "Successfully!!!";
     }
 
     public static void main(String[] args) {

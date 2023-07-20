@@ -3,30 +3,25 @@ package com.nhn.cigarwebapp.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
-import java.util.UUID;
-
 @Entity
-@Table(name = "comment")
+@Table(name = "product_attribute_value")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comment {
+public class ProductAttributeValue {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String content;
+    @ManyToOne
+    @JoinColumn(name = "product_attribute_id", referencedColumnName = "id")
+    private ProductAttribute productAttribute;
 
     @Column
-    private Date createdDate;
-
-    @Column
-    private Date updatedDate;
+    private String value;
 
     @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "id")

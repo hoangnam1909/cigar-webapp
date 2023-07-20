@@ -3,33 +3,37 @@ package com.nhn.cigarwebapp.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@Table(name = "comment")
+@Table(name="customer")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comment {
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
-    private String content;
+    private String fullName;
 
     @Column
-    private Date createdDate;
+    private String phone;
 
     @Column
-    private Date updatedDate;
+    private String email;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", referencedColumnName = "id")
-    private Product product;
+    @Column
+    private String address;
+
+    @Column
+    private String note;
+
+    @OneToOne(mappedBy = "customer")
+    private Order order;
 
 }
