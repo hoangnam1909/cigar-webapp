@@ -4,10 +4,15 @@ import com.nhn.cigarwebapp.model.entity.Brand;
 import com.nhn.cigarwebapp.model.request.brand.BrandRequest;
 import com.nhn.cigarwebapp.model.response.brand.BrandDetailResponse;
 import com.nhn.cigarwebapp.model.response.brand.BrandResponse;
+import com.nhn.cigarwebapp.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BrandMapper {
+
+    @Autowired
+    private ProductRepository productRepository;
 
     public Brand toEntity(BrandRequest request) {
         return Brand.builder()
@@ -18,11 +23,14 @@ public class BrandMapper {
     }
 
     public BrandResponse toResponse(Brand brand) {
+        Long productsCount = productRepository.countProductByBrand(brand);
+
         return new BrandResponse(
                 brand.getId(),
                 brand.getName(),
                 brand.getImage(),
-                brand.getCountry()
+                brand.getCountry(),
+                productsCount
         );
     }
 

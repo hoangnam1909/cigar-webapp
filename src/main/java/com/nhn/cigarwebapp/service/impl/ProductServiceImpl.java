@@ -8,6 +8,7 @@ import com.nhn.cigarwebapp.model.response.category.ProductResponse;
 import com.nhn.cigarwebapp.repository.ProductImageRepository;
 import com.nhn.cigarwebapp.repository.ProductRepository;
 import com.nhn.cigarwebapp.service.ProductService;
+import com.nhn.cigarwebapp.specification.ProductSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +35,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Page<ProductResponse> getProducts(ProductSpecification specification, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return productRepository.findAll(specification, pageable)
+                .map(product -> productMapper.toResponse(product));
+    }
+
+    @Override
     public void addProduct(ProductRequest request) {
         Product product = productMapper.toEntity(request);
         productRepository.saveAndFlush(product);
@@ -44,6 +52,11 @@ public class ProductServiceImpl implements ProductService {
                                 .linkToImage(link)
                                 .product(product)
                                 .build()));
+    }
+
+    @Override
+    public void deleteProduct(Long id) {
+        productRepository.deleteById(id);
     }
 
 }

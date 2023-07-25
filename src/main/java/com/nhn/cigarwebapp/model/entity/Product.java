@@ -53,7 +53,7 @@ public class Product {
     @JsonBackReference
     private Brand brand;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<ProductImage> productImages;
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 public record CategoryResponse(
         Long id,
-        String name
+        String name,
+        Long productsCount
 ) {
 }

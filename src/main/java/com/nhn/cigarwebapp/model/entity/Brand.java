@@ -22,6 +22,9 @@ public class Brand {
     @Column
     private String name;
 
+    @Column
+    private String link;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 

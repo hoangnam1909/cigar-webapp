@@ -1,7 +1,6 @@
 package com.nhn.cigarwebapp.service.impl;
 
-import com.nhn.cigarwebapp.mapper.request.CategoryRequestMapper;
-import com.nhn.cigarwebapp.mapper.response.CategoryResponseMapper;
+import com.nhn.cigarwebapp.mapper.CategoryMapper;
 import com.nhn.cigarwebapp.model.entity.Category;
 import com.nhn.cigarwebapp.model.request.category.CategoryRequest;
 import com.nhn.cigarwebapp.model.response.category.CategoryResponse;
@@ -20,21 +19,18 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryRepository categoryRepository;
 
     @Autowired
-    private CategoryRequestMapper categoryRequestMapper;
-
-    @Autowired
-    private CategoryResponseMapper categoryResponseMapper;
+    private CategoryMapper categoryMapper;
 
     @Override
     public List<CategoryResponse> getCategories() {
         return categoryRepository.findAll()
                 .stream()
-                .map(categoryResponseMapper)
+                .map(category -> categoryMapper.toResponse(category))
                 .collect(Collectors.toList());
     }
 
     public void addCategory(CategoryRequest request) {
-        Category category = categoryRequestMapper.apply(request);
+        Category category = categoryMapper.toEntity(request);
         categoryRepository.saveAndFlush(category);
     }
 

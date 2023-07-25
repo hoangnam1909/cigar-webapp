@@ -4,6 +4,7 @@ public record BrandResponse(
         Long id,
         String name,
         String image,
-        String country
+        String country,
+        Long productsCount
 ) {
 }

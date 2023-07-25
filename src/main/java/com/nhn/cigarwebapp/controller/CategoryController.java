@@ -1,11 +1,9 @@
 package com.nhn.cigarwebapp.controller;
 
-import com.nhn.cigarwebapp.mapper.request.CategoryRequestMapper;
 import com.nhn.cigarwebapp.model.common.ResponseObject;
 import com.nhn.cigarwebapp.model.request.category.CategoryRequest;
 import com.nhn.cigarwebapp.model.response.category.CategoryResponse;
 import com.nhn.cigarwebapp.service.CategoryService;
-import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +14,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/categories")
 public class CategoryController {
-
-    @Autowired
-    private CategoryRequestMapper categoryRequestMapper;
 
     @Autowired
     private CategoryService categoryService;
