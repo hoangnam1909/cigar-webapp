@@ -28,7 +28,7 @@ public class ProductMapper {
     public Product toEntity(ProductRequest request) {
         return Product.builder()
                 .name(request.getName())
-                .description(request.getDescription())
+                .description(request.getDescription().replaceAll("\"", "'"))
                 .originalPrice(request.getOriginalPrice())
                 .salePrice(request.getSalePrice())
                 .unitsInStock(request.getUnitsInStock())
