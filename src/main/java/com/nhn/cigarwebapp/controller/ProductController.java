@@ -4,10 +4,11 @@ import com.nhn.cigarwebapp.mapper.ProductMapper;
 import com.nhn.cigarwebapp.model.common.ResponseObject;
 import com.nhn.cigarwebapp.model.entity.Product;
 import com.nhn.cigarwebapp.model.request.product.ProductRequest;
-import com.nhn.cigarwebapp.model.response.category.ProductResponse;
+import com.nhn.cigarwebapp.model.response.product.ProductResponse;
 import com.nhn.cigarwebapp.repository.ProductRepository;
 import com.nhn.cigarwebapp.service.ProductService;
 import com.nhn.cigarwebapp.specification.ProductSpecification;
+import com.nhn.cigarwebapp.specification.SortMapper;
 import com.nhn.cigarwebapp.specification.SpecificationConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,10 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @CrossOrigin
 @RestController
@@ -42,6 +41,9 @@ public class ProductController {
     @Autowired
     private SpecificationConverter specificationConverter;
 
+    @Autowired
+    private SortMapper sortMapper;
+
     @GetMapping
     public ResponseEntity<ResponseObject> getProducts(@RequestParam Map<String, String> params) {
 
@@ -50,7 +52,13 @@ public class ProductController {
 
         ProductSpecification specification = specificationConverter.productSpecification(params);
 
-        Page<ProductResponse> products = productService.getProducts(specification, page - 1, size);
+        Pageable pageable;
+        if (params.containsKey("sort"))
+            pageable = PageRequest.of(page - 1, size, sortMapper.getSort(params));
+        else
+            pageable = PageRequest.of(page - 1, size);
+
+        Page<ProductResponse> products = productService.getProducts(specification, pageable);
 
         return ResponseEntity.ok()
                 .body(ResponseObject.builder()
@@ -80,12 +88,12 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<ResponseObject> insertProducts(@RequestBody ProductRequest request) {
         try {
-            productService.addProduct(request);
+            Product addedProduct = productService.add(request);
 
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
                             .msg("Your products have been saved")
-                            .result("")
+                            .result(productMapper.toResponse(addedProduct))
                             .build());
         } catch (Exception e) {
             return ResponseEntity.badRequest()
@@ -99,7 +107,7 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseObject> deleteProduct(@PathVariable(name = "id") String id) {
         try {
-            productService.deleteProduct(Long.valueOf(id));
+            productService.delete(Long.valueOf(id));
 
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()

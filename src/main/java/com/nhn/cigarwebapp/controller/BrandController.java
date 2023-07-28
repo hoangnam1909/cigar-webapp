@@ -4,7 +4,7 @@ import com.nhn.cigarwebapp.model.common.ResponseObject;
 import com.nhn.cigarwebapp.model.request.brand.BrandRequest;
 import com.nhn.cigarwebapp.model.response.brand.BrandDetailResponse;
 import com.nhn.cigarwebapp.model.response.brand.BrandResponse;
-import com.nhn.cigarwebapp.model.response.category.ProductResponse;
+import com.nhn.cigarwebapp.model.response.product.ProductResponse;
 import com.nhn.cigarwebapp.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

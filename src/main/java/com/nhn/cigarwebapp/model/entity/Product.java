@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -42,6 +43,15 @@ public class Product {
     @NotNull
     private Integer unitsInStock;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date modifiedDate;
+
+    @Column
+    private Boolean active;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
@@ -63,6 +73,17 @@ public class Product {
 
     @JsonIgnore
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
-    private List<ProductAttributeValue> attributes;
+    private List<AttributeValue> attributes;
+
+    @PrePersist
+    void prePersist() {
+        this.createdDate = new Date();
+        this.active = true;
+    }
+
+    @PostUpdate
+    void postUpdate() {
+        this.modifiedDate = new Date();
+    }
 
 }

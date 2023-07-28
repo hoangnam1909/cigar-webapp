@@ -34,6 +34,10 @@ public class ProductSpecification implements Specification<Product> {
             } else if (criteria.getOperation().equals(SearchOperation.BRAND_ID)) {
                 Join<Brand, Product> brandProductJoin = root.join("brand");
                 predicates.add(builder.equal(brandProductJoin.get("id"), criteria.getValue().toString()));
+            } else if (criteria.getOperation().equals(SearchOperation.MATCH)) {
+                predicates.add(builder.like(
+                        builder.lower(root.get(criteria.getKey())),
+                        "%" + criteria.getValue().toString().toLowerCase() + "%"));
             }
         }
 

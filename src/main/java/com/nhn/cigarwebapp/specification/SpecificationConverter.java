@@ -21,6 +21,10 @@ public class SpecificationConverter {
             specification.add(new SearchCriteria(ProductEnum.BRAND_ID, params.get(ProductEnum.BRAND_ID), SearchOperation.BRAND_ID));
         }
 
+        if (params.containsKey(ProductEnum.NAME)) {
+            specification.add(new SearchCriteria(ProductEnum.NAME, params.get(ProductEnum.NAME), SearchOperation.MATCH));
+        }
+
         return specification;
     }
 

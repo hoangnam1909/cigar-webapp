@@ -34,8 +34,4 @@ public class Brand {
     @Column
     private String country;
 
-//    @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
-//    @JsonManagedReference
-//    private List<Product> products;
-
 }

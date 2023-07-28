@@ -1,9 +1,9 @@
-package com.nhn.cigarwebapp.model.response.category;
+package com.nhn.cigarwebapp.model.response.product;
 
 import com.nhn.cigarwebapp.model.entity.Category;
-import com.nhn.cigarwebapp.model.entity.ProductAttributeValue;
 import com.nhn.cigarwebapp.model.entity.ProductImage;
 import com.nhn.cigarwebapp.model.response.brand.BrandResponse;
+import com.nhn.cigarwebapp.model.response.attributeValue.AttributeValueResponse;
 
 import java.util.List;
 
@@ -17,6 +17,6 @@ public record ProductResponse(
         Category category,
         BrandResponse brand,
         List<ProductImage> productImages,
-        List<ProductAttributeValue> attributes
+        List<AttributeValueResponse> attributes
 ) {
 }

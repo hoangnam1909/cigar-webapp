@@ -2,14 +2,13 @@ package com.nhn.cigarwebapp.mapper;
 
 import com.nhn.cigarwebapp.model.entity.Product;
 import com.nhn.cigarwebapp.model.request.product.ProductRequest;
-import com.nhn.cigarwebapp.model.response.category.ProductResponse;
+import com.nhn.cigarwebapp.model.response.product.ProductResponse;
 import com.nhn.cigarwebapp.repository.BrandRepository;
 import com.nhn.cigarwebapp.repository.CategoryRepository;
-import com.nhn.cigarwebapp.repository.ProductImageRepository;
-import com.nhn.cigarwebapp.repository.ProductRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
 
 @Component
 public class ProductMapper {
@@ -23,7 +22,10 @@ public class ProductMapper {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public Product toEntity(ProductRequest request){
+    @Autowired
+    private AttributeValueMapper attributeValueMapper;
+
+    public Product toEntity(ProductRequest request) {
         return Product.builder()
                 .name(request.getName())
                 .description(request.getDescription())
@@ -46,7 +48,12 @@ public class ProductMapper {
                 product.getCategory(),
                 brandMapper.toResponse(product.getBrand()),
                 product.getProductImages(),
-                product.getAttributes()
+                product.getAttributes() != null ?
+                        product.getAttributes()
+                                .stream()
+                                .map(value -> attributeValueMapper.toProductResponse(value))
+                                .collect(Collectors.toList())
+                        : null
         );
     }
 

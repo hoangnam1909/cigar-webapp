@@ -6,7 +6,7 @@ import com.nhn.cigarwebapp.model.entity.Brand;
 import com.nhn.cigarwebapp.model.request.brand.BrandRequest;
 import com.nhn.cigarwebapp.model.response.brand.BrandDetailResponse;
 import com.nhn.cigarwebapp.model.response.brand.BrandResponse;
-import com.nhn.cigarwebapp.model.response.category.ProductResponse;
+import com.nhn.cigarwebapp.model.response.product.ProductResponse;
 import com.nhn.cigarwebapp.repository.BrandRepository;
 import com.nhn.cigarwebapp.repository.ProductRepository;
 import com.nhn.cigarwebapp.service.BrandService;

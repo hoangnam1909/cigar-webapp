@@ -15,6 +15,7 @@ public enum SearchOperation {
     NOT_IN,
     CATEGORY_ID,
     BRAND_ID,
+    NAME,
 
 }
 
