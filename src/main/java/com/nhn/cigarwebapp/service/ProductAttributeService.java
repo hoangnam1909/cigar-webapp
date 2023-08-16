@@ -1,7 +1,7 @@
 package com.nhn.cigarwebapp.service;
 
-import com.nhn.cigarwebapp.model.request.productAttribute.ProductAttributeRequest;
-import com.nhn.cigarwebapp.model.response.productAttribute.ProductAttributeResponse;
+import com.nhn.cigarwebapp.dto.request.ProductAttributeRequest;
+import com.nhn.cigarwebapp.dto.response.ProductAttributeResponse;
 
 import java.util.List;
 

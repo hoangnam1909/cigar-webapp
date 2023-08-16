@@ -1,10 +1,13 @@
 package com.nhn.cigarwebapp.mapper;
 
-import com.nhn.cigarwebapp.model.entity.Product;
-import com.nhn.cigarwebapp.model.request.product.ProductRequest;
-import com.nhn.cigarwebapp.model.response.product.ProductResponse;
+import com.nhn.cigarwebapp.dto.request.ProductUpdateRequest;
+import com.nhn.cigarwebapp.model.Product;
+import com.nhn.cigarwebapp.dto.request.ProductRequest;
+import com.nhn.cigarwebapp.dto.response.ProductResponse;
 import com.nhn.cigarwebapp.repository.BrandRepository;
 import com.nhn.cigarwebapp.repository.CategoryRepository;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +38,18 @@ public class ProductMapper {
                 .category(categoryRepository.getReferenceById(request.getCategoryId()))
                 .brand(brandRepository.getReferenceById(request.getBrandId()))
                 .build();
+    }
+
+    public Product toEntity(ProductUpdateRequest request, Product product) {
+        product.setName(request.getName());
+        product.setDescription(request.getDescription());
+        product.setOriginalPrice(request.getOriginalPrice());
+        product.setSalePrice(request.getSalePrice());
+        product.setUnitsInStock(request.getUnitsInStock());
+        product.setCategory(categoryRepository.getReferenceById(request.getCategoryId()));
+        product.setBrand(brandRepository.getReferenceById(request.getBrandId()));
+
+        return product;
     }
 
     public ProductResponse toResponse(Product product) {

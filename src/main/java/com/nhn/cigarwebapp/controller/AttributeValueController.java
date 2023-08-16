@@ -1,8 +1,8 @@
 package com.nhn.cigarwebapp.controller;
 
-import com.nhn.cigarwebapp.model.common.ResponseObject;
-import com.nhn.cigarwebapp.model.entity.AttributeValue;
-import com.nhn.cigarwebapp.model.request.productAttributeValue.AttributeValueRequest;
+import com.nhn.cigarwebapp.common.ResponseObject;
+import com.nhn.cigarwebapp.model.AttributeValue;
+import com.nhn.cigarwebapp.dto.request.AttributeValueRequest;
 import com.nhn.cigarwebapp.service.AttributeValueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/product-attribute-values")
+@RequestMapping("/api/v1/product-attribute-values")
 public class AttributeValueController {
 
     @Autowired

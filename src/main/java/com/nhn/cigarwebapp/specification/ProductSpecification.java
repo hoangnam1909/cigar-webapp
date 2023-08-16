@@ -1,10 +1,10 @@
 package com.nhn.cigarwebapp.specification;
 
-import com.nhn.cigarwebapp.model.common.SearchCriteria;
-import com.nhn.cigarwebapp.model.common.SearchOperation;
-import com.nhn.cigarwebapp.model.entity.Brand;
-import com.nhn.cigarwebapp.model.entity.Category;
-import com.nhn.cigarwebapp.model.entity.Product;
+import com.nhn.cigarwebapp.common.SearchCriteria;
+import com.nhn.cigarwebapp.common.SearchOperation;
+import com.nhn.cigarwebapp.model.Brand;
+import com.nhn.cigarwebapp.model.Category;
+import com.nhn.cigarwebapp.model.Product;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -38,6 +38,10 @@ public class ProductSpecification implements Specification<Product> {
                 predicates.add(builder.like(
                         builder.lower(root.get(criteria.getKey())),
                         "%" + criteria.getValue().toString().toLowerCase() + "%"));
+            } else if (criteria.getOperation().equals(SearchOperation.IS_ACTIVE)) {
+                predicates.add(builder.equal(
+                        root.get(criteria.getKey()).as(Boolean.class), criteria.getValue()));
+
             }
         }
 

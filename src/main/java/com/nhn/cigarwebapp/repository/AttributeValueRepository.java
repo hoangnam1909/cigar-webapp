@@ -1,6 +1,6 @@
 package com.nhn.cigarwebapp.repository;
 
-import com.nhn.cigarwebapp.model.entity.AttributeValue;
+import com.nhn.cigarwebapp.model.AttributeValue;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

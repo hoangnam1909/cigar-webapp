@@ -1,9 +1,9 @@
 package com.nhn.cigarwebapp.mapper;
 
-import com.nhn.cigarwebapp.model.entity.Brand;
-import com.nhn.cigarwebapp.model.request.brand.BrandRequest;
-import com.nhn.cigarwebapp.model.response.brand.BrandDetailResponse;
-import com.nhn.cigarwebapp.model.response.brand.BrandResponse;
+import com.nhn.cigarwebapp.model.Brand;
+import com.nhn.cigarwebapp.dto.request.BrandRequest;
+import com.nhn.cigarwebapp.dto.response.BrandDetailResponse;
+import com.nhn.cigarwebapp.dto.response.BrandResponse;
 import com.nhn.cigarwebapp.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

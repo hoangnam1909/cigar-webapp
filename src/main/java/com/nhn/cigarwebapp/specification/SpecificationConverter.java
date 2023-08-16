@@ -1,8 +1,8 @@
 package com.nhn.cigarwebapp.specification;
 
-import com.nhn.cigarwebapp.model.common.ProductEnum;
-import com.nhn.cigarwebapp.model.common.SearchCriteria;
-import com.nhn.cigarwebapp.model.common.SearchOperation;
+import com.nhn.cigarwebapp.common.ProductEnum;
+import com.nhn.cigarwebapp.common.SearchCriteria;
+import com.nhn.cigarwebapp.common.SearchOperation;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;

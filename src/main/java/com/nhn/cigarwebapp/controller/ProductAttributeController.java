@@ -1,19 +1,19 @@
 package com.nhn.cigarwebapp.controller;
 
-import com.nhn.cigarwebapp.model.common.ResponseObject;
-import com.nhn.cigarwebapp.model.entity.ProductAttribute;
-import com.nhn.cigarwebapp.model.request.productAttribute.ProductAttributeRequest;
-import com.nhn.cigarwebapp.model.response.productAttribute.ProductAttributeResponse;
+import com.nhn.cigarwebapp.common.ResponseObject;
+import com.nhn.cigarwebapp.dto.request.ProductAttributeRequest;
+import com.nhn.cigarwebapp.dto.response.ProductAttributeResponse;
 import com.nhn.cigarwebapp.service.ProductAttributeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/product-attributes")
+@RequestMapping("/api/v1/product-attributes")
 public class ProductAttributeController {
 
     @Autowired
@@ -39,6 +39,7 @@ public class ProductAttributeController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ResponseObject> insertProductAttributes(@RequestBody ProductAttributeRequest request) {
         try {
             productAttributeService.addProductAttribute(request);

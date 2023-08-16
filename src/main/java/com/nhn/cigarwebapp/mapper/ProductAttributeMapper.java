@@ -1,8 +1,8 @@
 package com.nhn.cigarwebapp.mapper;
 
-import com.nhn.cigarwebapp.model.entity.ProductAttribute;
-import com.nhn.cigarwebapp.model.request.productAttribute.ProductAttributeRequest;
-import com.nhn.cigarwebapp.model.response.productAttribute.ProductAttributeResponse;
+import com.nhn.cigarwebapp.model.ProductAttribute;
+import com.nhn.cigarwebapp.dto.request.ProductAttributeRequest;
+import com.nhn.cigarwebapp.dto.response.ProductAttributeResponse;
 import org.springframework.stereotype.Service;
 
 @Service

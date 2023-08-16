@@ -1,12 +1,14 @@
 package com.nhn.cigarwebapp.service.impl;
 
+import com.nhn.cigarwebapp.dto.request.BrandUpdateRequest;
 import com.nhn.cigarwebapp.mapper.BrandMapper;
 import com.nhn.cigarwebapp.mapper.ProductMapper;
-import com.nhn.cigarwebapp.model.entity.Brand;
-import com.nhn.cigarwebapp.model.request.brand.BrandRequest;
-import com.nhn.cigarwebapp.model.response.brand.BrandDetailResponse;
-import com.nhn.cigarwebapp.model.response.brand.BrandResponse;
-import com.nhn.cigarwebapp.model.response.product.ProductResponse;
+import com.nhn.cigarwebapp.model.Brand;
+import com.nhn.cigarwebapp.dto.request.BrandRequest;
+import com.nhn.cigarwebapp.dto.response.BrandDetailResponse;
+import com.nhn.cigarwebapp.dto.response.BrandResponse;
+import com.nhn.cigarwebapp.dto.response.ProductResponse;
+import com.nhn.cigarwebapp.model.Category;
 import com.nhn.cigarwebapp.repository.BrandRepository;
 import com.nhn.cigarwebapp.repository.ProductRepository;
 import com.nhn.cigarwebapp.service.BrandService;
@@ -35,11 +37,7 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public BrandDetailResponse getBrandDetail(Long id) {
         Optional<Brand> brand = brandRepository.findById(id);
-
-        if (brand.isPresent())
-            return brandMapper.toDetailResponse(brand.get());
-
-        return null;
+        return brand.map(value -> brandMapper.toDetailResponse(value)).orElse(null);
     }
 
     @Override
@@ -66,6 +64,19 @@ public class BrandServiceImpl implements BrandService {
     public void addBrand(BrandRequest request) {
         Brand brand = brandMapper.toEntity(request);
         brandRepository.saveAndFlush(brand);
+    }
+
+    @Override
+    public BrandResponse update(Long id, BrandUpdateRequest request) {
+        Optional<Brand> brand = brandRepository.findById(id);
+        if (brand.isPresent()) {
+            Brand brandEditing = brand.get();
+            brandEditing.setName(request.name());
+            brandEditing.setCountry(request.country());
+            brandRepository.save(brandEditing);
+            return brandMapper.toResponse(brandEditing);
+        }
+        return null;
     }
 
 

@@ -1,12 +1,16 @@
 package com.nhn.cigarwebapp.repository;
 
-import com.nhn.cigarwebapp.model.entity.ProductImage;
+import com.nhn.cigarwebapp.model.ProductImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface ProductImageRepository extends JpaRepository<ProductImage, Long> {
 
     boolean existsByLinkToImage(String linkToImage);
+
+    List<ProductImage> findAllByProductId(Long id);
 
 }

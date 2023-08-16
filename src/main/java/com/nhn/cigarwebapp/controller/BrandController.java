@@ -1,20 +1,26 @@
 package com.nhn.cigarwebapp.controller;
 
-import com.nhn.cigarwebapp.model.common.ResponseObject;
-import com.nhn.cigarwebapp.model.request.brand.BrandRequest;
-import com.nhn.cigarwebapp.model.response.brand.BrandDetailResponse;
-import com.nhn.cigarwebapp.model.response.brand.BrandResponse;
-import com.nhn.cigarwebapp.model.response.product.ProductResponse;
+import com.nhn.cigarwebapp.common.ResponseObject;
+import com.nhn.cigarwebapp.dto.request.BrandRequest;
+import com.nhn.cigarwebapp.dto.request.BrandUpdateRequest;
+import com.nhn.cigarwebapp.dto.request.CategoryRequest;
+import com.nhn.cigarwebapp.dto.response.BrandDetailResponse;
+import com.nhn.cigarwebapp.dto.response.BrandResponse;
+import com.nhn.cigarwebapp.dto.response.CategoryResponse;
+import com.nhn.cigarwebapp.dto.response.ProductResponse;
 import com.nhn.cigarwebapp.service.BrandService;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/brands")
+@RequestMapping("/api/v1/brands")
 public class BrandController {
 
     @Autowired
@@ -78,6 +84,7 @@ public class BrandController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ResponseObject> insertBrand(@RequestBody BrandRequest request) {
         try {
             brandService.addBrand(request);
@@ -91,6 +98,34 @@ public class BrandController {
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
                             .msg("We could not save your brands")
+                            .result(e.getMessage())
+                            .build());
+        }
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ResponseObject> updateBrand(@PathVariable(name = "id") String id,
+                                                         @RequestBody BrandUpdateRequest request) {
+        try {
+            BrandResponse response = brandService.update(Long.valueOf(id), request);
+
+            if (response != null)
+                return ResponseEntity.ok()
+                        .body(ResponseObject.builder()
+                                .msg("Your brand have been saved")
+                                .result("")
+                                .build());
+            else
+                return ResponseEntity.badRequest()
+                        .body(ResponseObject.builder()
+                                .msg("Something went wrong")
+                                .result(response)
+                                .build());
+        } catch (Exception e) {
+            return ResponseEntity.ok()
+                    .body(ResponseObject.builder()
+                            .msg("We could not save your brand")
                             .result(e.getMessage())
                             .build());
         }
