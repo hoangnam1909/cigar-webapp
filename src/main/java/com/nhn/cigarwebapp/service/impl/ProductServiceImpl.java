@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -73,16 +72,18 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> product = productRepository.findById(id);
         if (product.isPresent()) {
             Product p = product.get();
-            productRepository.saveAndFlush(productMapper.toEntity(request, p));
+            productRepository.save(productMapper.toEntity(request, p));
             productImageRepository.deleteAllInBatch(p.getProductImages());
 
-            request.getProductImagesLink()
-                    .forEach(link -> productImageRepository
+            request.getProductImages().forEach(s ->
+                    productImageRepository
                             .save(ProductImage.builder()
-                                    .linkToImage(link)
+                                    .linkToImage(s)
                                     .product(p)
-                                    .build()));
+                                    .build())
+            );
 
+            entityManager.flush();
             return p;
         }
 

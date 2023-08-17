@@ -20,7 +20,7 @@ public class ProductImage {
     @Column(columnDefinition = "TEXT")
     private String linkToImage;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     @JsonBackReference
     private Product product;

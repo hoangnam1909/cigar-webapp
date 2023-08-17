@@ -16,6 +16,6 @@ public class ProductUpdateRequest {
     private Integer unitsInStock;
     private Long categoryId;
     private Long brandId;
-    private List<String> productImagesLink;
+    private List<String> productImages;
 
 }
