@@ -1,6 +1,7 @@
 package com.nhn.cigarwebapp.service.impl;
 
 import com.nhn.cigarwebapp.dto.request.BrandUpdateRequest;
+import com.nhn.cigarwebapp.dto.response.CategoryResponse;
 import com.nhn.cigarwebapp.mapper.BrandMapper;
 import com.nhn.cigarwebapp.mapper.ProductMapper;
 import com.nhn.cigarwebapp.model.Brand;
@@ -15,6 +16,7 @@ import com.nhn.cigarwebapp.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,6 +59,7 @@ public class BrandServiceImpl implements BrandService {
         return brandRepository.findAll()
                 .stream()
                 .map(b -> brandMapper.toResponse(b))
+                .sorted(Comparator.comparing(BrandResponse::id))
                 .collect(Collectors.toList());
     }
 

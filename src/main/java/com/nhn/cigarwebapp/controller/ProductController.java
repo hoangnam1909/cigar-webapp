@@ -24,6 +24,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -90,6 +92,17 @@ public class ProductController {
                             .msg("Product not found")
                             .result(null)
                             .build());
+    }
+
+    @GetMapping("/suggests/{id}")
+    public ResponseEntity<ResponseObject> getSuggestProducts(@PathVariable(name = "id") Long id) {
+        List<ProductResponse> products = productService.getSuggestProducts(id);
+
+        return ResponseEntity.ok()
+                .body(ResponseObject.builder()
+                        .msg("success")
+                        .result(products)
+                        .build());
     }
 
     @PostMapping

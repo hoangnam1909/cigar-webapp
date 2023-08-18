@@ -37,7 +37,6 @@ public class AuthenticationController {
     @GetMapping("/verify")
     public ResponseEntity<Boolean> verify() {
         String accessToken = servletRequest.getHeader("Authorization").substring(7);
-        System.err.println(accessToken);
         return ResponseEntity.ok(!jwtService.isTokenExpired(accessToken));
     }
 
@@ -45,7 +44,6 @@ public class AuthenticationController {
     public ResponseEntity<ResponseObject> currentUser(@PathVariable String token) {
         String username = jwtService.extractUsername(token);
         Optional<User> user = userRepository.findByUsername(username);
-        System.err.println(token);
         if (user.isPresent()) {
             if (jwtService.isTokenValid(token, user.get()))
                 return ResponseEntity.ok()

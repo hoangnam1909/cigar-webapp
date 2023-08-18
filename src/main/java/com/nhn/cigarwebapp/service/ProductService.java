@@ -8,11 +8,15 @@ import com.nhn.cigarwebapp.specification.ProductSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface ProductService {
 
     Page<ProductResponse> getProducts(Integer page, Integer size);
 
     Page<ProductResponse> getProducts(ProductSpecification specification, Pageable pageable);
+
+    List<ProductResponse> getSuggestProducts(Long id);
 
     Product add(ProductRequest request);
 

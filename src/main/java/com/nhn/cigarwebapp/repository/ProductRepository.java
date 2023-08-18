@@ -16,6 +16,8 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
 
     List<Product> findAllByBrandId(Long id);
 
+    List<Product> findAllByIdIsNotIn(List<Long> id);
+
     Long countProductByBrand(Brand brand);
 
     Long countProductByCategory(Category category);

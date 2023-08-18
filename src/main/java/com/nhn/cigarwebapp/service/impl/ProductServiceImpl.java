@@ -19,7 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -47,6 +48,25 @@ public class ProductServiceImpl implements ProductService {
     public Page<ProductResponse> getProducts(ProductSpecification specification, Pageable pageable) {
         return productRepository.findAll(specification, pageable)
                 .map(product -> productMapper.toResponse(product));
+    }
+
+    @Override
+    public List<ProductResponse> getSuggestProducts(Long id) {
+        Product product = productRepository.findById(id).get();
+        List<Product> products = entityManager
+                .createQuery(
+                        "SELECT p " +
+                                "FROM Product p " +
+                                "WHERE p.brand.id = :brandId AND p.id != :productId " +
+                                "ORDER BY random()", Product.class)
+                .setParameter("productId", id)
+                .setParameter("brandId", product.getBrand().getId())
+                .setMaxResults(4)
+                .getResultList();
+        return products
+                .stream()
+                .map(p -> productMapper.toResponse(p))
+                .collect(Collectors.toList());
     }
 
     @Override
