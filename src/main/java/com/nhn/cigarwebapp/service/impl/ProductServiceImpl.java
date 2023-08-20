@@ -53,14 +53,16 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductResponse> getSuggestProducts(Long id) {
         Product product = productRepository.findById(id).get();
+        System.err.println("suggest");
         List<Product> products = entityManager
                 .createQuery(
                         "SELECT p " +
                                 "FROM Product p " +
-                                "WHERE p.brand.id = :brandId AND p.id != :productId " +
+                                "WHERE (p.brand.id = :brandId OR p.category.id = :categoryId) AND p.id != :productId " +
                                 "ORDER BY random()", Product.class)
                 .setParameter("productId", id)
                 .setParameter("brandId", product.getBrand().getId())
+                .setParameter("categoryId", product.getCategory().getId())
                 .setMaxResults(4)
                 .getResultList();
         return products
