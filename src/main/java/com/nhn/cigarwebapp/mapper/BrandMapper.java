@@ -23,14 +23,11 @@ public class BrandMapper {
     }
 
     public BrandResponse toResponse(Brand brand) {
-        Long productsCount = productRepository.countProductByBrand(brand);
-
         return new BrandResponse(
                 brand.getId(),
                 brand.getName(),
                 brand.getImage(),
-                brand.getCountry(),
-                productsCount
+                brand.getCountry()
         );
     }
 

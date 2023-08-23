@@ -94,6 +94,23 @@ public class ProductController {
                             .build());
     }
 
+    @GetMapping("/count-product-on-sale")
+    public ResponseEntity<ResponseObject> countProductsOnSale() {
+        try {
+            return ResponseEntity.ok()
+                    .body(ResponseObject.builder()
+                            .msg("Successfully")
+                            .result(productService.countProductsOnSale())
+                            .build());
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest()
+                    .body(ResponseObject.builder()
+                            .msg("Error")
+                            .result(ex.getMessage())
+                            .build());
+        }
+    }
+
     @GetMapping("/suggests/{id}")
     public ResponseEntity<ResponseObject> getSuggestProducts(@PathVariable(name = "id") Long id) {
         List<ProductResponse> products = productService.getSuggestProducts(id);

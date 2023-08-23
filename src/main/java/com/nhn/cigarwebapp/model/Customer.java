@@ -1,10 +1,14 @@
 package com.nhn.cigarwebapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
-@Table(name="customer")
+@Table(name = "customer")
 @Getter
 @Setter
 @Builder
@@ -25,13 +29,14 @@ public class Customer {
     @Column
     private String email;
 
-    @Column
-    private String address;
+    @JsonIgnore
+    @JsonManagedReference
+    @OneToMany(mappedBy = "customer")
+    private List<Order> order;
 
-    @Column
-    private String note;
-
-    @OneToOne(mappedBy = "customer")
-    private Order order;
+    @JsonIgnore
+    @JsonManagedReference
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    private List<Address> addresses;
 
 }

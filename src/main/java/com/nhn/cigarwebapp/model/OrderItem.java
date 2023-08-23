@@ -1,5 +1,7 @@
 package com.nhn.cigarwebapp.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,6 +22,8 @@ public class OrderItem {
 
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "id")
+    @JsonIgnore
+    @JsonBackReference
     private Order order;
 
     @ManyToOne
@@ -31,5 +35,10 @@ public class OrderItem {
 
     @Column
     private Date createdAt;
+
+    @PrePersist
+    void prePersist() {
+        this.createdAt = new Date();
+    }
 
 }

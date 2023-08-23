@@ -32,11 +32,27 @@ public class SecurityConfiguration {
                 .httpBasic(Customizer.withDefaults())
                 .authorizeHttpRequests(request -> {
                     request.requestMatchers("/api/v1/auth/**").permitAll();
-                    request.requestMatchers(HttpMethod.GET, "/api/v1/categories**", "/api/v1/categories/**").permitAll();
-                    request.requestMatchers(HttpMethod.GET, "/api/v1/brands**", "/api/v1/brands/**").permitAll();
                     request.requestMatchers(HttpMethod.GET,
-                            "/api/v1/products**",
-                            "/api/v1/products/**").permitAll();
+                                    "/api/v1/categories**",
+                                    "/api/v1/categories/**")
+                            .permitAll();
+                    request.requestMatchers(
+                                    "/api/v1/customers**",
+                                    "/api/v1/customers/**",
+                                    "/api/v1/customers/validate/**")
+                            .permitAll();
+                    request.requestMatchers(
+                                    "/api/v1/orders**",
+                                    "/api/v1/orders/**")
+                            .permitAll();
+                    request.requestMatchers(HttpMethod.GET,
+                                    "/api/v1/brands**",
+                                    "/api/v1/brands/**")
+                            .permitAll();
+                    request.requestMatchers(HttpMethod.GET,
+                                    "/api/v1/products**",
+                                    "/api/v1/products/**")
+                            .permitAll();
                     request.anyRequest().authenticated();
                 })
                 .exceptionHandling(exceptionHandling -> {

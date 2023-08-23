@@ -12,6 +12,8 @@ import java.util.List;
 
 public interface ProductService {
 
+    Long countProductsOnSale();
+
     Page<ProductResponse> getProducts(Integer page, Integer size);
 
     Page<ProductResponse> getProducts(ProductSpecification specification, Pageable pageable);

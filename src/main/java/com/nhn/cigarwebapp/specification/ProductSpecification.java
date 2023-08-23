@@ -6,6 +6,7 @@ import com.nhn.cigarwebapp.model.Brand;
 import com.nhn.cigarwebapp.model.Category;
 import com.nhn.cigarwebapp.model.Product;
 import jakarta.persistence.criteria.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
@@ -36,8 +37,8 @@ public class ProductSpecification implements Specification<Product> {
                 predicates.add(builder.equal(brandProductJoin.get("id"), criteria.getValue().toString()));
             } else if (criteria.getOperation().equals(SearchOperation.MATCH)) {
                 predicates.add(builder.like(
-                        builder.lower(root.get(criteria.getKey())),
-                        "%" + criteria.getValue().toString().toLowerCase() + "%"));
+                        builder.lower(root.get(criteria.getKey()).as(String.class)),
+                        "%" + StringUtils.stripAccents(criteria.getValue().toString().toLowerCase()) + "%"));
             } else if (criteria.getOperation().equals(SearchOperation.IS_ACTIVE)) {
                 predicates.add(builder.equal(
                         root.get(criteria.getKey()).as(Boolean.class), criteria.getValue()));

@@ -10,9 +10,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class CategoryMapper {
 
-    @Autowired
-    private ProductRepository productRepository;
-
     public Category toEntity(CategoryRequest request) {
         return Category.builder()
                 .name(request.name())
@@ -20,12 +17,9 @@ public class CategoryMapper {
     }
 
     public CategoryResponse toResponse(Category category) {
-        Long productsCount = productRepository.countProductByCategory(category);
-
         return new CategoryResponse(
                 category.getId(),
-                category.getName(),
-                productsCount
+                category.getName()
         );
     }
 

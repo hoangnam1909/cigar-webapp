@@ -38,6 +38,11 @@ public class ProductServiceImpl implements ProductService {
     private EntityManager entityManager;
 
     @Override
+    public Long countProductsOnSale() {
+        return productRepository.countAllByActiveIsTrue();
+    }
+
+    @Override
     public Page<ProductResponse> getProducts(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         return productRepository.findAll(pageable)

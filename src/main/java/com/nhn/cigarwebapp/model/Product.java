@@ -72,7 +72,7 @@ public class Product {
     private List<Comment> comments;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<AttributeValue> attributes;
 
     @PrePersist
