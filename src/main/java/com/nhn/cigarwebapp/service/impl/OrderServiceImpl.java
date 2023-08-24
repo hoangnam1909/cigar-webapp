@@ -8,10 +8,7 @@ import com.nhn.cigarwebapp.model.Customer;
 import com.nhn.cigarwebapp.model.Order;
 import com.nhn.cigarwebapp.model.OrderItem;
 import com.nhn.cigarwebapp.model.Product;
-import com.nhn.cigarwebapp.repository.CustomerRepository;
-import com.nhn.cigarwebapp.repository.OrderItemRepository;
-import com.nhn.cigarwebapp.repository.OrderRepository;
-import com.nhn.cigarwebapp.repository.ProductRepository;
+import com.nhn.cigarwebapp.repository.*;
 import com.nhn.cigarwebapp.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -45,6 +43,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private OrderStatusRepository orderStatusRepository;
 
     @Override
     public Page<OrderResponse> getOrders(Integer page, Integer size) {
@@ -81,6 +82,7 @@ public class OrderServiceImpl implements OrderService {
 
         Order order = Order.builder()
                 .customer(customerRepository.getReferenceById(currentCustomer.getId()))
+                .orderStatus(orderStatusRepository.getReferenceById(1L))
                 .deliveryAddress(request.getDeliveryAddress())
                 .total(total.get())
                 .note(request.getNote())
@@ -98,6 +100,21 @@ public class OrderServiceImpl implements OrderService {
                 });
 
         return order;
+    }
+
+    @Override
+    @Transactional
+    public void partialUpdateOrder(Long id, Map<String, Object> params) {
+        Optional<Order> orderOptional = orderRepository.findById(id);
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            if (params.containsKey("orderStatusId"))
+                order.setOrderStatus(
+                        orderStatusRepository
+                                .getReferenceById(Long.valueOf((String) params.get("orderStatusId"))));
+
+            orderRepository.saveAndFlush(order);
+        }
     }
 
 }

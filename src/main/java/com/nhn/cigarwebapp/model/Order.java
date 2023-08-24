@@ -1,7 +1,6 @@
 package com.nhn.cigarwebapp.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -40,8 +39,10 @@ public class Order {
     @JsonManagedReference
     private Set<OrderItem> orderItems;
 
-    @Column
-    private String status;
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "order_status_id", referencedColumnName = "id")
+    private OrderStatus orderStatus;
 
     @Column
     private String deliveryAddress;

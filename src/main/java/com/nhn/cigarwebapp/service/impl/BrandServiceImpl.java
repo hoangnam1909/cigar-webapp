@@ -1,15 +1,13 @@
 package com.nhn.cigarwebapp.service.impl;
 
-import com.nhn.cigarwebapp.dto.request.BrandUpdateRequest;
-import com.nhn.cigarwebapp.dto.response.CategoryResponse;
-import com.nhn.cigarwebapp.mapper.BrandMapper;
-import com.nhn.cigarwebapp.mapper.ProductMapper;
-import com.nhn.cigarwebapp.model.Brand;
 import com.nhn.cigarwebapp.dto.request.BrandRequest;
+import com.nhn.cigarwebapp.dto.request.BrandUpdateRequest;
 import com.nhn.cigarwebapp.dto.response.BrandDetailResponse;
 import com.nhn.cigarwebapp.dto.response.BrandResponse;
 import com.nhn.cigarwebapp.dto.response.ProductResponse;
-import com.nhn.cigarwebapp.model.Category;
+import com.nhn.cigarwebapp.mapper.BrandMapper;
+import com.nhn.cigarwebapp.mapper.ProductMapper;
+import com.nhn.cigarwebapp.model.Brand;
 import com.nhn.cigarwebapp.repository.BrandRepository;
 import com.nhn.cigarwebapp.repository.ProductRepository;
 import com.nhn.cigarwebapp.service.BrandService;

@@ -46,6 +46,10 @@ public class SecurityConfiguration {
                                     "/api/v1/orders/**")
                             .permitAll();
                     request.requestMatchers(HttpMethod.GET,
+                                    "/api/v1/order-statuses**",
+                                    "/api/v1/order-statuses/**")
+                            .permitAll();
+                    request.requestMatchers(HttpMethod.GET,
                                     "/api/v1/brands**",
                                     "/api/v1/brands/**")
                             .permitAll();

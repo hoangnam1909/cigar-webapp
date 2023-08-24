@@ -1,6 +1,7 @@
 package com.nhn.cigarwebapp.dto.response;
 
 import com.nhn.cigarwebapp.model.OrderItem;
+import com.nhn.cigarwebapp.model.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class OrderResponse {
     private CustomerResponse customer;
     private String note;
     private Date createdAt;
+    private OrderStatus orderStatus;
     private Double total;
     private String deliveryAddress;
     private Set<OrderItem> orderItems;

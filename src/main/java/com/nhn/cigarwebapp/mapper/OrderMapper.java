@@ -17,6 +17,7 @@ public class OrderMapper {
                 .id(order.getId())
                 .customer(customerMapper.toResponse(order.getCustomer()))
                 .createdAt(order.getCreatedAt())
+                .orderStatus(order.getOrderStatus())
                 .total(order.getTotal())
                 .note(order.getNote())
                 .orderItems(order.getOrderItems())

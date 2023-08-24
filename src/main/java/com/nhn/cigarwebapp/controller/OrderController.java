@@ -107,4 +107,27 @@ public class OrderController {
                             .build());
         }
     }
+
+
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ResponseObject> partialUpdateOrder(@PathVariable String id,
+                                                             @RequestBody Map<String, Object> params) {
+        try {
+            orderService.partialUpdateOrder(Long.valueOf(id), params);
+            return ResponseEntity.ok()
+                    .body(ResponseObject.builder()
+                            .msg("Order have been updated")
+                            .result(null)
+                            .build());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.badRequest()
+                    .body(ResponseObject.builder()
+                            .msg("Could not update your order")
+                            .result(ex.getMessage())
+                            .build());
+        }
+    }
+
 }
