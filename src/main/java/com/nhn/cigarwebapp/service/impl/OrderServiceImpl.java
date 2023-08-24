@@ -1,7 +1,9 @@
 package com.nhn.cigarwebapp.service.impl;
 
 import com.nhn.cigarwebapp.dto.request.OrderRequest;
+import com.nhn.cigarwebapp.dto.response.OrderResponse;
 import com.nhn.cigarwebapp.mapper.CustomerMapper;
+import com.nhn.cigarwebapp.mapper.OrderMapper;
 import com.nhn.cigarwebapp.model.Customer;
 import com.nhn.cigarwebapp.model.Order;
 import com.nhn.cigarwebapp.model.OrderItem;
@@ -12,6 +14,9 @@ import com.nhn.cigarwebapp.repository.OrderRepository;
 import com.nhn.cigarwebapp.repository.ProductRepository;
 import com.nhn.cigarwebapp.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,14 +37,25 @@ public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
 
     @Autowired
+    private OrderMapper orderMapper;
+
+    @Autowired
     private OrderItemRepository orderItemRepository;
 
     @Autowired
     private ProductRepository productRepository;
 
     @Override
-    public List<Order> getOrders() {
-        return orderRepository.findAll();
+    public Page<OrderResponse> getOrders(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return orderRepository.findAll(pageable)
+                .map(order -> orderMapper.toResponse(order));
+    }
+
+    @Override
+    public OrderResponse getOrder(Long id) {
+        Optional<Order> order = orderRepository.findById(id);
+        return order.map(value -> orderMapper.toResponse(value)).orElse(null);
     }
 
     @Override

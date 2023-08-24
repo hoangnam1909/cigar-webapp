@@ -1,13 +1,15 @@
 package com.nhn.cigarwebapp.service;
 
 import com.nhn.cigarwebapp.dto.request.OrderRequest;
+import com.nhn.cigarwebapp.dto.response.OrderResponse;
 import com.nhn.cigarwebapp.model.Order;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface OrderService {
 
-    List<Order> getOrders();
+    Page<OrderResponse> getOrders(Integer page, Integer size);
+
+    OrderResponse getOrder(Long id);
 
     Order addOrder(OrderRequest request);
 

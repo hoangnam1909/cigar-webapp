@@ -40,6 +40,9 @@ public class Order {
     @JsonManagedReference
     private Set<OrderItem> orderItems;
 
+    @Column
+    private String status;
+
     @PrePersist
     void prePersist() {
         this.createdAt = new Date();

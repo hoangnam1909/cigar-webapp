@@ -29,12 +29,10 @@ public class Customer {
     @Column
     private String email;
 
-    @JsonIgnore
     @JsonManagedReference
     @OneToMany(mappedBy = "customer")
     private List<Order> order;
 
-    @JsonIgnore
     @JsonManagedReference
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Address> addresses;

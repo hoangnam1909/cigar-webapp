@@ -54,7 +54,6 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<ResponseObject> getProducts(@RequestParam Map<String, String> params) {
-
         int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
         int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
 
