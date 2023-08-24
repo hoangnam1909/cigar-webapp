@@ -44,7 +44,6 @@ public class CustomerController {
                             .result(!phoneCheck)
                             .build());
         }
-
     }
 
     @PostMapping

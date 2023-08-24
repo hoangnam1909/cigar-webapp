@@ -17,9 +17,10 @@ public class OrderResponse {
 
     private Long id;
     private CustomerResponse customer;
+    private String note;
     private Date createdAt;
     private Double total;
-    private String note;
+    private String deliveryAddress;
     private Set<OrderItem> orderItems;
 
 }

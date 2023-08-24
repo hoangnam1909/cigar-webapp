@@ -12,7 +12,7 @@ public class OrderMapper {
     @Autowired
     private CustomerMapper customerMapper;
 
-    public OrderResponse toResponse(Order order){
+    public OrderResponse toResponse(Order order) {
         return OrderResponse.builder()
                 .id(order.getId())
                 .customer(customerMapper.toResponse(order.getCustomer()))
@@ -20,6 +20,7 @@ public class OrderMapper {
                 .total(order.getTotal())
                 .note(order.getNote())
                 .orderItems(order.getOrderItems())
+                .deliveryAddress(order.getDeliveryAddress())
                 .build();
     }
 

@@ -31,7 +31,7 @@ public class CustomerMapper {
                 .fullName(customer.getFullName())
                 .phone(customer.getPhone())
                 .email(customer.getEmail())
-                .addresses(customer.getAddresses())
+                .address(customer.getAddress())
                 .build();
     }
 

@@ -1,6 +1,5 @@
 package com.nhn.cigarwebapp.dto.response;
 
-import com.nhn.cigarwebapp.model.Address;
 import lombok.*;
 
 import java.util.List;
@@ -15,6 +14,6 @@ public class CustomerResponse {
     private String fullName;
     private String phone;
     private String email;
-    private List<Address> addresses;
+    private String address;
 
 }

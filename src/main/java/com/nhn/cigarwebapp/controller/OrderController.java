@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,6 +47,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ResponseObject> getOrder(@PathVariable String id) {
         OrderResponse orderResponse = orderService.getOrder(Long.valueOf(id));
         if (orderResponse != null)
@@ -55,15 +57,41 @@ public class OrderController {
                             .result(orderResponse)
                             .build());
         else
-            return ResponseEntity.badRequest()
+            return ResponseEntity.ok()
                     .body(ResponseObject.builder()
                             .msg("No order with id = " + id)
                             .result(null)
                             .build());
     }
 
+    @GetMapping("/tracking")
+    public ResponseEntity<ResponseObject> trackingOrder(@RequestParam Map<String, String> params) {
+        if (params.containsKey("orderId") && params.containsKey("phone")) {
+            OrderResponse orderResponse = orderService.getOrder(Long.valueOf(params.get("orderId")));
+
+            if (orderResponse != null && orderResponse.getCustomer().getPhone().equals(params.get("phone")))
+                return ResponseEntity.ok()
+                        .body(ResponseObject.builder()
+                                .msg("Order found with id = " + params.get("orderId"))
+                                .result(orderResponse)
+                                .build());
+            else
+                return ResponseEntity.ok()
+                        .body(ResponseObject.builder()
+                                .msg("No order")
+                                .result(null)
+                                .build());
+        }
+
+        return ResponseEntity.ok()
+                .body(ResponseObject.builder()
+                        .msg("No order")
+                        .result(null)
+                        .build());
+    }
+
     @PostMapping
-    public ResponseEntity<ResponseObject> insertProducts(@RequestBody OrderRequest request) {
+    public ResponseEntity<ResponseObject> addOrder(@RequestBody OrderRequest request) {
         try {
             Order order = orderService.addOrder(request);
             return ResponseEntity.ok()
@@ -78,7 +106,5 @@ public class OrderController {
                             .result(ex.getMessage())
                             .build());
         }
-
     }
-
 }

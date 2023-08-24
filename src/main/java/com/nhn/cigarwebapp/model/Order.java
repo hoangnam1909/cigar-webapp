@@ -43,6 +43,9 @@ public class Order {
     @Column
     private String status;
 
+    @Column
+    private String deliveryAddress;
+
     @PrePersist
     void prePersist() {
         this.createdAt = new Date();
