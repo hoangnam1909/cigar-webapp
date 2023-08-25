@@ -2,9 +2,7 @@ package com.nhn.cigarwebapp.auth;
 
 import com.nhn.cigarwebapp.common.ResponseObject;
 import com.nhn.cigarwebapp.config.JwtService;
-import com.nhn.cigarwebapp.dto.request.AuthenticationRequest;
 import com.nhn.cigarwebapp.dto.request.RefreshTokenRequest;
-import com.nhn.cigarwebapp.dto.response.AuthenticationResponse;
 import com.nhn.cigarwebapp.mapper.UserMapper;
 import com.nhn.cigarwebapp.model.User;
 import com.nhn.cigarwebapp.repository.UserRepository;
@@ -57,10 +55,10 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthenticationResponse> register(
+    public ResponseEntity<AuthenticationResponse> refreshToken(
             @RequestBody RefreshTokenRequest request
     ) {
-        return ResponseEntity.ok(authenticationService.refreshToken(request));
+        return ResponseEntity.ok().body(authenticationService.refreshToken(request));
     }
 
     @PostMapping("/register")

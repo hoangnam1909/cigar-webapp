@@ -1,4 +1,4 @@
-package com.nhn.cigarwebapp.dto.response;
+package com.nhn.cigarwebapp.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class AuthenticationResponse {
 
     private String token;
+    private String refreshToken;
 
 }

@@ -31,14 +31,24 @@ public class JwtService {
 
     public String generateToken(Map<String, Object> extraClaims,
                                 UserDetails userDetails) {
-        System.err.println(System.currentTimeMillis());
-        System.err.println(new Date(System.currentTimeMillis() + 3600000));
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 3600000))
+                .setExpiration(new Date(System.currentTimeMillis() + 21600000))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS512)
+                .compact();
+    }
+
+    public String generateRefreshToken(Map<String, Object> extraClaims,
+                                UserDetails userDetails) {
+        return Jwts
+                .builder()
+                .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 259200000))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS512)
                 .compact();
     }

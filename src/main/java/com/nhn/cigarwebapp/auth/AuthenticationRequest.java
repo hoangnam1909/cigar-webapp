@@ -1,4 +1,4 @@
-package com.nhn.cigarwebapp.dto.request;
+package com.nhn.cigarwebapp.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
