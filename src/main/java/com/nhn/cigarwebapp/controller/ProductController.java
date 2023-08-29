@@ -111,8 +111,10 @@ public class ProductController {
     }
 
     @GetMapping("/suggests/{id}")
-    public ResponseEntity<ResponseObject> getSuggestProducts(@PathVariable(name = "id") Long id) {
-        List<ProductResponse> products = productService.getSuggestProducts(id);
+    public ResponseEntity<ResponseObject> getSuggestProducts(@PathVariable(name = "id") Long id,
+                                                             @RequestParam Map<String, String> params) {
+        int count = params.containsKey("count") ? Integer.parseInt(params.get("count")) : 4;
+        List<ProductResponse> products = productService.getSuggestProducts(id, count);
 
         return ResponseEntity.ok()
                 .body(ResponseObject.builder()

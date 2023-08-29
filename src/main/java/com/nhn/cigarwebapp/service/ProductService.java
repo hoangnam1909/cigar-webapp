@@ -18,7 +18,7 @@ public interface ProductService {
 
     Page<ProductResponse> getProducts(ProductSpecification specification, Pageable pageable);
 
-    List<ProductResponse> getSuggestProducts(Long id);
+    List<ProductResponse> getSuggestProducts(Long id, int count);
 
     Product add(ProductRequest request);
 

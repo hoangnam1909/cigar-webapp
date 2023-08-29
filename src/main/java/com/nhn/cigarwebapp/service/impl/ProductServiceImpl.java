@@ -56,7 +56,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductResponse> getSuggestProducts(Long id) {
+    public List<ProductResponse> getSuggestProducts(Long id, int count) {
         Product product = productRepository.findById(id).get();
         System.err.println("suggest");
         List<Product> products = entityManager
@@ -68,7 +68,7 @@ public class ProductServiceImpl implements ProductService {
                 .setParameter("productId", id)
                 .setParameter("brandId", product.getBrand().getId())
                 .setParameter("categoryId", product.getCategory().getId())
-                .setMaxResults(4)
+                .setMaxResults(count)
                 .getResultList();
         return products
                 .stream()
