@@ -1,10 +1,8 @@
 package com.nhn.cigarwebapp.mapper;
 
-import com.nhn.cigarwebapp.model.Category;
 import com.nhn.cigarwebapp.dto.request.CategoryRequest;
 import com.nhn.cigarwebapp.dto.response.CategoryResponse;
-import com.nhn.cigarwebapp.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.nhn.cigarwebapp.model.Category;
 import org.springframework.stereotype.Service;
 
 @Service

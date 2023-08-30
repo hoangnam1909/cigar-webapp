@@ -1,18 +1,18 @@
 package com.nhn.cigarwebapp.controller;
 
-import com.nhn.cigarwebapp.dto.request.ProductUpdateRequest;
-import com.nhn.cigarwebapp.mapper.ProductMapper;
 import com.nhn.cigarwebapp.common.ProductEnum;
 import com.nhn.cigarwebapp.common.ResponseObject;
 import com.nhn.cigarwebapp.common.SearchCriteria;
 import com.nhn.cigarwebapp.common.SearchOperation;
-import com.nhn.cigarwebapp.model.Product;
 import com.nhn.cigarwebapp.dto.request.ProductRequest;
+import com.nhn.cigarwebapp.dto.request.ProductUpdateRequest;
 import com.nhn.cigarwebapp.dto.response.ProductResponse;
+import com.nhn.cigarwebapp.mapper.ProductMapper;
+import com.nhn.cigarwebapp.mapper.SortMapper;
+import com.nhn.cigarwebapp.model.Product;
 import com.nhn.cigarwebapp.repository.ProductRepository;
 import com.nhn.cigarwebapp.service.ProductService;
 import com.nhn.cigarwebapp.specification.ProductSpecification;
-import com.nhn.cigarwebapp.mapper.SortMapper;
 import com.nhn.cigarwebapp.specification.SpecificationConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

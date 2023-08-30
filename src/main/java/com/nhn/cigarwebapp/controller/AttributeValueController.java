@@ -1,8 +1,8 @@
 package com.nhn.cigarwebapp.controller;
 
 import com.nhn.cigarwebapp.common.ResponseObject;
-import com.nhn.cigarwebapp.model.AttributeValue;
 import com.nhn.cigarwebapp.dto.request.AttributeValueRequest;
+import com.nhn.cigarwebapp.model.AttributeValue;
 import com.nhn.cigarwebapp.service.AttributeValueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

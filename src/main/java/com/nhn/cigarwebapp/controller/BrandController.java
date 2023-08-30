@@ -3,20 +3,19 @@ package com.nhn.cigarwebapp.controller;
 import com.nhn.cigarwebapp.common.ResponseObject;
 import com.nhn.cigarwebapp.dto.request.BrandRequest;
 import com.nhn.cigarwebapp.dto.request.BrandUpdateRequest;
-import com.nhn.cigarwebapp.dto.request.CategoryRequest;
 import com.nhn.cigarwebapp.dto.response.BrandDetailResponse;
 import com.nhn.cigarwebapp.dto.response.BrandResponse;
-import com.nhn.cigarwebapp.dto.response.CategoryResponse;
+import com.nhn.cigarwebapp.dto.response.BrandWithProductsResponse;
 import com.nhn.cigarwebapp.dto.response.ProductResponse;
 import com.nhn.cigarwebapp.service.BrandService;
-import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin
 @RestController
@@ -28,7 +27,6 @@ public class BrandController {
 
     @GetMapping
     public ResponseEntity<ResponseObject> getBrands() {
-
         List<BrandResponse> brands = brandService.getBrands();
 
         if (!brands.isEmpty())
@@ -65,8 +63,12 @@ public class BrandController {
     }
 
     @GetMapping("/{id}/products")
-    public ResponseEntity<ResponseObject> productsOfBrand(@PathVariable(name = "id") String id) {
-        List<ProductResponse> products = brandService.getProductOfBrand(Long.valueOf(id));
+    public ResponseEntity<ResponseObject> productsOfBrand(@PathVariable(name = "id") String id,
+                                                          @RequestParam Map<String, String> params) {
+        int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
+        int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : 4;
+
+        Page<ProductResponse> products = brandService.getProductOfBrand(Long.valueOf(id), page, size);
 
         if (!products.isEmpty())
             return ResponseEntity.ok()
@@ -80,7 +82,23 @@ public class BrandController {
                             .msg("No content")
                             .result(null)
                             .build());
+    }
 
+    @GetMapping("/top-3")
+    public ResponseEntity<ResponseObject> getTop3Brand() {
+        List<BrandWithProductsResponse> brandResponses = brandService.getTop3();
+        if (!brandResponses.isEmpty())
+            return ResponseEntity.ok()
+                    .body(ResponseObject.builder()
+                            .msg("Top 3 brands")
+                            .result(brandResponses)
+                            .build());
+        else
+            return ResponseEntity.ok()
+                    .body(ResponseObject.builder()
+                            .msg("No content")
+                            .result(null)
+                            .build());
     }
 
     @PostMapping
@@ -106,7 +124,7 @@ public class BrandController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ResponseObject> updateBrand(@PathVariable(name = "id") String id,
-                                                         @RequestBody BrandUpdateRequest request) {
+                                                      @RequestBody BrandUpdateRequest request) {
         try {
             BrandResponse response = brandService.update(Long.valueOf(id), request);
 

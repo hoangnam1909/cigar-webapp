@@ -1,18 +1,17 @@
 package com.nhn.cigarwebapp.mapper;
 
-import com.nhn.cigarwebapp.model.Brand;
 import com.nhn.cigarwebapp.dto.request.BrandRequest;
 import com.nhn.cigarwebapp.dto.response.BrandDetailResponse;
 import com.nhn.cigarwebapp.dto.response.BrandResponse;
-import com.nhn.cigarwebapp.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.nhn.cigarwebapp.dto.response.BrandWithProductsResponse;
+import com.nhn.cigarwebapp.dto.response.ProductResponse;
+import com.nhn.cigarwebapp.model.Brand;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class BrandMapper {
-
-    @Autowired
-    private ProductRepository productRepository;
 
     public Brand toEntity(BrandRequest request) {
         return Brand.builder()
@@ -29,6 +28,17 @@ public class BrandMapper {
                 brand.getImage(),
                 brand.getCountry()
         );
+    }
+
+    public BrandWithProductsResponse toResponseWithProduct(Brand brand, List<ProductResponse> productResponseList) {
+        return BrandWithProductsResponse.builder()
+                .id(brand.getId())
+                .name(brand.getName())
+                .description(brand.getDescription())
+                .image(brand.getImage())
+                .country(brand.getCountry())
+                .products(productResponseList)
+                .build();
     }
 
     public BrandDetailResponse toDetailResponse(Brand brand) {

@@ -1,7 +1,6 @@
 package com.nhn.cigarwebapp.mapper;
 
 import com.nhn.cigarwebapp.common.SortEnum;
-import com.nhn.cigarwebapp.model.Product;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 

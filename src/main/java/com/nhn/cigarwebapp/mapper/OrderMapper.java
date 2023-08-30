@@ -1,6 +1,5 @@
 package com.nhn.cigarwebapp.mapper;
 
-import com.nhn.cigarwebapp.dto.request.OrderRequest;
 import com.nhn.cigarwebapp.dto.response.OrderResponse;
 import com.nhn.cigarwebapp.model.Order;
 import org.springframework.beans.factory.annotation.Autowired;

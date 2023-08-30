@@ -1,8 +1,8 @@
 package com.nhn.cigarwebapp.service.impl;
 
+import com.nhn.cigarwebapp.dto.request.AttributeValueRequest;
 import com.nhn.cigarwebapp.mapper.AttributeValueMapper;
 import com.nhn.cigarwebapp.model.AttributeValue;
-import com.nhn.cigarwebapp.dto.request.AttributeValueRequest;
 import com.nhn.cigarwebapp.repository.AttributeValueRepository;
 import com.nhn.cigarwebapp.service.AttributeValueService;
 import org.springframework.beans.factory.annotation.Autowired;

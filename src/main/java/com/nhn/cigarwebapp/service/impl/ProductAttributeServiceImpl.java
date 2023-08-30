@@ -1,9 +1,9 @@
 package com.nhn.cigarwebapp.service.impl;
 
-import com.nhn.cigarwebapp.mapper.ProductAttributeMapper;
-import com.nhn.cigarwebapp.model.ProductAttribute;
 import com.nhn.cigarwebapp.dto.request.ProductAttributeRequest;
 import com.nhn.cigarwebapp.dto.response.ProductAttributeResponse;
+import com.nhn.cigarwebapp.mapper.ProductAttributeMapper;
+import com.nhn.cigarwebapp.model.ProductAttribute;
 import com.nhn.cigarwebapp.repository.ProductAttributeRepository;
 import com.nhn.cigarwebapp.service.ProductAttributeService;
 import org.springframework.beans.factory.annotation.Autowired;

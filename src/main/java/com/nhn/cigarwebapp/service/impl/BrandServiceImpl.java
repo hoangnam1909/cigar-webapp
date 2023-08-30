@@ -4,6 +4,7 @@ import com.nhn.cigarwebapp.dto.request.BrandRequest;
 import com.nhn.cigarwebapp.dto.request.BrandUpdateRequest;
 import com.nhn.cigarwebapp.dto.response.BrandDetailResponse;
 import com.nhn.cigarwebapp.dto.response.BrandResponse;
+import com.nhn.cigarwebapp.dto.response.BrandWithProductsResponse;
 import com.nhn.cigarwebapp.dto.response.ProductResponse;
 import com.nhn.cigarwebapp.mapper.BrandMapper;
 import com.nhn.cigarwebapp.mapper.ProductMapper;
@@ -12,6 +13,9 @@ import com.nhn.cigarwebapp.repository.BrandRepository;
 import com.nhn.cigarwebapp.repository.ProductRepository;
 import com.nhn.cigarwebapp.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -41,13 +45,12 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public List<ProductResponse> getProductOfBrand(Long id) {
-        if (brandRepository.existsById(id)) {
-            return productRepository.findAllByBrandId(id)
-                    .stream()
-                    .map(p -> productMapper.toResponse(p))
-                    .collect(Collectors.toList());
-        }
+    public Page<ProductResponse> getProductOfBrand(Long id, int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        if (brandRepository.existsById(id))
+            return productRepository.findAllByBrandId(id, pageable)
+                    .map(p -> productMapper.toResponse(p));
 
         return null;
     }
@@ -59,6 +62,21 @@ public class BrandServiceImpl implements BrandService {
                 .map(b -> brandMapper.toResponse(b))
                 .sorted(Comparator.comparing(BrandResponse::id))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BrandWithProductsResponse> getTop3() {
+        return brandRepository.findTop3ByOrderByIsBestSellerDesc()
+                .stream()
+                .map(brand -> {
+                    Pageable pageable = PageRequest.of(0,6);
+                    List<ProductResponse> productsResponses = productRepository.findAllByBrandId(brand.getId(), pageable)
+                            .getContent()
+                            .stream().map(product -> productMapper.toResponse(product))
+                            .toList();
+                    return brandMapper.toResponseWithProduct(brand, productsResponses);
+                })
+                .toList();
     }
 
     @Override
@@ -79,6 +97,5 @@ public class BrandServiceImpl implements BrandService {
         }
         return null;
     }
-
 
 }

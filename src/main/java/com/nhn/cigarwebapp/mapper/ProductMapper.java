@@ -1,13 +1,11 @@
 package com.nhn.cigarwebapp.mapper;
 
-import com.nhn.cigarwebapp.dto.request.ProductUpdateRequest;
-import com.nhn.cigarwebapp.model.Product;
 import com.nhn.cigarwebapp.dto.request.ProductRequest;
+import com.nhn.cigarwebapp.dto.request.ProductUpdateRequest;
 import com.nhn.cigarwebapp.dto.response.ProductResponse;
+import com.nhn.cigarwebapp.model.Product;
 import com.nhn.cigarwebapp.repository.BrandRepository;
 import com.nhn.cigarwebapp.repository.CategoryRepository;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

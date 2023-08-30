@@ -2,7 +2,6 @@ package com.nhn.cigarwebapp.controller;
 
 import com.nhn.cigarwebapp.common.ResponseObject;
 import com.nhn.cigarwebapp.dto.request.CategoryRequest;
-import com.nhn.cigarwebapp.dto.response.BrandDetailResponse;
 import com.nhn.cigarwebapp.dto.response.CategoryResponse;
 import com.nhn.cigarwebapp.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
