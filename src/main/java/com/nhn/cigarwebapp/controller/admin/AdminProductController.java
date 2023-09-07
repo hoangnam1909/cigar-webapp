@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@CrossOrigin(origins = {"${settings.cors_origin}"})
+//@CrossOrigin(origins = {"${settings.cors_origin}"})
 @RestController
 @RequestMapping("/api/v1/admin/products")
 public class AdminProductController {

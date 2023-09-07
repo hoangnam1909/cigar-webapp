@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@CrossOrigin(origins = {"${settings.cors_origin}"})
+//@CrossOrigin(origins = {"${settings.cors_origin}"})
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin/delivery-companies")

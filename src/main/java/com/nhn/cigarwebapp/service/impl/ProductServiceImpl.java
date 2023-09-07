@@ -73,7 +73,6 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductResponse> getSuggestProducts(Long id, int count) {
         Product product = productRepository.findById(id).get();
-        System.err.println("suggest");
         List<Product> products = entityManager
                 .createQuery(
                         "SELECT p " +

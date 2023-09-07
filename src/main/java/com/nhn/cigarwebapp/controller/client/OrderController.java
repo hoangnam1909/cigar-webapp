@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@CrossOrigin(origins = {"${settings.cors_origin}"})
+//@CrossOrigin(origins = {"${settings.cors_origin}"})
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/orders")
