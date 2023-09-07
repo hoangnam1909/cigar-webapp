@@ -1,4 +1,4 @@
-package com.nhn.cigarwebapp.controller;
+package com.nhn.cigarwebapp.controller.client;
 
 import com.nhn.cigarwebapp.common.ResponseObject;
 import com.nhn.cigarwebapp.dto.request.AttributeValueRequest;
@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin
+@CrossOrigin(origins = {"${settings.cors_origin}"})
 @RestController
 @RequestMapping("/api/v1/product-attribute-values")
 public class AttributeValueController {

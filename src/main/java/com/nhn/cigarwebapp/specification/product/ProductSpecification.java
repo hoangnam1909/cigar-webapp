@@ -1,4 +1,4 @@
-package com.nhn.cigarwebapp.specification;
+package com.nhn.cigarwebapp.specification.product;
 
 import com.nhn.cigarwebapp.common.SearchCriteria;
 import com.nhn.cigarwebapp.common.SearchOperation;

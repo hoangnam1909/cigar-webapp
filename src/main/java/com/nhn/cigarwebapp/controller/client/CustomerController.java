@@ -1,4 +1,4 @@
-package com.nhn.cigarwebapp.controller;
+package com.nhn.cigarwebapp.controller.client;
 
 import com.nhn.cigarwebapp.common.ResponseObject;
 import com.nhn.cigarwebapp.dto.request.CustomerRequest;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin
+@CrossOrigin(origins = {"${settings.cors_origin}"})
 @RestController
 @RequestMapping("/api/v1/customers")
 public class CustomerController {

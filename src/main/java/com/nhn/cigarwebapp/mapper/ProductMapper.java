@@ -3,6 +3,7 @@ package com.nhn.cigarwebapp.mapper;
 import com.nhn.cigarwebapp.dto.request.ProductRequest;
 import com.nhn.cigarwebapp.dto.request.ProductUpdateRequest;
 import com.nhn.cigarwebapp.dto.response.ProductResponse;
+import com.nhn.cigarwebapp.dto.response.admin.ProductAdminResponse;
 import com.nhn.cigarwebapp.model.Product;
 import com.nhn.cigarwebapp.repository.BrandRepository;
 import com.nhn.cigarwebapp.repository.CategoryRepository;
@@ -51,23 +52,45 @@ public class ProductMapper {
     }
 
     public ProductResponse toResponse(Product product) {
-        return new ProductResponse(
-                product.getId(),
-                product.getName(),
-                product.getDescription(),
-                product.getOriginalPrice(),
-                product.getSalePrice(),
-                product.getUnitsInStock(),
-                product.getCategory(),
-                brandMapper.toResponse(product.getBrand()),
-                product.getProductImages(),
-                product.getAttributes() != null ?
+        return ProductResponse.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .originalPrice(product.getOriginalPrice())
+                .salePrice(product.getSalePrice())
+                .unitsInStock(product.getUnitsInStock())
+                .category(product.getCategory())
+                .brand(brandMapper.toResponse(product.getBrand()))
+                .productImages(product.getProductImages())
+                .attributes(product.getAttributes() != null ?
                         product.getAttributes()
                                 .stream()
                                 .map(value -> attributeValueMapper.toProductResponse(value))
                                 .collect(Collectors.toList())
-                        : null
-        );
+                        : null)
+                .build();
+    }
+
+    public ProductAdminResponse toAdminResponse(Product product) {
+        return ProductAdminResponse.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .originalPrice(product.getOriginalPrice())
+                .salePrice(product.getSalePrice())
+                .unitsInStock(product.getUnitsInStock())
+                .category(product.getCategory())
+                .brand(brandMapper.toResponse(product.getBrand()))
+                .productImages(product.getProductImages())
+                .createdDate(product.getCreatedDate())
+                .modifiedDate(product.getModifiedDate())
+                .attributes(product.getAttributes() != null ?
+                        product.getAttributes()
+                                .stream()
+                                .map(value -> attributeValueMapper.toProductResponse(value))
+                                .collect(Collectors.toList())
+                        : null)
+                .build();
     }
 
 }

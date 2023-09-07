@@ -16,7 +16,8 @@ public enum SearchOperation {
     CATEGORY_ID,
     BRAND_ID,
     NAME,
-    IS_ACTIVE
+    IS_ACTIVE,
+    ORDER_STATUS_ID
 
 }
 

@@ -30,13 +30,13 @@ public class Order {
     private Date createdAt;
 
     @Column
-    private Double total;
+    private Double totalPrice;
 
     @Column
     private String note;
 
-    @OneToMany(mappedBy = "order")
     @JsonManagedReference
+    @OneToMany(mappedBy = "order")
     private Set<OrderItem> orderItems;
 
     @JsonBackReference
@@ -44,8 +44,9 @@ public class Order {
     @JoinColumn(name = "order_status_id", referencedColumnName = "id")
     private OrderStatus orderStatus;
 
-    @Column
-    private String deliveryAddress;
+    @ManyToOne
+    @JoinColumn(name = "shipment_id", referencedColumnName = "id")
+    private Shipment shipment;
 
     @PrePersist
     void prePersist() {

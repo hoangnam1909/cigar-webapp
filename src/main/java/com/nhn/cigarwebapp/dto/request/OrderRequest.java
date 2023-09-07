@@ -16,7 +16,7 @@ public class OrderRequest {
     private String fullName;
     private String phone;
     private String email;
-    private String deliveryAddress;
+    private String address;
     private String note;
     private List<OrderItemRequest> orderItems;
 

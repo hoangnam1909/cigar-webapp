@@ -1,6 +1,7 @@
 package com.nhn.cigarwebapp.mapper;
 
-import com.nhn.cigarwebapp.common.SortEnum;
+import com.nhn.cigarwebapp.specification.sort.OrderSortEnum;
+import com.nhn.cigarwebapp.specification.sort.ProductSortEnum;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -9,18 +10,39 @@ import java.util.Map;
 @Service
 public class SortMapper {
 
-    public Sort getSort(Map<String, String> params) {
-        if (params.containsKey("sort")) {
-            if (params.get("sort").equals(SortEnum.PRICE_DESC)) {
-                return Sort.by(Sort.Order.desc("salePrice"));
-            } else if (params.get("sort").equals(SortEnum.PRICE_ASC)) {
-                return Sort.by(Sort.Order.asc("salePrice"));
-            } else if (params.get("sort").equals(SortEnum.NEWEST)) {
-                return Sort.by(Sort.Order.desc("createdDate"));
+    public Sort getProductSort(String sort) {
+        if (sort != null) {
+            switch (sort) {
+                case ProductSortEnum.PRICE_DESC -> {
+                    return Sort.by(Sort.Order.desc("salePrice"));
+                }
+                case ProductSortEnum.PRICE_ASC -> {
+                    return Sort.by(Sort.Order.asc("salePrice"));
+                }
+                case ProductSortEnum.NEWEST -> {
+                    return Sort.by(Sort.Order.desc("createdDate"));
+                }
             }
         }
 
         return null;
     }
 
+    public Sort getOrderSort(String sort) {
+        if (sort != null) {
+            if (sort.equals(OrderSortEnum.ORDER_STATUS_DESC))
+                return Sort.by(Sort.Order.desc("orderStatus"));
+
+            if (sort.equals(OrderSortEnum.ORDER_STATUS_ASC))
+                return Sort.by(Sort.Order.asc("orderStatus"));
+
+            if (sort.equals(OrderSortEnum.CREATED_AT_DESC))
+                return Sort.by(Sort.Order.desc("createdAt"));
+
+            if (sort.equals(OrderSortEnum.CREATED_AT_ASC))
+                return Sort.by(Sort.Order.asc("createdAt"));
+        }
+
+        return null;
+    }
 }

@@ -1,5 +1,6 @@
-package com.nhn.cigarwebapp.dto.response;
+package com.nhn.cigarwebapp.dto.response.admin;
 
+import com.nhn.cigarwebapp.dto.response.CustomerResponse;
 import com.nhn.cigarwebapp.model.OrderItem;
 import com.nhn.cigarwebapp.model.OrderStatus;
 import com.nhn.cigarwebapp.model.Shipment;
@@ -15,15 +16,15 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderResponse {
+public class OrderAdminResponse {
 
     private Long id;
     private CustomerResponse customer;
-    private String note;
     private Date createdAt;
-    private OrderStatus orderStatus;
     private Double totalPrice;
-    private Shipment shipment;
+    private String note;
     private Set<OrderItem> orderItems;
+    private OrderStatus orderStatus;
+    private Shipment shipment;
 
 }

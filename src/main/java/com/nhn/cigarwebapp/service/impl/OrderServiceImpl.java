@@ -2,14 +2,16 @@ package com.nhn.cigarwebapp.service.impl;
 
 import com.nhn.cigarwebapp.dto.request.OrderRequest;
 import com.nhn.cigarwebapp.dto.response.OrderResponse;
+import com.nhn.cigarwebapp.dto.response.admin.OrderAdminResponse;
 import com.nhn.cigarwebapp.mapper.CustomerMapper;
 import com.nhn.cigarwebapp.mapper.OrderMapper;
-import com.nhn.cigarwebapp.model.Customer;
-import com.nhn.cigarwebapp.model.Order;
-import com.nhn.cigarwebapp.model.OrderItem;
-import com.nhn.cigarwebapp.model.Product;
+import com.nhn.cigarwebapp.mapper.SortMapper;
+import com.nhn.cigarwebapp.model.*;
 import com.nhn.cigarwebapp.repository.*;
 import com.nhn.cigarwebapp.service.OrderService;
+import com.nhn.cigarwebapp.service.ShipmentService;
+import com.nhn.cigarwebapp.specification.order.OrderSpecification;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,34 +25,33 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
-    @Autowired
-    private CustomerMapper customerMapper;
-
-    @Autowired
-    private CustomerRepository customerRepository;
-
-    @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private OrderMapper orderMapper;
-
-    @Autowired
-    private OrderItemRepository orderItemRepository;
-
-    @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private OrderStatusRepository orderStatusRepository;
+    private final CustomerMapper customerMapper;
+    private final CustomerRepository customerRepository;
+    private final OrderRepository orderRepository;
+    private final OrderMapper orderMapper;
+    private final OrderItemRepository orderItemRepository;
+    private final ProductRepository productRepository;
+    private final OrderStatusRepository orderStatusRepository;
+    private final SortMapper sortMapper;
+    private final ShipmentService shipmentService;
+    private final ShipmentRepository shipmentRepository;
+    private final DeliveryCompanyRepository deliveryCompanyRepository;
 
     @Override
     public Page<OrderResponse> getOrders(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
         return orderRepository.findAll(pageable)
                 .map(order -> orderMapper.toResponse(order));
+    }
+
+    @Override
+    public Page<OrderAdminResponse> getAdminOrders(OrderSpecification specification, Integer page, Integer size, String sort) {
+        Pageable pageable = PageRequest.of(page - 1, size, sortMapper.getOrderSort(sort));
+        return orderRepository.findAll(specification, pageable)
+                .map(order -> orderMapper.toAdminResponse(order));
     }
 
     @Override
@@ -62,17 +63,17 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public Order addOrder(OrderRequest request) {
-        Optional<Customer> customer = customerRepository.findByPhone(request.getPhone());
-        Customer currentCustomer;
+        Optional<Customer> optionalCustomer = customerRepository.findByPhone(request.getPhone());
+        Customer customer;
 
-        if (customer.isPresent()) {
-            currentCustomer = customer.get();
+        if (optionalCustomer.isPresent()) {
+            customer = optionalCustomer.get();
         } else {
-            currentCustomer = customerMapper.toEntity(request);
-            customerRepository.saveAndFlush(currentCustomer);
+            customer = customerMapper.toEntity(request);
+            customerRepository.saveAndFlush(customer);
         }
 
-        AtomicReference<Double> total = new AtomicReference<>((double) 0);
+        AtomicReference<Double> total = new AtomicReference<>(0.0);
         request.getOrderItems()
                 .forEach(orderItemRequest -> {
                     Optional<Product> product = productRepository.findById(orderItemRequest.getProductId());
@@ -80,10 +81,10 @@ public class OrderServiceImpl implements OrderService {
                 });
 
         Order order = Order.builder()
-                .customer(customerRepository.getReferenceById(currentCustomer.getId()))
+                .customer(customerRepository.getReferenceById(customer.getId()))
                 .orderStatus(orderStatusRepository.getReferenceById(1L))
-                .deliveryAddress(request.getDeliveryAddress())
-                .total(total.get())
+                .shipment(shipmentService.add(request.getAddress()))
+                .totalPrice(total.get())
                 .note(request.getNote())
                 .build();
         orderRepository.saveAndFlush(order);
@@ -107,10 +108,28 @@ public class OrderServiceImpl implements OrderService {
         Optional<Order> orderOptional = orderRepository.findById(id);
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
-            if (params.containsKey("orderStatusId"))
+            if (params.containsKey("orderStatusId")) {
                 order.setOrderStatus(
                         orderStatusRepository
                                 .getReferenceById(Long.valueOf((String) params.get("orderStatusId"))));
+            }
+
+            if (params.containsKey("trackingNumber")) {
+                String trackingNumber = (String) params.get("trackingNumber");
+                Shipment shipment = order.getShipment();
+                shipment.setTrackingNumber(trackingNumber);
+                shipmentRepository.save(shipment);
+            }
+
+            if (params.containsKey("deliveryCompanyId")) {
+                String deliveryCompanyIdStr = (String) params.get("deliveryCompanyId");
+                if (!deliveryCompanyIdStr.isEmpty()) {
+                    Long deliveryCompanyId = Long.parseLong(deliveryCompanyIdStr);
+                    order.getShipment().setDeliveryCompany(deliveryCompanyRepository.getReferenceById(deliveryCompanyId));
+                } else {
+                    order.getShipment().setDeliveryCompany(null);
+                }
+            }
 
             orderRepository.saveAndFlush(order);
         }

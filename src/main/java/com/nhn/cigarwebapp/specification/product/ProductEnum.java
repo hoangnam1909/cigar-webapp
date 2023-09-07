@@ -1,4 +1,4 @@
-package com.nhn.cigarwebapp.common;
+package com.nhn.cigarwebapp.specification.product;
 
 public class ProductEnum {
     public static final String CATEGORY_ID = "categoryId";

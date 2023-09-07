@@ -1,5 +1,7 @@
-package com.nhn.cigarwebapp.dto.response;
+package com.nhn.cigarwebapp.dto.response.admin;
 
+import com.nhn.cigarwebapp.dto.response.AttributeValueResponse;
+import com.nhn.cigarwebapp.dto.response.BrandResponse;
 import com.nhn.cigarwebapp.model.Category;
 import com.nhn.cigarwebapp.model.ProductImage;
 import lombok.AllArgsConstructor;
@@ -14,7 +16,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductResponse {
+public class ProductAdminResponse {
 
     private Long id;
     private String name;
@@ -25,6 +27,7 @@ public class ProductResponse {
     private Category category;
     private BrandResponse brand;
     private Date createdDate;
+    private Date modifiedDate;
     private List<ProductImage> productImages;
     private List<AttributeValueResponse> attributes;
 

@@ -3,6 +3,7 @@ package com.nhn.cigarwebapp.service;
 import com.nhn.cigarwebapp.auth.AuthenticationRequest;
 import com.nhn.cigarwebapp.auth.AuthenticationResponse;
 import com.nhn.cigarwebapp.auth.RegisterRequest;
+import com.nhn.cigarwebapp.config.JwtRefreshTokenService;
 import com.nhn.cigarwebapp.config.JwtService;
 import com.nhn.cigarwebapp.dto.request.RefreshTokenRequest;
 import com.nhn.cigarwebapp.model.Role;
@@ -24,16 +25,17 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final JwtRefreshTokenService jwtRefreshTokenService;
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse refreshToken(RefreshTokenRequest request) {
-        String username = jwtService.extractUsername(request.getRefreshToken());
+        String username = jwtRefreshTokenService.extractUsername(request.getRefreshToken());
         var user = userRepository.findByUsername(username)
                 .orElseThrow();
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRole().toString());
         var jwtToken = jwtService.generateToken(claims, user);
-        var refreshToken = jwtService.generateRefreshToken(claims, user);
+        var refreshToken = jwtRefreshTokenService.generateRefreshToken(user);
         return AuthenticationResponse
                 .builder()
                 .token(jwtToken)
@@ -70,7 +72,7 @@ public class AuthenticationService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRole().toString());
         var jwtToken = jwtService.generateToken(claims, user);
-        var refreshToken = jwtService.generateRefreshToken(claims, user);
+        var refreshToken = jwtRefreshTokenService.generateRefreshToken(user);
         return AuthenticationResponse
                 .builder()
                 .token(jwtToken)

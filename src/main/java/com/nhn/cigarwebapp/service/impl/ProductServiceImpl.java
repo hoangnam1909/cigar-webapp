@@ -3,19 +3,22 @@ package com.nhn.cigarwebapp.service.impl;
 import com.nhn.cigarwebapp.dto.request.ProductRequest;
 import com.nhn.cigarwebapp.dto.request.ProductUpdateRequest;
 import com.nhn.cigarwebapp.dto.response.ProductResponse;
+import com.nhn.cigarwebapp.dto.response.admin.ProductAdminResponse;
 import com.nhn.cigarwebapp.mapper.ProductMapper;
+import com.nhn.cigarwebapp.mapper.SortMapper;
 import com.nhn.cigarwebapp.model.Product;
 import com.nhn.cigarwebapp.model.ProductImage;
 import com.nhn.cigarwebapp.repository.ProductImageRepository;
 import com.nhn.cigarwebapp.repository.ProductRepository;
 import com.nhn.cigarwebapp.service.ProductService;
-import com.nhn.cigarwebapp.specification.ProductSpecification;
+import com.nhn.cigarwebapp.specification.product.ProductSpecification;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +41,9 @@ public class ProductServiceImpl implements ProductService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private SortMapper sortMapper;
+
     @Override
     public Long countProductsOnSale() {
         return productRepository.countAllByActiveIsTrue();
@@ -51,9 +57,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductResponse> getProducts(ProductSpecification specification, Pageable pageable) {
+    public Page<ProductResponse> getProducts(ProductSpecification specification, Integer page, Integer size, String sort) {
+        Pageable pageable = PageRequest.of(page - 1, size, sortMapper.getProductSort(sort));
         return productRepository.findAll(specification, pageable)
                 .map(product -> productMapper.toResponse(product));
+    }
+
+    @Override
+    public Page<ProductAdminResponse> getAdminProducts(ProductSpecification specification, Integer page, Integer size, String sort) {
+        Pageable pageable = PageRequest.of(page - 1, size, sortMapper.getProductSort(sort));
+        return productRepository.findAll(specification, pageable)
+                .map(product -> productMapper.toAdminResponse(product));
     }
 
     @Override
