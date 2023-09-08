@@ -30,7 +30,13 @@ public class OrderSpecification implements Specification<Order> {
         for (SearchCriteria criteria : criteriaList) {
             if (criteria.getOperation().equals(SearchOperation.ORDER_STATUS_ID)) {
                 Join<OrderStatus, Order> statusOrderJoin = root.join("orderStatus");
+
                 predicates.add(builder.equal(statusOrderJoin.get("id"), criteria.getValue().toString()));
+            } else if (criteria.getOperation().equals(SearchOperation.DELIVERY_COMPANY_ID)) {
+                Join<Shipment, Order> shipment = root.join("shipment");
+                Join<DeliveryCompany, Shipment> deliveryCompany = shipment.join("deliveryCompany");
+
+                predicates.add(builder.equal(deliveryCompany.get("id"), criteria.getValue().toString()));
             }
         }
 

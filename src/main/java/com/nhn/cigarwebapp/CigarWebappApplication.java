@@ -30,7 +30,9 @@ public class CigarWebappApplication {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins(FRONTEND_DOMAIN);
+                registry.addMapping("/**")
+                        .allowedOrigins(FRONTEND_DOMAIN)
+                        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE");
             }
         };
     }

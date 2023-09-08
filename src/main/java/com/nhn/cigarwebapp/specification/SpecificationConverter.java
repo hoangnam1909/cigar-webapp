@@ -38,6 +38,10 @@ public class SpecificationConverter {
             specification.add(new SearchCriteria(OrderEnum.ORDER_STATUS_ID, params.get(OrderEnum.ORDER_STATUS_ID), SearchOperation.ORDER_STATUS_ID));
         }
 
+        if (params.containsKey(OrderEnum.DELIVERY_COMPANY_ID)) {
+            specification.add(new SearchCriteria(OrderEnum.DELIVERY_COMPANY_ID, params.get(OrderEnum.DELIVERY_COMPANY_ID), SearchOperation.DELIVERY_COMPANY_ID));
+        }
+
         return specification;
     }
 

@@ -42,7 +42,6 @@ public class ProductSpecification implements Specification<Product> {
             } else if (criteria.getOperation().equals(SearchOperation.IS_ACTIVE)) {
                 predicates.add(builder.equal(
                         root.get(criteria.getKey()).as(Boolean.class), criteria.getValue()));
-
             }
         }
 
