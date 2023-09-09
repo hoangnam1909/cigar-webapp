@@ -9,6 +9,8 @@ public interface OrderStatusService {
 
     List<OrderStatusResponse> getOrderStatuses();
 
-    void addOrderStatuses(List<OrderStatusRequest> requestList);
+    OrderStatusResponse add(OrderStatusRequest request);
+
+//    void add(List<OrderStatusRequest> requestList);
 
 }

@@ -1,6 +1,5 @@
 package com.nhn.cigarwebapp.dto.response.admin;
 
-import com.nhn.cigarwebapp.dto.response.AttributeValueResponse;
 import com.nhn.cigarwebapp.dto.response.BrandResponse;
 import com.nhn.cigarwebapp.model.Category;
 import com.nhn.cigarwebapp.model.ProductImage;
@@ -29,6 +28,5 @@ public class ProductAdminResponse {
     private Date createdDate;
     private Date modifiedDate;
     private List<ProductImage> productImages;
-    private List<AttributeValueResponse> attributes;
 
 }

@@ -5,6 +5,7 @@ import com.nhn.cigarwebapp.mapper.DeliveryCompanyMapper;
 import com.nhn.cigarwebapp.repository.DeliveryCompanyRepository;
 import com.nhn.cigarwebapp.service.DeliveryCompanyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class DeliveryCompanyServiceImpl implements DeliveryCompanyService {
     private final DeliveryCompanyRepository deliveryCompanyRepository;
     private final DeliveryCompanyMapper deliveryCompanyMapper;
 
+    @Cacheable("deliveryCompanies")
     @Override
     public List<DeliveryCompanyAdminResponse> getDeliveryCompanies() {
         return deliveryCompanyRepository.findAll()

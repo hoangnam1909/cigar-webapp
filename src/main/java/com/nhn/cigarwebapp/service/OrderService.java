@@ -4,21 +4,21 @@ import com.nhn.cigarwebapp.dto.request.OrderRequest;
 import com.nhn.cigarwebapp.dto.response.OrderResponse;
 import com.nhn.cigarwebapp.dto.response.admin.OrderAdminResponse;
 import com.nhn.cigarwebapp.model.Order;
-import com.nhn.cigarwebapp.specification.order.OrderSpecification;
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
 public interface OrderService {
 
-    Page<OrderResponse> getOrders(Integer page, Integer size);
+    OrderResponse getOrder(@RequestParam Map<String, String> params);
 
-    Page<OrderAdminResponse> getAdminOrders(OrderSpecification specification, Integer page, Integer size, String sort);
+    Page<OrderAdminResponse> getAdminOrders(@RequestParam Map<String, String> params);
 
-    OrderResponse getOrder(Long id);
+    OrderAdminResponse getAdminOrder(Long id);
 
     Order addOrder(OrderRequest request);
 
-    void partialUpdateOrder(Long id, Map<String, Object> params);
+    OrderAdminResponse partialUpdateOrder(Long id, Map<String, Object> params);
 
 }

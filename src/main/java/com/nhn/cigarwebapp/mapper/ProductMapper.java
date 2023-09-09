@@ -7,25 +7,17 @@ import com.nhn.cigarwebapp.dto.response.admin.ProductAdminResponse;
 import com.nhn.cigarwebapp.model.Product;
 import com.nhn.cigarwebapp.repository.BrandRepository;
 import com.nhn.cigarwebapp.repository.CategoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
-
 @Component
+@RequiredArgsConstructor
 public class ProductMapper {
 
-    @Autowired
-    private BrandRepository brandRepository;
-
-    @Autowired
-    private BrandMapper brandMapper;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private AttributeValueMapper attributeValueMapper;
+    private final BrandRepository brandRepository;
+    private final BrandMapper brandMapper;
+    private final CategoryRepository categoryRepository;
+    private final AttributeValueMapper attributeValueMapper;
 
     public Product toEntity(ProductRequest request) {
         return Product.builder()
@@ -61,13 +53,14 @@ public class ProductMapper {
                 .unitsInStock(product.getUnitsInStock())
                 .category(product.getCategory())
                 .brand(brandMapper.toResponse(product.getBrand()))
+                .createdDate(product.getCreatedDate())
                 .productImages(product.getProductImages())
-                .attributes(product.getAttributes() != null ?
-                        product.getAttributes()
-                                .stream()
-                                .map(value -> attributeValueMapper.toProductResponse(value))
-                                .collect(Collectors.toList())
-                        : null)
+//                .attributes(product.getAttributes() != null ?
+//                        product.getAttributes()
+//                                .stream()
+//                                .map(value -> attributeValueMapper.toProductResponse(value))
+//                                .collect(Collectors.toList())
+//                        : null)
                 .build();
     }
 
@@ -81,15 +74,15 @@ public class ProductMapper {
                 .unitsInStock(product.getUnitsInStock())
                 .category(product.getCategory())
                 .brand(brandMapper.toResponse(product.getBrand()))
-                .productImages(product.getProductImages())
                 .createdDate(product.getCreatedDate())
                 .modifiedDate(product.getModifiedDate())
-                .attributes(product.getAttributes() != null ?
-                        product.getAttributes()
-                                .stream()
-                                .map(value -> attributeValueMapper.toProductResponse(value))
-                                .collect(Collectors.toList())
-                        : null)
+                .productImages(product.getProductImages())
+//                .attributes(product.getAttributes() != null ?
+//                        product.getAttributes()
+//                                .stream()
+//                                .map(value -> attributeValueMapper.toProductResponse(value))
+//                                .collect(Collectors.toList())
+//                        : null)
                 .build();
     }
 

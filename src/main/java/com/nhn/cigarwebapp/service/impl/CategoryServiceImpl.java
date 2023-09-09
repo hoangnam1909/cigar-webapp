@@ -6,7 +6,10 @@ import com.nhn.cigarwebapp.mapper.CategoryMapper;
 import com.nhn.cigarwebapp.model.Category;
 import com.nhn.cigarwebapp.repository.CategoryRepository;
 import com.nhn.cigarwebapp.service.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -15,50 +18,54 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private CategoryMapper categoryMapper;
+    private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     @Override
+    @Cacheable(value = "categories")
     public List<CategoryResponse> getCategories() {
         return categoryRepository.findAll()
                 .stream()
-                .map(category -> categoryMapper.toResponse(category))
+                .map(categoryMapper::toResponse)
                 .sorted(Comparator.comparing(CategoryResponse::getId))
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @CacheEvict(value = "categories", allEntries = true)
     public void addCategory(CategoryRequest request) {
         Category category = categoryMapper.toEntity(request);
         categoryRepository.saveAndFlush(category);
     }
 
     @Override
+    @Cacheable(key = "#id", value = "categories")
     public CategoryResponse getCategoryDetail(Long id) {
-        System.err.println("call getCategoryDetail");
         Optional<Category> category = categoryRepository.findById(id);
-
-        return category.map(value -> categoryMapper.toResponse(value)).orElse(null);
+        return category.map(categoryMapper::toResponse).orElse(null);
     }
 
     @Override
+    @CachePut(key = "#id", value = "categories")
+    @CacheEvict(value = "categories", allEntries = true)
     public CategoryResponse updateCategory(Long id, CategoryRequest request) {
-        Optional<Category> category = categoryRepository.findById(id);
-        if (category.isPresent()) {
-            Category categoryEditing = category.get();
-            categoryEditing.setName(request.name());
-            categoryRepository.save(categoryEditing);
-            return categoryMapper.toResponse(categoryEditing);
+        Optional<Category> categoryOptional = categoryRepository.findById(id);
+        if (categoryOptional.isPresent()) {
+            Category category = categoryOptional.get();
+            category.setName(request.name());
+            categoryRepository.save(category);
+
+            return categoryMapper.toResponse(category);
         }
 
         return null;
     }
 
     @Override
+    @CacheEvict(value = "categories", allEntries = true)
     public boolean deleteCategory(Long id) {
         Optional<Category> category = categoryRepository.findById(id);
         if (category.isPresent()) {

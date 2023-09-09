@@ -1,20 +1,9 @@
 package com.nhn.cigarwebapp.controller.client;
 
 import com.nhn.cigarwebapp.common.ResponseObject;
-import com.nhn.cigarwebapp.common.SearchCriteria;
-import com.nhn.cigarwebapp.common.SearchOperation;
 import com.nhn.cigarwebapp.dto.response.ProductResponse;
-import com.nhn.cigarwebapp.mapper.ProductMapper;
-import com.nhn.cigarwebapp.model.Product;
-import com.nhn.cigarwebapp.repository.ProductRepository;
 import com.nhn.cigarwebapp.service.ProductService;
-import com.nhn.cigarwebapp.specification.SpecificationConverter;
-import com.nhn.cigarwebapp.specification.product.ProductEnum;
-import com.nhn.cigarwebapp.specification.product.ProductSpecification;
-import com.nhn.cigarwebapp.specification.sort.ProductSortEnum;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -87,6 +76,5 @@ public class ProductController {
                         .result(products)
                         .build());
     }
-
 
 }

@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.io.Serializable;
-
 @Entity
 @Table(name = "attribute_value")
 @Getter

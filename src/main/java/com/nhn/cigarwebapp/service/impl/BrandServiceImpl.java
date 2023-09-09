@@ -1,22 +1,29 @@
 package com.nhn.cigarwebapp.service.impl;
 
-import com.nhn.cigarwebapp.dto.request.BrandRequest;
-import com.nhn.cigarwebapp.dto.request.BrandUpdateRequest;
-import com.nhn.cigarwebapp.dto.response.BrandDetailResponse;
+import com.nhn.cigarwebapp.dto.request.admin.BrandCreationRequest;
+import com.nhn.cigarwebapp.dto.request.admin.BrandUpdateRequest;
 import com.nhn.cigarwebapp.dto.response.BrandResponse;
 import com.nhn.cigarwebapp.dto.response.BrandWithProductsResponse;
 import com.nhn.cigarwebapp.dto.response.ProductResponse;
+import com.nhn.cigarwebapp.dto.response.admin.BrandAdminResponse;
 import com.nhn.cigarwebapp.mapper.BrandMapper;
 import com.nhn.cigarwebapp.mapper.ProductMapper;
 import com.nhn.cigarwebapp.model.Brand;
 import com.nhn.cigarwebapp.repository.BrandRepository;
 import com.nhn.cigarwebapp.repository.ProductRepository;
 import com.nhn.cigarwebapp.service.BrandService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
@@ -24,55 +31,73 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class BrandServiceImpl implements BrandService {
 
-    @Autowired
-    private BrandMapper brandMapper;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    @Autowired
-    private ProductMapper productMapper;
-
-    @Autowired
-    private BrandRepository brandRepository;
-
-    @Autowired
-    private ProductRepository productRepository;
+    private final BrandMapper brandMapper;
+    private final ProductMapper productMapper;
+    private final BrandRepository brandRepository;
+    private final ProductRepository productRepository;
 
     @Override
-    public BrandDetailResponse getBrandDetail(Long id) {
+    @Cacheable(key = "#id", value = "brand")
+    public BrandResponse getBrand(Long id) {
         Optional<Brand> brand = brandRepository.findById(id);
-        return brand.map(value -> brandMapper.toDetailResponse(value)).orElse(null);
+        return brand.map(brandMapper::toResponse).orElse(null);
     }
 
     @Override
+    @Cacheable(key = "#id + '_' + #page + '_' + #size", value = "brands")
     public Page<ProductResponse> getProductOfBrand(Long id, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         if (brandRepository.existsById(id))
             return productRepository.findAllByBrandId(id, pageable)
-                    .map(p -> productMapper.toResponse(p));
+                    .map(productMapper::toResponse);
 
         return null;
     }
 
     @Override
+    @Cacheable(value = "brands")
     public List<BrandResponse> getBrands() {
         return brandRepository.findAll()
                 .stream()
-                .map(b -> brandMapper.toResponse(b))
+                .map(brandMapper::toResponse)
                 .sorted(Comparator.comparing(BrandResponse::getId))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<BrandWithProductsResponse> getTop3() {
-        return brandRepository.findTop3ByOrderByIsBestSellerDesc()
+    @Cacheable(value = "adminBrands")
+    public List<BrandAdminResponse> getAdminBrands() {
+        return brandRepository.findAll()
                 .stream()
+                .map(brandMapper::toAdminResponse)
+                .sorted(Comparator.comparing(BrandAdminResponse::getId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Cacheable(key = "#top", value = "topBrands")
+    public List<BrandWithProductsResponse> getTop(int top) {
+        List<Brand> brands = entityManager
+                .createQuery(
+                        "SELECT b " +
+                                "FROM Brand b " +
+                                "ORDER BY isBestSeller DESC", Brand.class)
+                .setMaxResults(top)
+                .getResultList();
+
+        return brands.stream()
                 .map(brand -> {
-                    Pageable pageable = PageRequest.of(0,6);
+                    Pageable pageable = PageRequest.of(0, 6);
                     List<ProductResponse> productsResponses = productRepository.findAllByBrandId(brand.getId(), pageable)
                             .getContent()
-                            .stream().map(product -> productMapper.toResponse(product))
+                            .stream().map(productMapper::toResponse)
                             .toList();
                     return brandMapper.toResponseWithProduct(brand, productsResponses);
                 })
@@ -80,21 +105,35 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public void addBrand(BrandRequest request) {
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "topBrands", allEntries = true),
+            @CacheEvict(value = "brands", allEntries = true),
+            @CacheEvict(value = "adminBrands", allEntries = true),
+    })
+    public void addBrand(BrandCreationRequest request) {
         Brand brand = brandMapper.toEntity(request);
         brandRepository.saveAndFlush(brand);
     }
 
     @Override
+    @Transactional
+    @Caching(put = {
+            @CachePut(key = "#id", value = "brand")
+    }, evict = {
+            @CacheEvict(value = "topBrands", allEntries = true),
+            @CacheEvict(value = "brands", allEntries = true),
+            @CacheEvict(value = "adminBrands", allEntries = true),
+    })
     public BrandResponse update(Long id, BrandUpdateRequest request) {
-        Optional<Brand> brand = brandRepository.findById(id);
-        if (brand.isPresent()) {
-            Brand brandEditing = brand.get();
-            brandEditing.setName(request.name());
-            brandEditing.setCountry(request.country());
-            brandRepository.save(brandEditing);
-            return brandMapper.toResponse(brandEditing);
+        Optional<Brand> brandOptional = brandRepository.findById(id);
+        if (brandOptional.isPresent()) {
+            Brand brand = brandMapper.toEntity(request);
+            brand.setId(id);
+            brandRepository.save(brand);
+            return brandMapper.toResponse(brand);
         }
+
         return null;
     }
 

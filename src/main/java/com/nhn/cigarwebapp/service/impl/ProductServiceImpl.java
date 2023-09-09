@@ -20,11 +20,11 @@ import com.nhn.cigarwebapp.specification.sort.ProductSortEnum;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -53,14 +53,14 @@ public class ProductServiceImpl implements ProductService {
     private final SpecificationConverter specificationConverter;
 
     @Override
+    @Cacheable("countProductsOnSale")
     public Long countProductsOnSale() {
         return productRepository.countAllByActiveIsTrue();
     }
 
     @Override
-    @Cacheable(key = "#id", value = "Products")
+    @Cacheable(key = "#id", value = "product")
     public ProductResponse getProduct(Long id) {
-        System.err.println("get getProductById From DB");
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
@@ -71,7 +71,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Cacheable(key = "#params", value = "Products")
+    @Cacheable(key = "#params", value = "products")
     public Page<ProductResponse> getProducts(Map<String, String> params) {
         System.err.println("getProducts");
 
@@ -88,13 +88,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductAdminResponse> getAdminProducts(ProductSpecification specification, Integer page, Integer size, String sort) {
-        Pageable pageable = PageRequest.of(page - 1, size, sortMapper.getProductSort(sort));
-        return productRepository.findAll(specification, pageable)
-                .map(productMapper::toAdminResponse);
-    }
-
-    @Override
+    @Cacheable(key = "{#id, #count}", value = "productSuggest")
     public List<ProductResponse> getSuggestProducts(Long id, int count) {
         Optional<Product> productOptional = productRepository.findById(id);
 
@@ -105,6 +99,7 @@ public class ProductServiceImpl implements ProductService {
                             "SELECT p " +
                                     "FROM Product p " +
                                     "WHERE (p.brand.id = :brandId OR p.category.id = :categoryId) AND p.id != :productId " +
+//                                    "WHERE p.id != :productId " +
                                     "ORDER BY random()", Product.class)
                     .setParameter("productId", id)
                     .setParameter("brandId", product.getBrand().getId())
@@ -120,11 +115,34 @@ public class ProductServiceImpl implements ProductService {
         return List.of();
     }
 
+    // ADMIN SERVICES
+    @Override
+    @Cacheable(key = "#params", value = "adminProducts")
+    public Page<ProductAdminResponse> getAdminProducts(Map<String, String> params) {
+        int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
+        int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
+        String sort = params.getOrDefault("sort", ProductSortEnum.NEWEST);
+
+        ProductSpecification specification = specificationConverter.productSpecification(params);
+        specification.add(new SearchCriteria(ProductEnum.IS_ACTIVE, true, SearchOperation.IS_ACTIVE));
+
+        Pageable pageable = PageRequest.of(page - 1, size, sortMapper.getProductSort(sort));
+
+        return productRepository.findAll(specification, pageable)
+                .map(productMapper::toAdminResponse);
+    }
+
     @Override
     @Transactional
-    public Product add(ProductRequest request) {
+    @Caching(evict = {
+            @CacheEvict(value = "products", allEntries = true),
+            @CacheEvict(value = "productSuggest", allEntries = true),
+            @CacheEvict(value = "adminProducts", allEntries = true),
+            @CacheEvict(value = "countProductsOnSale", allEntries = true),
+    })
+    public ProductResponse add(ProductRequest request) {
         Product product = productMapper.toEntity(request);
-        Product productSaved = productRepository.saveAndFlush(product);
+        Product productSaving = productRepository.saveAndFlush(product);
 
         request.getProductImagesLink()
                 .forEach(link -> productImageRepository
@@ -133,30 +151,37 @@ public class ProductServiceImpl implements ProductService {
                                 .product(product)
                                 .build()));
 
-        entityManager.refresh(entityManager.find(Product.class, productSaved.getId()));
-        return productSaved;
+        entityManager.refresh(entityManager.find(Product.class, productSaving.getId()));
+        return productMapper.toResponse(productSaving);
     }
 
     @Override
     @Transactional
-    @CachePut(key = "#id", value = "Product")
-    public Product update(Long id, ProductUpdateRequest request) {
-        Optional<Product> product = productRepository.findById(id);
-        if (product.isPresent()) {
-            Product p = product.get();
-            productRepository.save(productMapper.toEntity(request, p));
-            productImageRepository.deleteAllInBatch(p.getProductImages());
+    @Caching(put = {
+            @CachePut(key = "#id", value = "product")
+    }, evict = {
+            @CacheEvict(value = "products", allEntries = true),
+            @CacheEvict(value = "productSuggest", allEntries = true),
+            @CacheEvict(value = "adminProducts", allEntries = true),
+    })
+    public ProductResponse update(Long id, ProductUpdateRequest request) {
+        Optional<Product> productOptional = productRepository.findById(id);
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+            productRepository.save(productMapper.toEntity(request, product));
+            productImageRepository.deleteAllInBatch(product.getProductImages());
 
             request.getProductImages().forEach(s ->
                     productImageRepository
                             .save(ProductImage.builder()
                                     .linkToImage(s)
-                                    .product(p)
+                                    .product(product)
                                     .build())
             );
 
             entityManager.flush();
-            return p;
+
+            return productMapper.toResponse(product);
         }
 
         return null;
@@ -165,7 +190,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    @CacheEvict(key = "#id", value = "Product")
+    @Caching(evict = {
+            @CacheEvict(value = "products", allEntries = true),
+            @CacheEvict(value = "productSuggest", allEntries = true),
+            @CacheEvict(value = "adminProducts", allEntries = true),
+            @CacheEvict(value = "countProductsOnSale", allEntries = true),
+    })
     public void delete(Long id) {
         productRepository.deleteById(id);
     }

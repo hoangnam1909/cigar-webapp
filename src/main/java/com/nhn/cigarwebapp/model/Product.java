@@ -1,14 +1,12 @@
 package com.nhn.cigarwebapp.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -53,7 +51,6 @@ public class Product {
     @Column
     private Boolean active;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     @JsonBackReference
@@ -68,13 +65,13 @@ public class Product {
     @JsonManagedReference
     private List<ProductImage> productImages;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private List<Comment> comments;
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+//    private List<Comment> comments;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private List<AttributeValue> attributes;
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+//    private List<AttributeValue> attributes;
 
     @PrePersist
     void prePersist() {

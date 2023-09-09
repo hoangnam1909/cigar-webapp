@@ -10,14 +10,20 @@ import com.nhn.cigarwebapp.model.*;
 import com.nhn.cigarwebapp.repository.*;
 import com.nhn.cigarwebapp.service.OrderService;
 import com.nhn.cigarwebapp.service.ShipmentService;
+import com.nhn.cigarwebapp.specification.SpecificationConverter;
 import com.nhn.cigarwebapp.specification.order.OrderSpecification;
+import com.nhn.cigarwebapp.specification.sort.OrderSortEnum;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 import java.util.Optional;
@@ -26,6 +32,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+
+    @Value("${order.default-page-size}")
+    private int PAGE_SIZE;
 
     private final CustomerMapper customerMapper;
     private final CustomerRepository customerRepository;
@@ -38,29 +47,49 @@ public class OrderServiceImpl implements OrderService {
     private final ShipmentService shipmentService;
     private final ShipmentRepository shipmentRepository;
     private final DeliveryCompanyRepository deliveryCompanyRepository;
+    private final SpecificationConverter specificationConverter;
 
     @Override
-    public Page<OrderResponse> getOrders(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
-        return orderRepository.findAll(pageable)
-                .map(order -> orderMapper.toResponse(order));
+    @Cacheable(key = "#params", value = "order")
+    public OrderResponse getOrder(@RequestParam Map<String, String> params) {
+        if (params.containsKey("orderId") && params.containsKey("phone")) {
+            Optional<Order> orderOptional = orderRepository.findById(Long.valueOf(params.get("orderId")));
+            if (orderOptional.isPresent()) {
+                Order order = orderOptional.get();
+                if (order.getCustomer().getPhone().equals(params.get("phone")))
+                    return orderMapper.toResponse(order);
+            }
+        }
+
+        return null;
     }
 
     @Override
-    public Page<OrderAdminResponse> getAdminOrders(OrderSpecification specification, Integer page, Integer size, String sort) {
+    @Cacheable(key = "#params", value = "adminOrders")
+    public Page<OrderAdminResponse> getAdminOrders(@RequestParam Map<String, String> params) {
+        int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
+        int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
+        String sort = params.getOrDefault("sort", OrderSortEnum.CREATED_AT_DESC);
+
+        OrderSpecification specification = specificationConverter.orderSpecification(params);
         Pageable pageable = PageRequest.of(page - 1, size, sortMapper.getOrderSort(sort));
+
         return orderRepository.findAll(specification, pageable)
-                .map(order -> orderMapper.toAdminResponse(order));
+                .map(orderMapper::toAdminResponse);
     }
 
     @Override
-    public OrderResponse getOrder(Long id) {
+    @Cacheable(key = "#id", value = "adminOrders")
+    public OrderAdminResponse getAdminOrder(Long id) {
         Optional<Order> order = orderRepository.findById(id);
-        return order.map(value -> orderMapper.toResponse(value)).orElse(null);
+        return order.map(orderMapper::toAdminResponse).orElse(null);
     }
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "adminOrders", allEntries = true),
+    })
     public Order addOrder(OrderRequest request) {
         Optional<Customer> optionalCustomer = customerRepository.findByPhone(request.getPhone());
         Customer customer;
@@ -103,15 +132,18 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void partialUpdateOrder(Long id, Map<String, Object> params) {
+    @Caching(evict = {
+            @CacheEvict(value = "order", allEntries = true),
+            @CacheEvict(value = "adminOrders", allEntries = true),
+    })
+    public OrderAdminResponse partialUpdateOrder(Long id, Map<String, Object> params) {
         Optional<Order> orderOptional = orderRepository.findById(id);
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
-            if (params.containsKey("orderStatusId")) {
+            if (params.containsKey("orderStatusId"))
                 order.setOrderStatus(
                         orderStatusRepository
                                 .getReferenceById(Long.valueOf((String) params.get("orderStatusId"))));
-            }
 
             if (params.containsKey("trackingNumber")) {
                 String trackingNumber = (String) params.get("trackingNumber");
@@ -131,7 +163,10 @@ public class OrderServiceImpl implements OrderService {
             }
 
             orderRepository.saveAndFlush(order);
+            return orderMapper.toAdminResponse(order);
         }
+
+        return null;
     }
 
 }

@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -15,9 +14,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductResponse implements Serializable {
-
-    private static final long serialVersionUID = 5778414782048504952L;
+public class ProductResponse {
 
     private Long id;
     private String name;
@@ -29,6 +26,5 @@ public class ProductResponse implements Serializable {
     private BrandResponse brand;
     private Date createdDate;
     private List<ProductImage> productImages;
-    private List<AttributeValueResponse> attributes;
 
 }

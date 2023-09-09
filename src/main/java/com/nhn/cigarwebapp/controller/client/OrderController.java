@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-//@CrossOrigin(origins = {"${settings.cors_origin}"})
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/orders")
@@ -21,28 +20,20 @@ public class OrderController {
 
     @GetMapping("/tracking")
     public ResponseEntity<ResponseObject> trackingOrder(@RequestParam Map<String, String> params) {
-        if (params.containsKey("orderId") && params.containsKey("phone")) {
-            OrderResponse orderResponse = orderService.getOrder(Long.valueOf(params.get("orderId")));
+        OrderResponse orderResponse = orderService.getOrder(params);
 
-            if (orderResponse != null && orderResponse.getCustomer().getPhone().equals(params.get("phone")))
-                return ResponseEntity.ok()
-                        .body(ResponseObject.builder()
-                                .msg("Order found with id = " + params.get("orderId"))
-                                .result(orderResponse)
-                                .build());
-            else
-                return ResponseEntity.ok()
-                        .body(ResponseObject.builder()
-                                .msg("No order")
-                                .result(null)
-                                .build());
-        }
-
-        return ResponseEntity.ok()
-                .body(ResponseObject.builder()
-                        .msg("No order")
-                        .result(null)
-                        .build());
+        if (orderResponse != null && orderResponse.getCustomer().getPhone().equals(params.get("phone")))
+            return ResponseEntity.ok()
+                    .body(ResponseObject.builder()
+                            .msg("Order found with id = " + params.get("orderId"))
+                            .result(orderResponse)
+                            .build());
+        else
+            return ResponseEntity.ok()
+                    .body(ResponseObject.builder()
+                            .msg("No order")
+                            .result(null)
+                            .build());
     }
 
     @PostMapping

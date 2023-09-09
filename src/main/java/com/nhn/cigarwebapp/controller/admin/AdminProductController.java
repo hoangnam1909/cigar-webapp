@@ -1,62 +1,28 @@
 package com.nhn.cigarwebapp.controller.admin;
 
 import com.nhn.cigarwebapp.common.ResponseObject;
-import com.nhn.cigarwebapp.common.SearchCriteria;
-import com.nhn.cigarwebapp.common.SearchOperation;
 import com.nhn.cigarwebapp.dto.request.ProductRequest;
 import com.nhn.cigarwebapp.dto.request.ProductUpdateRequest;
+import com.nhn.cigarwebapp.dto.response.ProductResponse;
 import com.nhn.cigarwebapp.dto.response.admin.ProductAdminResponse;
-import com.nhn.cigarwebapp.mapper.ProductMapper;
-import com.nhn.cigarwebapp.mapper.SortMapper;
-import com.nhn.cigarwebapp.model.Product;
-import com.nhn.cigarwebapp.repository.ProductRepository;
 import com.nhn.cigarwebapp.service.ProductService;
-import com.nhn.cigarwebapp.specification.SpecificationConverter;
-import com.nhn.cigarwebapp.specification.product.ProductEnum;
-import com.nhn.cigarwebapp.specification.product.ProductSpecification;
-import com.nhn.cigarwebapp.specification.sort.ProductSortEnum;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-//@CrossOrigin(origins = {"${settings.cors_origin}"})
 @RestController
 @RequestMapping("/api/v1/admin/products")
+@RequiredArgsConstructor
 public class AdminProductController {
 
-    @Value("${product.default-page-size}")
-    private int PAGE_SIZE;
-
-    @Autowired
-    private ProductMapper productMapper;
-
-    @Autowired
-    private ProductService productService;
-
-    @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private SpecificationConverter specificationConverter;
-
-    @Autowired
-    private SortMapper sortMapper;
+    private final ProductService productService;
 
     @GetMapping
     public ResponseEntity<ResponseObject> getProducts(@RequestParam Map<String, String> params) {
-        int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
-        int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
-        String sort = params.getOrDefault("sort", ProductSortEnum.NEWEST);
-
-        ProductSpecification specification = specificationConverter.productSpecification(params);
-        specification.add(new SearchCriteria(ProductEnum.IS_ACTIVE, true, SearchOperation.IS_ACTIVE));
-
-        Page<ProductAdminResponse> products = productService.getAdminProducts(specification, page, size, sort);
-
+        Page<ProductAdminResponse> products = productService.getAdminProducts(params);
         return ResponseEntity.ok()
                 .body(ResponseObject.builder()
                         .msg("Products found")
@@ -67,12 +33,12 @@ public class AdminProductController {
     @PostMapping
     public ResponseEntity<ResponseObject> insertProducts(@RequestBody ProductRequest request) {
         try {
-            Product addedProduct = productService.add(request);
+            ProductResponse productResponse = productService.add(request);
 
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
                             .msg("Your products have been saved")
-                            .result(productMapper.toResponse(addedProduct))
+                            .result(productResponse)
                             .build());
         } catch (Exception e) {
             return ResponseEntity.badRequest()
@@ -88,12 +54,12 @@ public class AdminProductController {
             @PathVariable String id,
             @RequestBody ProductUpdateRequest request) {
         try {
-            Product addedProduct = productService.update(Long.valueOf(id), request);
+            ProductResponse productResponse = productService.update(Long.valueOf(id), request);
 
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
                             .msg("Your product have been updated")
-                            .result(productMapper.toResponse(addedProduct))
+                            .result(productResponse)
                             .build());
         } catch (Exception e) {
             return ResponseEntity.badRequest()

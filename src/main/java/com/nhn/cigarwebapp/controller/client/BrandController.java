@@ -1,17 +1,14 @@
 package com.nhn.cigarwebapp.controller.client;
 
 import com.nhn.cigarwebapp.common.ResponseObject;
-import com.nhn.cigarwebapp.dto.request.BrandRequest;
-import com.nhn.cigarwebapp.dto.request.BrandUpdateRequest;
-import com.nhn.cigarwebapp.dto.response.BrandDetailResponse;
 import com.nhn.cigarwebapp.dto.response.BrandResponse;
 import com.nhn.cigarwebapp.dto.response.BrandWithProductsResponse;
 import com.nhn.cigarwebapp.dto.response.ProductResponse;
 import com.nhn.cigarwebapp.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,7 +42,7 @@ public class BrandController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseObject> brandDetail(@PathVariable(name = "id") String id) {
-        BrandDetailResponse brandDetail = brandService.getBrandDetail(Long.valueOf(id));
+        BrandResponse brandDetail = brandService.getBrand(Long.valueOf(id));
 
         if (brandDetail != null)
             return ResponseEntity.ok()
@@ -84,9 +81,10 @@ public class BrandController {
                             .build());
     }
 
-    @GetMapping("/top-3")
-    public ResponseEntity<ResponseObject> getTop3Brand() {
-        List<BrandWithProductsResponse> brandResponses = brandService.getTop3();
+    @GetMapping("/top/{topNumber}")
+    @Cacheable(key = "#topNumber", value = "topBrands")
+    public ResponseEntity<ResponseObject> getTopBrand(@PathVariable Integer topNumber) {
+        List<BrandWithProductsResponse> brandResponses = brandService.getTop(topNumber);
         if (!brandResponses.isEmpty())
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
@@ -99,54 +97,6 @@ public class BrandController {
                             .msg("No content")
                             .result(null)
                             .build());
-    }
-
-    @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<ResponseObject> insertBrand(@RequestBody BrandRequest request) {
-        try {
-            brandService.addBrand(request);
-
-            return ResponseEntity.ok()
-                    .body(ResponseObject.builder()
-                            .msg("Your brands have been saved")
-                            .result("")
-                            .build());
-        } catch (Exception e) {
-            return ResponseEntity.ok()
-                    .body(ResponseObject.builder()
-                            .msg("We could not save your brands")
-                            .result(e.getMessage())
-                            .build());
-        }
-    }
-
-    @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<ResponseObject> updateBrand(@PathVariable(name = "id") String id,
-                                                      @RequestBody BrandUpdateRequest request) {
-        try {
-            BrandResponse response = brandService.update(Long.valueOf(id), request);
-
-            if (response != null)
-                return ResponseEntity.ok()
-                        .body(ResponseObject.builder()
-                                .msg("Your brand have been saved")
-                                .result("")
-                                .build());
-            else
-                return ResponseEntity.badRequest()
-                        .body(ResponseObject.builder()
-                                .msg("Something went wrong")
-                                .result(response)
-                                .build());
-        } catch (Exception e) {
-            return ResponseEntity.ok()
-                    .body(ResponseObject.builder()
-                            .msg("We could not save your brand")
-                            .result(e.getMessage())
-                            .build());
-        }
     }
 
 }
