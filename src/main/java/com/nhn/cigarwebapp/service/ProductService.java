@@ -7,17 +7,17 @@ import com.nhn.cigarwebapp.dto.response.admin.ProductAdminResponse;
 import com.nhn.cigarwebapp.model.Product;
 import com.nhn.cigarwebapp.specification.product.ProductSpecification;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ProductService {
 
     Long countProductsOnSale();
 
-    Page<ProductResponse> getProducts(Integer page, Integer size);
+    ProductResponse getProduct(Long id);
 
-    Page<ProductResponse> getProducts(ProductSpecification specification, Integer page, Integer size, String sort);
+    Page<ProductResponse> getProducts(Map<String, String> params);
 
 //    Page<ProductAdminResponse> getAdminProducts(ProductSpecification specification, Pageable pageable);
 

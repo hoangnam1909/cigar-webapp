@@ -22,12 +22,12 @@ public class BrandMapper {
     }
 
     public BrandResponse toResponse(Brand brand) {
-        return new BrandResponse(
-                brand.getId(),
-                brand.getName(),
-                brand.getImage(),
-                brand.getCountry()
-        );
+        return BrandResponse.builder()
+                .id(brand.getId())
+                .name(brand.getName())
+                .image(brand.getImage())
+                .country(brand.getCountry())
+                .build();
     }
 
     public BrandWithProductsResponse toResponseWithProduct(Brand brand, List<ProductResponse> productResponseList) {

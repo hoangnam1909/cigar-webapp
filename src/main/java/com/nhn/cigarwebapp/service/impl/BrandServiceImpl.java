@@ -60,7 +60,7 @@ public class BrandServiceImpl implements BrandService {
         return brandRepository.findAll()
                 .stream()
                 .map(b -> brandMapper.toResponse(b))
-                .sorted(Comparator.comparing(BrandResponse::id))
+                .sorted(Comparator.comparing(BrandResponse::getId))
                 .collect(Collectors.toList());
     }
 

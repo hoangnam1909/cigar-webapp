@@ -3,6 +3,7 @@ package com.nhn.cigarwebapp.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity

@@ -5,10 +5,7 @@ import com.nhn.cigarwebapp.dto.request.OrderRequest;
 import com.nhn.cigarwebapp.dto.response.OrderResponse;
 import com.nhn.cigarwebapp.model.Order;
 import com.nhn.cigarwebapp.service.OrderService;
-import com.nhn.cigarwebapp.specification.SpecificationConverter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

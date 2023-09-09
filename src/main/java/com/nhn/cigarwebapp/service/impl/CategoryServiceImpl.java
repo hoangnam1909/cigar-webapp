@@ -28,7 +28,7 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findAll()
                 .stream()
                 .map(category -> categoryMapper.toResponse(category))
-                .sorted(Comparator.comparing(CategoryResponse::id))
+                .sorted(Comparator.comparing(CategoryResponse::getId))
                 .collect(Collectors.toList());
     }
 
@@ -39,7 +39,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponse getCategoryDetail(Long id) {
+        System.err.println("call getCategoryDetail");
         Optional<Category> category = categoryRepository.findById(id);
+
         return category.map(value -> categoryMapper.toResponse(value)).orElse(null);
     }
 
@@ -52,6 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
             categoryRepository.save(categoryEditing);
             return categoryMapper.toResponse(categoryEditing);
         }
+
         return null;
     }
 

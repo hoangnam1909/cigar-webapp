@@ -5,8 +5,6 @@ import com.nhn.cigarwebapp.specification.sort.ProductSortEnum;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-
 @Service
 public class SortMapper {
 

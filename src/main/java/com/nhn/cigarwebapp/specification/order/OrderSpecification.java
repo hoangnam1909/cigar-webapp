@@ -2,10 +2,11 @@ package com.nhn.cigarwebapp.specification.order;
 
 import com.nhn.cigarwebapp.common.SearchCriteria;
 import com.nhn.cigarwebapp.common.SearchOperation;
-import com.nhn.cigarwebapp.model.*;
+import com.nhn.cigarwebapp.model.DeliveryCompany;
 import com.nhn.cigarwebapp.model.Order;
+import com.nhn.cigarwebapp.model.OrderStatus;
+import com.nhn.cigarwebapp.model.Shipment;
 import jakarta.persistence.criteria.*;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;

@@ -12,7 +12,6 @@ import com.nhn.cigarwebapp.service.OrderService;
 import com.nhn.cigarwebapp.service.ShipmentService;
 import com.nhn.cigarwebapp.specification.order.OrderSpecification;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

@@ -1,10 +1,10 @@
 package com.nhn.cigarwebapp.specification;
 
-import com.nhn.cigarwebapp.specification.order.OrderEnum;
-import com.nhn.cigarwebapp.specification.product.ProductEnum;
 import com.nhn.cigarwebapp.common.SearchCriteria;
 import com.nhn.cigarwebapp.common.SearchOperation;
+import com.nhn.cigarwebapp.specification.order.OrderEnum;
 import com.nhn.cigarwebapp.specification.order.OrderSpecification;
+import com.nhn.cigarwebapp.specification.product.ProductEnum;
 import com.nhn.cigarwebapp.specification.product.ProductSpecification;
 import org.springframework.stereotype.Component;
 

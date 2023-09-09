@@ -4,20 +4,22 @@ import com.nhn.cigarwebapp.common.ResponseObject;
 import com.nhn.cigarwebapp.dto.request.CategoryRequest;
 import com.nhn.cigarwebapp.dto.response.CategoryResponse;
 import com.nhn.cigarwebapp.service.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-//@CrossOrigin(origins = {"${settings.cors_origin}"})
 @RestController
 @RequestMapping("/api/v1/categories")
+@EnableCaching
+@RequiredArgsConstructor
 public class CategoryController {
 
-    @Autowired
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     @GetMapping
     public ResponseEntity<ResponseObject> getCategories() {
@@ -39,6 +41,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
+    @Cacheable(key = "#id", value = "Category")
     public ResponseEntity<ResponseObject> categoryDetail(@PathVariable(name = "id") String id) {
         CategoryResponse categoryResponse = categoryService.getCategoryDetail(Long.valueOf(id));
 

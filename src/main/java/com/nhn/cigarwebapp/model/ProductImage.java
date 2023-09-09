@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "product_image")
 @Getter
@@ -20,7 +22,7 @@ public class ProductImage {
     @Column(columnDefinition = "TEXT")
     private String linkToImage;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     @JsonBackReference
     private Product product;
