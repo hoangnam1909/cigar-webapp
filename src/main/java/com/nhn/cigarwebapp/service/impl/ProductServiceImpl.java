@@ -13,7 +13,7 @@ import com.nhn.cigarwebapp.model.ProductImage;
 import com.nhn.cigarwebapp.repository.ProductImageRepository;
 import com.nhn.cigarwebapp.repository.ProductRepository;
 import com.nhn.cigarwebapp.service.ProductService;
-import com.nhn.cigarwebapp.specification.SpecificationConverter;
+import com.nhn.cigarwebapp.specification.SpecificationMapper;
 import com.nhn.cigarwebapp.specification.product.ProductEnum;
 import com.nhn.cigarwebapp.specification.product.ProductSpecification;
 import com.nhn.cigarwebapp.specification.sort.ProductSortEnum;
@@ -50,7 +50,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
     private final SortMapper sortMapper;
-    private final SpecificationConverter specificationConverter;
+    private final SpecificationMapper specificationMapper;
 
     @Override
     @Cacheable("countProductsOnSale")
@@ -73,13 +73,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Cacheable(key = "#params", value = "products")
     public Page<ProductResponse> getProducts(Map<String, String> params) {
-        System.err.println("getProducts");
-
         int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
         int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
         String sort = params.getOrDefault("sort", ProductSortEnum.NEWEST);
 
-        ProductSpecification specification = specificationConverter.productSpecification(params);
+        ProductSpecification specification = specificationMapper.productSpecification(params);
         specification.add(new SearchCriteria(ProductEnum.IS_ACTIVE, true, SearchOperation.IS_ACTIVE));
 
         Pageable pageable = PageRequest.of(page - 1, size, sortMapper.getProductSort(sort));
@@ -123,7 +121,7 @@ public class ProductServiceImpl implements ProductService {
         int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
         String sort = params.getOrDefault("sort", ProductSortEnum.NEWEST);
 
-        ProductSpecification specification = specificationConverter.productSpecification(params);
+        ProductSpecification specification = specificationMapper.productSpecification(params);
         specification.add(new SearchCriteria(ProductEnum.IS_ACTIVE, true, SearchOperation.IS_ACTIVE));
 
         Pageable pageable = PageRequest.of(page - 1, size, sortMapper.getProductSort(sort));

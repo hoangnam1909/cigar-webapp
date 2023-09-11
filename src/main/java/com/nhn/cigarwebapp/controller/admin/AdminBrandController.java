@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,9 +23,8 @@ public class AdminBrandController {
     private final BrandService brandService;
 
     @GetMapping
-    public ResponseEntity<ResponseObject> getBrands() {
-        List<BrandAdminResponse> brands = brandService.getAdminBrands();
-
+    public ResponseEntity<ResponseObject> getBrands(@RequestParam Map<String, String> params) {
+        List<BrandAdminResponse> brands = brandService.getAdminBrands(params);
         if (!brands.isEmpty())
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()

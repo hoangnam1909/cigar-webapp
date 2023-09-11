@@ -9,6 +9,7 @@ import com.nhn.cigarwebapp.dto.response.admin.BrandAdminResponse;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 
 public interface BrandService {
 
@@ -18,7 +19,7 @@ public interface BrandService {
 
     List<BrandResponse> getBrands();
 
-    List<BrandAdminResponse> getAdminBrands();
+    List<BrandAdminResponse> getAdminBrands(Map<String, String> params);
 
     List<BrandWithProductsResponse> getTop(int top);
 

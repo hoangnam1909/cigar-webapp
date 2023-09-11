@@ -10,7 +10,7 @@ import com.nhn.cigarwebapp.model.*;
 import com.nhn.cigarwebapp.repository.*;
 import com.nhn.cigarwebapp.service.OrderService;
 import com.nhn.cigarwebapp.service.ShipmentService;
-import com.nhn.cigarwebapp.specification.SpecificationConverter;
+import com.nhn.cigarwebapp.specification.SpecificationMapper;
 import com.nhn.cigarwebapp.specification.order.OrderSpecification;
 import com.nhn.cigarwebapp.specification.sort.OrderSortEnum;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +47,7 @@ public class OrderServiceImpl implements OrderService {
     private final ShipmentService shipmentService;
     private final ShipmentRepository shipmentRepository;
     private final DeliveryCompanyRepository deliveryCompanyRepository;
-    private final SpecificationConverter specificationConverter;
+    private final SpecificationMapper specificationMapper;
 
     @Override
     @Cacheable(key = "#params", value = "order")
@@ -71,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
         int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
         String sort = params.getOrDefault("sort", OrderSortEnum.CREATED_AT_DESC);
 
-        OrderSpecification specification = specificationConverter.orderSpecification(params);
+        OrderSpecification specification = specificationMapper.orderSpecification(params);
         Pageable pageable = PageRequest.of(page - 1, size, sortMapper.getOrderSort(sort));
 
         return orderRepository.findAll(specification, pageable)

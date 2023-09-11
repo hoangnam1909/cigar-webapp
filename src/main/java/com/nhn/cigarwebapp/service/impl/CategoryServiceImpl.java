@@ -6,15 +6,16 @@ import com.nhn.cigarwebapp.mapper.CategoryMapper;
 import com.nhn.cigarwebapp.model.Category;
 import com.nhn.cigarwebapp.repository.CategoryRepository;
 import com.nhn.cigarwebapp.service.CategoryService;
+import com.nhn.cigarwebapp.specification.SpecificationMapper;
+import com.nhn.cigarwebapp.specification.category.CategorySpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,11 +24,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private final SpecificationMapper specificationMapper;
 
     @Override
     @Cacheable(value = "categories")
     public List<CategoryResponse> getCategories() {
-        return categoryRepository.findAll()
+        CategorySpecification specification = specificationMapper.categorySpecification(new HashMap<>());
+        return categoryRepository.findAll(specification)
                 .stream()
                 .map(categoryMapper::toResponse)
                 .sorted(Comparator.comparing(CategoryResponse::getId))
@@ -35,7 +38,21 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @CacheEvict(value = "categories", allEntries = true)
+    @Cacheable(key = "#params", value = "adminCategories")
+    public List<CategoryResponse> getAdminCategories(Map<String, String> params) {
+        CategorySpecification specification = specificationMapper.categorySpecification(params);
+        return categoryRepository.findAll(specification)
+                .stream()
+                .map(categoryMapper::toResponse)
+                .sorted(Comparator.comparing(CategoryResponse::getId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Caching(evict = {
+            @CacheEvict(value = "categories", allEntries = true),
+            @CacheEvict(value = "adminCategories", allEntries = true),
+    })
     public void addCategory(CategoryRequest request) {
         Category category = categoryMapper.toEntity(request);
         categoryRepository.saveAndFlush(category);
@@ -49,8 +66,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @CachePut(key = "#id", value = "categories")
-    @CacheEvict(value = "categories", allEntries = true)
+    @Caching(put = {
+            @CachePut(key = "#id", value = "categories")
+    }, evict = {
+            @CacheEvict(value = "categories", allEntries = true),
+            @CacheEvict(value = "adminCategories", allEntries = true),
+    })
     public CategoryResponse updateCategory(Long id, CategoryRequest request) {
         Optional<Category> categoryOptional = categoryRepository.findById(id);
         if (categoryOptional.isPresent()) {
@@ -65,7 +86,10 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @CacheEvict(value = "categories", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "categories", allEntries = true),
+            @CacheEvict(value = "adminCategories", allEntries = true),
+    })
     public boolean deleteCategory(Long id) {
         Optional<Category> category = categoryRepository.findById(id);
         if (category.isPresent()) {

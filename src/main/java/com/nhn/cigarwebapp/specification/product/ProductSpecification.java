@@ -29,19 +29,29 @@ public class ProductSpecification implements Specification<Product> {
         List<Predicate> predicates = new ArrayList<>();
 
         for (SearchCriteria criteria : criteriaList) {
-            if (criteria.getOperation().equals(SearchOperation.CATEGORY_ID)) {
+            if (criteria.getOperation().equals(SearchOperation.MATCH)) {
+                predicates.add(builder.like(
+                        builder.function("unaccent", String.class, builder.lower(root.get(criteria.getKey()))),
+                        "%" + StringUtils.stripAccents(criteria.getValue().toString().toLowerCase().trim()) + "%"));
+            } else if (criteria.getOperation().equals(SearchOperation.CATEGORY_ID)) {
                 Join<Category, Product> categoryProductJoin = root.join("category");
                 predicates.add(builder.equal(categoryProductJoin.get("id"), criteria.getValue().toString()));
             } else if (criteria.getOperation().equals(SearchOperation.BRAND_ID)) {
                 Join<Brand, Product> brandProductJoin = root.join("brand");
                 predicates.add(builder.equal(brandProductJoin.get("id"), criteria.getValue().toString()));
-            } else if (criteria.getOperation().equals(SearchOperation.MATCH)) {
-                predicates.add(builder.like(
-                        builder.lower(root.get(criteria.getKey()).as(String.class)),
-                        "%" + StringUtils.stripAccents(criteria.getValue().toString().toLowerCase()) + "%"));
             } else if (criteria.getOperation().equals(SearchOperation.IS_ACTIVE)) {
                 predicates.add(builder.equal(
                         root.get(criteria.getKey()).as(Boolean.class), criteria.getValue()));
+            } else if (criteria.getOperation().equals(SearchOperation.ID_NAME)) {
+                Predicate predicateId = builder.like(
+                        builder.function("unaccent", String.class, builder.lower(root.get("id").as(String.class))),
+                        "%" + StringUtils.stripAccents(criteria.getValue().toString().toLowerCase().trim()) + "%");
+
+                Predicate predicateName = builder.like(
+                        builder.function("unaccent", String.class, builder.lower(root.get("name"))),
+                        "%" + StringUtils.stripAccents(criteria.getValue().toString().toLowerCase().trim()) + "%");
+
+                predicates.add(builder.or(predicateId, predicateName));
             }
         }
 

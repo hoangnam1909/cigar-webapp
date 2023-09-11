@@ -18,7 +18,8 @@ public enum SearchOperation {
     NAME,
     IS_ACTIVE,
     ORDER_STATUS_ID,
-    DELIVERY_COMPANY_ID
+    DELIVERY_COMPANY_ID,
+    ID_NAME
 
 }
 

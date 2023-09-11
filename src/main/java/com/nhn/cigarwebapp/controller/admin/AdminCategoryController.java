@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin/categories")
@@ -16,6 +19,24 @@ import org.springframework.web.bind.annotation.*;
 public class AdminCategoryController {
 
     private final CategoryService categoryService;
+
+    @GetMapping
+    public ResponseEntity<ResponseObject> getCategories(@RequestParam Map<String, String> params) {
+        List<CategoryResponse> categoryList = categoryService.getAdminCategories(params);
+
+        if (!categoryList.isEmpty())
+            return ResponseEntity.ok()
+                    .body(ResponseObject.builder()
+                            .msg("Categories founds")
+                            .result(categoryList)
+                            .build());
+        else
+            return ResponseEntity.ok()
+                    .body(ResponseObject.builder()
+                            .msg("No content")
+                            .result(List.of())
+                            .build());
+    }
 
     @PostMapping
     public ResponseEntity<ResponseObject> insertCategory(@RequestBody CategoryRequest request) {

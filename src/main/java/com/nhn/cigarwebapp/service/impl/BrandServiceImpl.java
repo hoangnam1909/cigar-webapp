@@ -12,6 +12,8 @@ import com.nhn.cigarwebapp.model.Brand;
 import com.nhn.cigarwebapp.repository.BrandRepository;
 import com.nhn.cigarwebapp.repository.ProductRepository;
 import com.nhn.cigarwebapp.service.BrandService;
+import com.nhn.cigarwebapp.specification.SpecificationMapper;
+import com.nhn.cigarwebapp.specification.brand.BrandSpecification;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -41,6 +44,7 @@ public class BrandServiceImpl implements BrandService {
     private final ProductMapper productMapper;
     private final BrandRepository brandRepository;
     private final ProductRepository productRepository;
+    private final SpecificationMapper specificationMapper;
 
     @Override
     @Cacheable(key = "#id", value = "brands")
@@ -73,8 +77,9 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Cacheable(value = "adminBrands")
-    public List<BrandAdminResponse> getAdminBrands() {
-        return brandRepository.findAll()
+    public List<BrandAdminResponse> getAdminBrands(Map<String, String> params) {
+        BrandSpecification specification = specificationMapper.brandSpecification(params);
+        return brandRepository.findAll(specification)
                 .stream()
                 .map(brandMapper::toAdminResponse)
                 .sorted(Comparator.comparing(BrandAdminResponse::getId))
