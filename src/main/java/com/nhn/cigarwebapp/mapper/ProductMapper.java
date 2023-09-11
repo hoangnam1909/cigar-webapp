@@ -18,6 +18,7 @@ public class ProductMapper {
     private final BrandMapper brandMapper;
     private final CategoryRepository categoryRepository;
     private final AttributeValueMapper attributeValueMapper;
+    private final ProductImageMapper productImageMapper;
 
     public Product toEntity(ProductRequest request) {
         return Product.builder()
@@ -54,7 +55,10 @@ public class ProductMapper {
                 .category(product.getCategory())
                 .brand(brandMapper.toResponse(product.getBrand()))
                 .createdDate(product.getCreatedDate())
-                .productImages(product.getProductImages())
+                .productImages(product.getProductImages()
+                        .stream()
+                        .map(productImageMapper::toResponse)
+                        .toList())
 //                .attributes(product.getAttributes() != null ?
 //                        product.getAttributes()
 //                                .stream()

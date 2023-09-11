@@ -6,14 +6,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductAttributeResponse implements Serializable {
+public class OrderItemResponse implements Serializable {
 
     private Long id;
-    private String name;
+    private ProductResponse product;
+    private Integer quantity;
+    private Date createdAt;
 
 }

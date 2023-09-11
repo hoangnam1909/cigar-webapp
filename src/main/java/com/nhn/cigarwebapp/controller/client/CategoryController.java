@@ -15,7 +15,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/categories")
-@EnableCaching
 @RequiredArgsConstructor
 public class CategoryController {
 

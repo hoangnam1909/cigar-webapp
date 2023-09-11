@@ -3,14 +3,15 @@ package com.nhn.cigarwebapp.mapper;
 import com.nhn.cigarwebapp.dto.response.OrderResponse;
 import com.nhn.cigarwebapp.dto.response.admin.OrderAdminResponse;
 import com.nhn.cigarwebapp.model.Order;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class OrderMapper {
 
-    @Autowired
-    private CustomerMapper customerMapper;
+    private final CustomerMapper customerMapper;
+    private final OrderItemMapper orderItemMapper;
 
     public OrderResponse toResponse(Order order) {
         return OrderResponse.builder()
@@ -20,7 +21,7 @@ public class OrderMapper {
                 .orderStatus(order.getOrderStatus())
                 .totalPrice(order.getTotalPrice())
                 .note(order.getNote())
-                .orderItems(order.getOrderItems())
+                .orderItems(orderItemMapper.toResponses(order.getOrderItems()))
                 .shipment(order.getShipment())
                 .build();
     }
@@ -33,7 +34,7 @@ public class OrderMapper {
                 .orderStatus(order.getOrderStatus())
                 .totalPrice(order.getTotalPrice())
                 .note(order.getNote())
-                .orderItems(order.getOrderItems())
+                .orderItems(orderItemMapper.toResponses(order.getOrderItems()))
                 .shipment(order.getShipment())
                 .build();
     }

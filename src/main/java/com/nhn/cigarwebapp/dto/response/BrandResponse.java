@@ -13,9 +13,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class BrandResponse implements Serializable {
 
-    Long id;
-    String name;
-    String image;
-    String country;
+    private Long id;
+    private String name;
+    private String image;
+    private String country;
 
 }

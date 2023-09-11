@@ -43,7 +43,7 @@ public class BrandServiceImpl implements BrandService {
     private final ProductRepository productRepository;
 
     @Override
-    @Cacheable(key = "#id", value = "brand")
+    @Cacheable(key = "#id", value = "brands")
     public BrandResponse getBrand(Long id) {
         Optional<Brand> brand = brandRepository.findById(id);
         return brand.map(brandMapper::toResponse).orElse(null);
@@ -119,7 +119,7 @@ public class BrandServiceImpl implements BrandService {
     @Override
     @Transactional
     @Caching(put = {
-            @CachePut(key = "#id", value = "brand")
+            @CachePut(key = "#id", value = "brands")
     }, evict = {
             @CacheEvict(value = "topBrands", allEntries = true),
             @CacheEvict(value = "brands", allEntries = true),

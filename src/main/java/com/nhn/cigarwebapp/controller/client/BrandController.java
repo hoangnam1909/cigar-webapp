@@ -5,6 +5,7 @@ import com.nhn.cigarwebapp.dto.response.BrandResponse;
 import com.nhn.cigarwebapp.dto.response.BrandWithProductsResponse;
 import com.nhn.cigarwebapp.dto.response.ProductResponse;
 import com.nhn.cigarwebapp.service.BrandService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -14,13 +15,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-//@CrossOrigin(origins = {"${settings.cors_origin}"})
 @RestController
 @RequestMapping("/api/v1/brands")
+@RequiredArgsConstructor
 public class BrandController {
 
-    @Autowired
-    private BrandService brandService;
+    private final BrandService brandService;
 
     @GetMapping
     public ResponseEntity<ResponseObject> getBrands() {
@@ -82,9 +82,9 @@ public class BrandController {
     }
 
     @GetMapping("/top/{topNumber}")
-    @Cacheable(key = "#topNumber", value = "topBrands")
-    public ResponseEntity<ResponseObject> getTopBrand(@PathVariable Integer topNumber) {
-        List<BrandWithProductsResponse> brandResponses = brandService.getTop(topNumber);
+    public ResponseEntity<ResponseObject> getTopBrand(@PathVariable String topNumber) {
+        List<BrandWithProductsResponse> brandResponses = brandService.getTop(Integer.parseInt(topNumber));
+
         if (!brandResponses.isEmpty())
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()

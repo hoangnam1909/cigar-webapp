@@ -1,12 +1,12 @@
 package com.nhn.cigarwebapp.dto.response;
 
 import com.nhn.cigarwebapp.model.Category;
-import com.nhn.cigarwebapp.model.ProductImage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductResponse {
+public class ProductResponse implements Serializable {
 
     private Long id;
     private String name;
@@ -25,6 +25,6 @@ public class ProductResponse {
     private Category category;
     private BrandResponse brand;
     private Date createdDate;
-    private List<ProductImage> productImages;
+    private List<ProductImageResponse> productImages;
 
 }

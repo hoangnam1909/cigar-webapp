@@ -11,9 +11,9 @@ import java.io.Serializable;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductAttributeResponse implements Serializable {
+public class ProductImageResponse implements Serializable {
 
     private Long id;
-    private String name;
+    private String linkToImage;
 
 }

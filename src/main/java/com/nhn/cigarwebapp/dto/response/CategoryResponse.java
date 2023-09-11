@@ -13,7 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class CategoryResponse implements Serializable {
 
-    Long id;
-    String name;
+    private Long id;
+    private String name;
 
 }
