@@ -21,4 +21,6 @@ public interface OrderService {
 
     OrderAdminResponse partialUpdateOrder(Long id, Map<String, Object> params);
 
+    void deleteOrder(Long id);
+
 }

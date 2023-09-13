@@ -3,9 +3,12 @@ package com.nhn.cigarwebapp.service.impl;
 import com.nhn.cigarwebapp.dto.request.CustomerRequest;
 import com.nhn.cigarwebapp.dto.response.CustomerResponse;
 import com.nhn.cigarwebapp.mapper.CustomerMapper;
+import com.nhn.cigarwebapp.model.Customer;
 import com.nhn.cigarwebapp.repository.CustomerRepository;
 import com.nhn.cigarwebapp.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -37,6 +40,27 @@ public class CustomerServiceImpl implements CustomerService {
                 .stream()
                 .map(customerMapper::toResponse)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "customers", allEntries = true)
+    public void addCustomer(Customer customer) {
+        try {
+            customerMapper.toResponse(customerRepository.saveAndFlush(customer));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public void addCustomer(CustomerRequest request) {
+        try {
+            Customer customer = customerMapper.toEntity(request);
+            customerMapper.toResponse(customerRepository.saveAndFlush(customer));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override

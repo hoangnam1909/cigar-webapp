@@ -81,4 +81,23 @@ public class AdminOrderController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseObject> deleteOrder(@PathVariable Long id) {
+        try {
+            orderService.deleteOrder(id);
+            return ResponseEntity.ok()
+                    .body(ResponseObject.builder()
+                            .msg("Order have been deleted")
+                            .result(null)
+                            .build());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.badRequest()
+                    .body(ResponseObject.builder()
+                            .msg("Something went wrong!!!")
+                            .result(ex.getMessage())
+                            .build());
+        }
+    }
+
 }

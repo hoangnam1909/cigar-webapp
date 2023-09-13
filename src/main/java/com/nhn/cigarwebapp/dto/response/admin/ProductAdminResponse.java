@@ -3,7 +3,6 @@ package com.nhn.cigarwebapp.dto.response.admin;
 import com.nhn.cigarwebapp.dto.response.BrandResponse;
 import com.nhn.cigarwebapp.dto.response.ProductImageResponse;
 import com.nhn.cigarwebapp.model.Category;
-import com.nhn.cigarwebapp.model.ProductImage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final JwtRefreshTokenService jwtRefreshTokenService;
     private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
 
     public AuthenticationResponse refreshToken(RefreshTokenRequest request) {
         String username = jwtRefreshTokenService.extractUsername(request.getRefreshToken());
@@ -73,6 +75,8 @@ public class AuthenticationService {
         claims.put("role", user.getRole().toString());
         var jwtToken = jwtService.generateToken(claims, user);
         var refreshToken = jwtRefreshTokenService.generateRefreshToken(user);
+
+        emailService.sendLoginAlertEmail(user, request.getBrowserInfo(), new Date());
         return AuthenticationResponse
                 .builder()
                 .token(jwtToken)

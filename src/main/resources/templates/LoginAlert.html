@@ -149,8 +149,9 @@
                 <tr>
                     <td align="left" bgcolor="#ffffff"
                         style="padding: 24px; text-align: center; border-top: 3px solid #d4dadf;">
-                        <h2 style="margin: 0;">
-                            Cảm ơn ban đã đặt hàng tại Cigar For Boss</h2>
+                        <h2 style="margin: 0; color: red">
+                            Cảnh báo đăng nhập từ thiết bị khác
+                        </h2>
                     </td>
                 </tr>
             </table>
@@ -178,7 +179,8 @@
                     <td align="left" bgcolor="#ffffff"
                         style="padding: 0 24px 16px; font-size: 16px">
                         <p style="margin: 0; font-weight: 600">
-                            Xin chào <span th:text="${customerFullName}"></span>.
+                            Xin chào <span th:text="${fullName}"></span>
+                            với tên đăng nhập <span th:text="${username}"></span>.
                         </p>
                     </td>
                 </tr>
@@ -186,17 +188,25 @@
                     <td align="left" bgcolor="#ffffff"
                         style="padding: 0 24px 16px; font-size: 16px">
                         <p style="margin: 0; font-weight: 600">
-                            Mã đơn hàng của bạn là: <span th:text="${orderId}"></span>.
+                            Yêu cầu đăng nhập Tài khoản Cigar For Boss từ thiết bị khác đã được thực hiện.
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left" bgcolor="#ffffff"
+                        style="padding: 0 24px 6px; font-size: 16px">
+                        <p style="margin: 0;">
+                            Thời gian đăng nhập:
+                            <span th:text=" ${#dates.format(loginDate, 'HH:mm:ss - dd/MM/yyyy')}"></span>.
                         </p>
                     </td>
                 </tr>
                 <tr>
                     <td align="left" bgcolor="#ffffff"
                         style="padding: 0 24px 16px; font-size: 16px">
-                        <p style="margin: 0;">Chúng tôi đã nhận được yêu cầu đặt hàng của bạn
-                            và đang xử lý, bạn có thể kiểm tra đơn hàng
-                            <a th:href="@{${linkToTrackingOrder}}">tại đây</a>
-                            với mã đơn hàng và số điện thoại đặt hàng.
+                        <p style="margin: 0;">
+                            Thiết bị đăng nhập:
+                            <span th:text=" ${browserInfo}"></span>.
                         </p>
                     </td>
                 </tr>

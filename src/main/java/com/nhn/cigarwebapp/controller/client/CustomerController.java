@@ -1,30 +1,20 @@
 package com.nhn.cigarwebapp.controller.client;
 
 import com.nhn.cigarwebapp.common.ResponseObject;
-import com.nhn.cigarwebapp.dto.request.CustomerRequest;
 import com.nhn.cigarwebapp.service.CustomerService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
-//@CrossOrigin(origins = {"${settings.cors_origin}"})
 @RestController
 @RequestMapping("/api/v1/customers")
+@RequiredArgsConstructor
 public class CustomerController {
 
-    @Autowired
-    private CustomerService customerService;
-
-    @GetMapping
-    public ResponseEntity<ResponseObject> getCustomers() {
-        return ResponseEntity.ok()
-                .body(ResponseObject.builder()
-                        .msg("Customers found")
-                        .result(customerService.getCustomers())
-                        .build());
-    }
+    private final CustomerService customerService;
 
     @GetMapping("/validate/{value}")
     public ResponseEntity<ResponseObject> validateCustomerEmail(@PathVariable String value) {
@@ -32,34 +22,17 @@ public class CustomerController {
             boolean emailCheck = customerService.isEmailExisted(value);
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
-                            .msg("Validate email address")
+                            .msg("Invalid email address")
                             .result(!emailCheck)
                             .build());
         } else {
             boolean phoneCheck = customerService.isPhoneNumberExisted(value);
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
-                            .msg("Valid phone number")
+                            .msg("Invalid phone number")
                             .result(!phoneCheck)
                             .build());
         }
     }
 
-    @PostMapping
-    public ResponseEntity<ResponseObject> insertCustomers(@RequestBody List<CustomerRequest> request) {
-        try {
-            customerService.addCustomers(request);
-            return ResponseEntity.ok()
-                    .body(ResponseObject.builder()
-                            .msg("Customers info added successfully")
-                            .result("")
-                            .build());
-        } catch (Exception ex) {
-            return ResponseEntity.internalServerError()
-                    .body(ResponseObject.builder()
-                            .msg("Error")
-                            .result(ex.getMessage())
-                            .build());
-        }
-    }
 }

@@ -3,8 +3,11 @@ package com.nhn.cigarwebapp.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -35,5 +38,12 @@ public class Customer implements Serializable {
     @JsonManagedReference
     @OneToMany(mappedBy = "customer")
     private List<Order> order;
+
+    @PrePersist
+    @PreUpdate
+    void normalizeFullName() {
+        fullName = StringUtils.normalizeSpace(fullName);
+        fullName = WordUtils.capitalize(fullName);
+    }
 
 }

@@ -32,6 +32,7 @@ public class SecurityConfiguration {
                 .httpBasic(Customizer.withDefaults())
                 .authorizeHttpRequests(request -> {
                     request.requestMatchers("/api/v1/auth/**", "/api/v1/auth/refresh/**").permitAll();
+                    request.requestMatchers("/api/v1/test**", "/api/v1/test/**").permitAll();
                     request.requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN");
                     request.requestMatchers(HttpMethod.GET,
                                     "/api/v1/categories**",

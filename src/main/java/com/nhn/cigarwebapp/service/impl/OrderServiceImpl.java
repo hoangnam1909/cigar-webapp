@@ -8,12 +8,17 @@ import com.nhn.cigarwebapp.mapper.OrderMapper;
 import com.nhn.cigarwebapp.mapper.SortMapper;
 import com.nhn.cigarwebapp.model.*;
 import com.nhn.cigarwebapp.repository.*;
+import com.nhn.cigarwebapp.service.CustomerService;
+import com.nhn.cigarwebapp.service.EmailService;
 import com.nhn.cigarwebapp.service.OrderService;
 import com.nhn.cigarwebapp.service.ShipmentService;
 import com.nhn.cigarwebapp.specification.SpecificationMapper;
 import com.nhn.cigarwebapp.specification.order.OrderSpecification;
 import com.nhn.cigarwebapp.specification.sort.OrderSortEnum;
+import com.nhn.cigarwebapp.util.MyStringUtils;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -36,6 +41,8 @@ public class OrderServiceImpl implements OrderService {
     @Value("${order.default-page-size}")
     private int PAGE_SIZE;
 
+    private final EntityManager entityManager;
+
     private final CustomerMapper customerMapper;
     private final CustomerRepository customerRepository;
     private final OrderRepository orderRepository;
@@ -48,6 +55,8 @@ public class OrderServiceImpl implements OrderService {
     private final ShipmentRepository shipmentRepository;
     private final DeliveryCompanyRepository deliveryCompanyRepository;
     private final SpecificationMapper specificationMapper;
+    private final CustomerService customerService;
+    private final EmailService emailService;
 
     @Override
     @Cacheable(key = "#params", value = "order")
@@ -91,14 +100,16 @@ public class OrderServiceImpl implements OrderService {
             @CacheEvict(value = "adminOrders", allEntries = true),
     })
     public Order addOrder(OrderRequest request) {
-        Optional<Customer> optionalCustomer = customerRepository.findByPhone(request.getPhone());
+        Optional<Customer> customerOptional = customerRepository
+                .findByFullNameAndPhone(MyStringUtils.normalizeFullName(request.getFullName()),
+                        StringUtils.normalizeSpace(request.getPhone()));
         Customer customer;
 
-        if (optionalCustomer.isPresent()) {
-            customer = optionalCustomer.get();
+        if (customerOptional.isPresent()) {
+            customer = customerOptional.get();
         } else {
             customer = customerMapper.toEntity(request);
-            customerRepository.saveAndFlush(customer);
+            customerService.addCustomer(customer);
         }
 
         AtomicReference<Double> total = new AtomicReference<>(0.0);
@@ -127,6 +138,8 @@ public class OrderServiceImpl implements OrderService {
                                     .build());
                 });
 
+        entityManager.refresh(order);
+        emailService.sendOrderConfirmationEmail(order);
         return order;
     }
 
@@ -167,6 +180,20 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return null;
+    }
+
+    @Override
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "order", allEntries = true),
+            @CacheEvict(value = "adminOrders", allEntries = true),
+    })
+    public void deleteOrder(Long id) {
+        try {
+            orderRepository.deleteById(id);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
 }

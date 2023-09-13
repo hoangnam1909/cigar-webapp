@@ -6,8 +6,6 @@ import com.nhn.cigarwebapp.dto.response.BrandWithProductsResponse;
 import com.nhn.cigarwebapp.dto.response.ProductResponse;
 import com.nhn.cigarwebapp.service.BrandService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
