@@ -28,6 +28,7 @@ public class ProductAdminResponse implements Serializable {
     private BrandResponse brand;
     private Date createdDate;
     private Date modifiedDate;
+    private Boolean active;
     private List<ProductImageResponse> productImages;
 
 }

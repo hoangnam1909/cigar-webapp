@@ -75,7 +75,7 @@ public class ProductServiceImpl implements ProductService {
     public Page<ProductResponse> getProducts(Map<String, String> params) {
         int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
         int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
-        String sort = params.getOrDefault("sort", ProductSortEnum.NEWEST);
+        String sort = params.getOrDefault("sort", ProductSortEnum.DEFAULT);
 
         ProductSpecification specification = specificationMapper.productSpecification(params);
         specification.add(new SearchCriteria(ProductEnum.IS_ACTIVE, true, SearchOperation.IS_ACTIVE));
@@ -119,10 +119,9 @@ public class ProductServiceImpl implements ProductService {
     public Page<ProductAdminResponse> getAdminProducts(Map<String, String> params) {
         int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
         int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
-        String sort = params.getOrDefault("sort", ProductSortEnum.NEWEST);
+        String sort = params.getOrDefault("sort", ProductSortEnum.DEFAULT);
 
         ProductSpecification specification = specificationMapper.productSpecification(params);
-        specification.add(new SearchCriteria(ProductEnum.IS_ACTIVE, true, SearchOperation.IS_ACTIVE));
 
         Pageable pageable = PageRequest.of(page - 1, size, sortMapper.getProductSort(sort));
 
@@ -184,6 +183,29 @@ public class ProductServiceImpl implements ProductService {
 
         return null;
 
+    }
+
+    @Override
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "products", allEntries = true),
+            @CacheEvict(value = "productSuggest", allEntries = true),
+            @CacheEvict(value = "adminProducts", allEntries = true),
+    })
+    public ProductAdminResponse partialUpdateProduct(Long id, Map<String, Object> params) {
+        Optional<Product> productOptional = productRepository.findById(id);
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+            if (params.containsKey("active")){
+                System.err.println(params.get("active").getClass());
+                product.setActive(Boolean.parseBoolean(String.valueOf(params.get("active"))));
+            }
+
+            productRepository.saveAndFlush(product);
+            return productMapper.toAdminResponse(product);
+        }
+
+        return null;
     }
 
     @Override

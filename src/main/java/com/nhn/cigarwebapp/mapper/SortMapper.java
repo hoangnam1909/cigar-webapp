@@ -11,6 +11,9 @@ public class SortMapper {
     public Sort getProductSort(String sort) {
         if (sort != null) {
             switch (sort) {
+                case ProductSortEnum.DEFAULT -> {
+                    return Sort.by(Sort.Order.desc("unitsInStock")).and(Sort.by(Sort.Order.desc("createdDate")));
+                }
                 case ProductSortEnum.PRICE_DESC -> {
                     return Sort.by(Sort.Order.desc("salePrice"));
                 }

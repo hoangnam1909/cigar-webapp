@@ -33,8 +33,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(request -> {
                     request.requestMatchers("/api/v1/auth/**", "/api/v1/auth/refresh/**").permitAll();
                     request.requestMatchers("/api/v1/test**", "/api/v1/test/**").permitAll();
-                    request.requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN");
-                    request.requestMatchers(HttpMethod.GET,
+                    request.requestMatchers(
                                     "/api/v1/categories**",
                                     "/api/v1/categories/**")
                             .permitAll();
@@ -47,18 +46,23 @@ public class SecurityConfiguration {
                                     "/api/v1/orders**",
                                     "/api/v1/orders/**")
                             .permitAll();
-                    request.requestMatchers(HttpMethod.GET,
+                    request.requestMatchers(
                                     "/api/v1/order-statuses**",
                                     "/api/v1/order-statuses/**")
                             .permitAll();
-                    request.requestMatchers(HttpMethod.GET,
+                    request.requestMatchers(
                                     "/api/v1/brands**",
                                     "/api/v1/brands/**")
                             .permitAll();
-                    request.requestMatchers(HttpMethod.GET,
+                    request.requestMatchers(
                                     "/api/v1/products**",
                                     "/api/v1/products/**")
                             .permitAll();
+                    request.requestMatchers(
+                                    "/api/v1/carts**",
+                                    "/api/v1/carts/**")
+                            .permitAll();
+                    request.requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN");
                     request.anyRequest().authenticated();
                 })
                 .exceptionHandling(exceptionHandling -> {

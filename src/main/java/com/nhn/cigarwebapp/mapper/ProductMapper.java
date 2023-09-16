@@ -80,6 +80,7 @@ public class ProductMapper {
                 .brand(brandMapper.toResponse(product.getBrand()))
                 .createdDate(product.getCreatedDate())
                 .modifiedDate(product.getModifiedDate())
+                .active(product.getActive())
                 .productImages(product.getProductImages()
                         .stream()
                         .map(productImageMapper::toResponse)

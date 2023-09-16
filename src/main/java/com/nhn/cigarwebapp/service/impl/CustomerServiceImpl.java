@@ -54,6 +54,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @CacheEvict(value = "customers", allEntries = true)
     public void addCustomer(CustomerRequest request) {
         try {
             Customer customer = customerMapper.toEntity(request);

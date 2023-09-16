@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    @Cacheable(key = "#username", value = "users")
+//    @Cacheable(key = "#username", value = "users")
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> userOptional = this.userRepository.findByUsername(username);
         if (userOptional.isEmpty())

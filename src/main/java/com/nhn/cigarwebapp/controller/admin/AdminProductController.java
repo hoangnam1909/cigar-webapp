@@ -4,6 +4,7 @@ import com.nhn.cigarwebapp.common.ResponseObject;
 import com.nhn.cigarwebapp.dto.request.ProductRequest;
 import com.nhn.cigarwebapp.dto.request.ProductUpdateRequest;
 import com.nhn.cigarwebapp.dto.response.ProductResponse;
+import com.nhn.cigarwebapp.dto.response.admin.OrderAdminResponse;
 import com.nhn.cigarwebapp.dto.response.admin.ProductAdminResponse;
 import com.nhn.cigarwebapp.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -66,6 +67,33 @@ public class AdminProductController {
                     .body(ResponseObject.builder()
                             .msg("We could not update your product")
                             .result(e.getMessage())
+                            .build());
+        }
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ResponseObject> partialUpdateProduct(@PathVariable Long id,
+                                                               @RequestBody Map<String, Object> params) {
+        try {
+            ProductAdminResponse productAdminResponse = productService.partialUpdateProduct(id, params);
+            if (productAdminResponse != null)
+                return ResponseEntity.ok()
+                        .body(ResponseObject.builder()
+                                .msg("Product have been updated")
+                                .result(productAdminResponse)
+                                .build());
+            else
+                return ResponseEntity.badRequest()
+                        .body(ResponseObject.builder()
+                                .msg("Could not update your product")
+                                .result(null)
+                                .build());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.badRequest()
+                    .body(ResponseObject.builder()
+                            .msg("Something went wrong!!!")
+                            .result(ex.getMessage())
                             .build());
         }
     }

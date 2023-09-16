@@ -22,6 +22,7 @@ import java.util.Map;
 public class EmailServiceImpl implements EmailService {
 
     public static final String CHARACTER_ENCODING = "UTF-8";
+    public static final String FROM_NAME = "Cigar For Boss";
     public static final String TEXT_HTML_ENCODING = "text/html";
 
     private final JavaMailSender emailSender;
@@ -63,7 +64,7 @@ public class EmailServiceImpl implements EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, CHARACTER_ENCODING);
             helper.setPriority(1);
             helper.setSubject("New User Account Verification");
-            helper.setFrom(fromEmail);
+            helper.setFrom(fromEmail, FROM_NAME);
             helper.setTo(to);
             helper.setText(text, true);
 
@@ -83,14 +84,14 @@ public class EmailServiceImpl implements EmailService {
             context.setVariable("username", user.getUsername());
             context.setVariable("fullName", user.getFirstName() + " " + user.getLastName());
             context.setVariable("loginDate", loginDate);
-            context.setVariable("browserInfo",browserInfo);
+            context.setVariable("browserInfo", browserInfo);
             String text = templateEngine.process("LoginAlert", context);
 
             MimeMessage message = getMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, CHARACTER_ENCODING);
             helper.setPriority(1);
             helper.setSubject("Có 1 yêu cầu truy cập Tài khoản Cigar For Boss từ thiết bị khác");
-            helper.setFrom(fromEmail);
+            helper.setFrom(fromEmail, FROM_NAME);
             helper.setTo(user.getEmail());
             helper.setText(text, true);
 
@@ -117,7 +118,7 @@ public class EmailServiceImpl implements EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, CHARACTER_ENCODING);
             helper.setPriority(3);
             helper.setSubject("Cigar For Boss đã nhận đơn hàng #" + order.getId());
-            helper.setFrom(fromEmail);
+            helper.setFrom(fromEmail, FROM_NAME);
             helper.setTo(order.getCustomer().getEmail());
             helper.setText(text, true);
 
