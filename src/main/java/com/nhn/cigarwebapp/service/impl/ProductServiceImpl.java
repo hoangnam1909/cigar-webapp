@@ -64,7 +64,8 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
-            return productMapper.toResponse(product);
+            if (product.getActive())
+                return productMapper.toResponse(product);
         }
 
         return null;

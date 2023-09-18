@@ -2,11 +2,10 @@ package com.nhn.cigarwebapp.specification.order;
 
 import com.nhn.cigarwebapp.common.SearchCriteria;
 import com.nhn.cigarwebapp.common.SearchOperation;
-import com.nhn.cigarwebapp.model.DeliveryCompany;
+import com.nhn.cigarwebapp.model.*;
 import com.nhn.cigarwebapp.model.Order;
-import com.nhn.cigarwebapp.model.OrderStatus;
-import com.nhn.cigarwebapp.model.Shipment;
 import jakarta.persistence.criteria.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
@@ -38,6 +37,17 @@ public class OrderSpecification implements Specification<Order> {
                 Join<DeliveryCompany, Shipment> deliveryCompany = shipment.join("deliveryCompany");
 
                 predicates.add(builder.equal(deliveryCompany.get("id"), criteria.getValue().toString()));
+            } else if (criteria.getOperation().equals(SearchOperation.ID_NAME)) {
+                Predicate predicateId = builder.like(
+                        builder.function("unaccent", String.class, builder.lower(root.get("id").as(String.class))),
+                        "%" + StringUtils.stripAccents(criteria.getValue().toString().toLowerCase().trim()) + "%");
+
+                Join<Customer, Order> customer = root.join("customer");
+                Predicate predicateName = builder.like(
+                        builder.function("unaccent", String.class, builder.lower(customer.get("fullName"))),
+                        "%" + StringUtils.stripAccents(criteria.getValue().toString().toLowerCase().trim()) + "%");
+
+                predicates.add(builder.or(predicateId, predicateName));
             }
         }
 

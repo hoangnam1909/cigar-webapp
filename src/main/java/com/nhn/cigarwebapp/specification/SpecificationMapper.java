@@ -86,6 +86,10 @@ public class SpecificationMapper {
             specification.add(new SearchCriteria(OrderEnum.DELIVERY_COMPANY_ID, params.get(OrderEnum.DELIVERY_COMPANY_ID), SearchOperation.DELIVERY_COMPANY_ID));
         }
 
+        if (params.containsKey(OrderEnum.KEYWORD)) {
+            specification.add(new SearchCriteria(OrderEnum.KEYWORD, params.get(OrderEnum.KEYWORD), SearchOperation.ID_NAME));
+        }
+
         return specification;
     }
 

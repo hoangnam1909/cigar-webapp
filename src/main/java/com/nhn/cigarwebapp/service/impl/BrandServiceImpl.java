@@ -12,6 +12,7 @@ import com.nhn.cigarwebapp.model.Brand;
 import com.nhn.cigarwebapp.repository.BrandRepository;
 import com.nhn.cigarwebapp.repository.ProductRepository;
 import com.nhn.cigarwebapp.service.BrandService;
+import com.nhn.cigarwebapp.service.ProductService;
 import com.nhn.cigarwebapp.specification.SpecificationMapper;
 import com.nhn.cigarwebapp.specification.brand.BrandSpecification;
 import jakarta.persistence.EntityManager;
@@ -27,10 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,6 +43,7 @@ public class BrandServiceImpl implements BrandService {
     private final BrandRepository brandRepository;
     private final ProductRepository productRepository;
     private final SpecificationMapper specificationMapper;
+    private final ProductService productService;
 
     @Override
     @Cacheable(key = "#id", value = "brands")
@@ -99,12 +98,18 @@ public class BrandServiceImpl implements BrandService {
 
         return brands.stream()
                 .map(brand -> {
-                    Pageable pageable = PageRequest.of(0, 6);
-                    List<ProductResponse> productsResponses = productRepository.findAllByBrandId(brand.getId(), pageable)
-                            .getContent()
-                            .stream().map(productMapper::toResponse)
-                            .toList();
-                    return brandMapper.toResponseWithProduct(brand, productsResponses);
+                    Map<String, String> params = new HashMap<>();
+                    params.put("size", "6");
+                    params.put("brandId", brand.getId().toString());
+                    return brandMapper.toResponseWithProduct(brand,
+                            productService.getProducts(params).getContent());
+
+//                    Pageable pageable = PageRequest.of(0, 6);
+//                    List<ProductResponse> productsResponses = productRepository.findAllByBrandId(brand.getId(), pageable)
+//                            .getContent()
+//                            .stream().map(productMapper::toResponse)
+//                            .toList();
+//                    return brandMapper.toResponseWithProduct(brand, productsResponses);
                 })
                 .toList();
     }
