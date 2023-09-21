@@ -28,6 +28,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,8 +98,9 @@ public class ProductServiceImpl implements ProductService {
                     .createQuery(
                             "SELECT p " +
                                     "FROM Product p " +
-                                    "WHERE (p.brand.id = :brandId OR p.category.id = :categoryId) AND p.id != :productId " +
-//                                    "WHERE p.id != :productId " +
+                                    "WHERE (p.brand.id = :brandId OR p.category.id = :categoryId) " +
+                                    "AND p.id != :productId " +
+                                    "AND p.active = true " +
                                     "ORDER BY random()", Product.class)
                     .setParameter("productId", id)
                     .setParameter("brandId", product.getBrand().getId())
@@ -120,7 +122,7 @@ public class ProductServiceImpl implements ProductService {
     public Page<ProductAdminResponse> getAdminProducts(Map<String, String> params) {
         int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
         int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
-        String sort = params.getOrDefault("sort", ProductSortEnum.DEFAULT);
+        String sort = params.getOrDefault("sort", ProductSortEnum.ADMIN_DEFAULT);
 
         ProductSpecification specification = specificationMapper.productSpecification(params);
 
@@ -188,7 +190,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    @Caching(evict = {
+    @Caching(put = {
+            @CachePut(key = "#id", value = "product"),
+    }, evict = {
             @CacheEvict(value = "products", allEntries = true),
             @CacheEvict(value = "productSuggest", allEntries = true),
             @CacheEvict(value = "adminProducts", allEntries = true),
@@ -197,8 +201,7 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
-            if (params.containsKey("active")){
-                System.err.println(params.get("active").getClass());
+            if (params.containsKey("active")) {
                 product.setActive(Boolean.parseBoolean(String.valueOf(params.get("active"))));
             }
 

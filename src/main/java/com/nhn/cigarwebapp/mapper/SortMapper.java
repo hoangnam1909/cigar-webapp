@@ -14,6 +14,9 @@ public class SortMapper {
                 case ProductSortEnum.DEFAULT -> {
                     return Sort.by(Sort.Order.desc("unitsInStock")).and(Sort.by(Sort.Order.desc("createdDate")));
                 }
+                case ProductSortEnum.ADMIN_DEFAULT -> {
+                    return Sort.by(Sort.Order.desc("active")).and(Sort.by(Sort.Order.desc("createdDate")));
+                }
                 case ProductSortEnum.PRICE_DESC -> {
                     return Sort.by(Sort.Order.desc("salePrice"));
                 }

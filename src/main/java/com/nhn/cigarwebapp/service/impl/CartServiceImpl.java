@@ -10,6 +10,7 @@ import com.nhn.cigarwebapp.service.CartService;
 import com.nhn.cigarwebapp.specification.product.ProductEnum;
 import com.nhn.cigarwebapp.specification.product.ProductSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Cacheable(key = "#ids", value = "productsInCart")
     public List<CartProductResponse> getProductsInCart(Set<Long> ids) {
         List<Product> products = productRepository.findAllById(ids);
         return products
