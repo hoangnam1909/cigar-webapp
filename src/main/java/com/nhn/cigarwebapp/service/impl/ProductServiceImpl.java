@@ -190,9 +190,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    @Caching(put = {
-            @CachePut(key = "#id", value = "product"),
-    }, evict = {
+    @Caching(evict = {
+            @CacheEvict(key = "#id", value = "product"),
             @CacheEvict(value = "products", allEntries = true),
             @CacheEvict(value = "productSuggest", allEntries = true),
             @CacheEvict(value = "adminProducts", allEntries = true),

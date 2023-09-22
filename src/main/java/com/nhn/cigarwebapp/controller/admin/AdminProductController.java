@@ -89,7 +89,7 @@ public class AdminProductController {
                                 .result(null)
                                 .build());
         } catch (Exception ex) {
-            ex.printStackTrace();
+            System.err.println(ex.getMessage());
             return ResponseEntity.badRequest()
                     .body(ResponseObject.builder()
                             .msg("Something went wrong!!!")
@@ -108,11 +108,12 @@ public class AdminProductController {
                             .msg(String.format("Product with id = %s have been deleted", id))
                             .result("")
                             .build());
-        } catch (Exception e) {
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
             return ResponseEntity.badRequest()
                     .body(ResponseObject.builder()
                             .msg("We could not delete your product")
-                            .result(e.getMessage())
+                            .result("")
                             .build());
         }
     }
