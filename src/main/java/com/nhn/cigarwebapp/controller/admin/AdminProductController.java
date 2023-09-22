@@ -31,6 +31,23 @@ public class AdminProductController {
                         .build());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseObject> getProduct(@PathVariable Long id) {
+        ProductAdminResponse product = productService.getAdminProduct(id);
+        if (product != null)
+            return ResponseEntity.ok()
+                    .body(ResponseObject.builder()
+                            .msg("Products found")
+                            .result(product)
+                            .build());
+        else
+            return ResponseEntity.badRequest()
+                    .body(ResponseObject.builder()
+                            .msg("Product not found")
+                            .result(null)
+                            .build());
+    }
+
     @PostMapping
     public ResponseEntity<ResponseObject> insertProducts(@RequestBody ProductRequest request) {
         try {
@@ -75,19 +92,12 @@ public class AdminProductController {
     public ResponseEntity<ResponseObject> partialUpdateProduct(@PathVariable Long id,
                                                                @RequestBody Map<String, Object> params) {
         try {
-            ProductAdminResponse productAdminResponse = productService.partialUpdateProduct(id, params);
-            if (productAdminResponse != null)
-                return ResponseEntity.ok()
-                        .body(ResponseObject.builder()
-                                .msg("Product have been updated")
-                                .result(productAdminResponse)
-                                .build());
-            else
-                return ResponseEntity.badRequest()
-                        .body(ResponseObject.builder()
-                                .msg("Could not update your product")
-                                .result(null)
-                                .build());
+            productService.partialUpdateProduct(id, params);
+            return ResponseEntity.ok()
+                    .body(ResponseObject.builder()
+                            .msg("Product have been updated")
+                            .result("")
+                            .build());
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
             return ResponseEntity.badRequest()

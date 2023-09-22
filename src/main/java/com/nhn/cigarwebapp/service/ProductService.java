@@ -21,13 +21,15 @@ public interface ProductService {
     List<ProductResponse> getSuggestProducts(Long id, int count);
 
     // ADMIN SERVICES
+    ProductAdminResponse getAdminProduct(Long id);
+
     Page<ProductAdminResponse> getAdminProducts(Map<String, String> params);
 
     ProductResponse add(ProductRequest request);
 
     ProductResponse update(Long id, ProductUpdateRequest request);
 
-    ProductAdminResponse partialUpdateProduct(Long id, Map<String, Object> params);
+    void partialUpdateProduct(Long id, Map<String, Object> params);
 
     void delete(Long id);
 }

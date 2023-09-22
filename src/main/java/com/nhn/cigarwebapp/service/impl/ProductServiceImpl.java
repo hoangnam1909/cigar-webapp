@@ -28,6 +28,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,6 +119,17 @@ public class ProductServiceImpl implements ProductService {
 
     // ADMIN SERVICES
     @Override
+    @Cacheable(key = "#id", value = "adminProduct")
+    public ProductAdminResponse getAdminProduct(Long id) {
+        Optional<Product> productOptional = productRepository.findById(id);
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+            return productMapper.toAdminResponse(product);
+        }
+        return null;
+    }
+
+    @Override
     @Cacheable(key = "#params", value = "adminProducts")
     public Page<ProductAdminResponse> getAdminProducts(Map<String, String> params) {
         int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
@@ -192,23 +204,20 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(key = "#id", value = "product"),
+            @CacheEvict(key = "#id", value = "adminProduct"),
             @CacheEvict(value = "products", allEntries = true),
             @CacheEvict(value = "productSuggest", allEntries = true),
             @CacheEvict(value = "adminProducts", allEntries = true),
     })
-    public ProductAdminResponse partialUpdateProduct(Long id, Map<String, Object> params) {
+    public void partialUpdateProduct(Long id, Map<String, Object> params) {
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
             if (params.containsKey("active")) {
                 product.setActive(Boolean.parseBoolean(String.valueOf(params.get("active"))));
             }
-
-            productRepository.saveAndFlush(product);
-            return productMapper.toAdminResponse(product);
+            productRepository.save(product);
         }
-
-        return null;
     }
 
     @Override
