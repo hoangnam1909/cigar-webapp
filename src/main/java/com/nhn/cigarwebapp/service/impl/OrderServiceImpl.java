@@ -122,7 +122,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = Order.builder()
                 .customer(customerRepository.getReferenceById(customer.getId()))
                 .orderStatus(orderStatusRepository.getReferenceById(1L))
-                .shipment(shipmentService.add(request.getAddress()))
+                .shipment(shipmentService.add(request.getDeliveryAddress()))
                 .totalPrice(total.get())
                 .note(request.getNote())
                 .build();
