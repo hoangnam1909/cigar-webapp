@@ -9,9 +9,12 @@ import com.nhn.cigarwebapp.dto.response.admin.ProductAdminResponse;
 import com.nhn.cigarwebapp.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -48,10 +51,14 @@ public class AdminProductController {
                             .build());
     }
 
-    @PostMapping
-    public ResponseEntity<ResponseObject> insertProducts(@RequestBody ProductRequest request) {
+    @PostMapping(consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.MULTIPART_FORM_DATA_VALUE
+    })
+    public ResponseEntity<ResponseObject> addProducts(@RequestPart("product") ProductRequest request,
+                                                      @RequestPart("files") List<MultipartFile> files) {
         try {
-            ProductResponse productResponse = productService.add(request);
+            ProductResponse productResponse = productService.add(request, files);
 
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
@@ -67,18 +74,30 @@ public class AdminProductController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}",
+            consumes = {
+                    MediaType.APPLICATION_JSON_VALUE,
+                    MediaType.MULTIPART_FORM_DATA_VALUE
+            })
     public ResponseEntity<ResponseObject> updateEntireProducts(
             @PathVariable String id,
-            @RequestBody ProductUpdateRequest request) {
+            @RequestPart("product") ProductUpdateRequest request,
+            @RequestPart("files") List<MultipartFile> files) {
         try {
-            ProductResponse productResponse = productService.update(Long.valueOf(id), request);
+            ProductResponse productResponse = productService.update(Long.valueOf(id), request, files);
 
-            return ResponseEntity.ok()
-                    .body(ResponseObject.builder()
-                            .msg("Your product have been updated")
-                            .result(productResponse)
-                            .build());
+            if (productResponse != null)
+                return ResponseEntity.ok()
+                        .body(ResponseObject.builder()
+                                .msg("Your product have been updated")
+                                .result(productResponse)
+                                .build());
+            else
+                return ResponseEntity.badRequest()
+                        .body(ResponseObject.builder()
+                                .msg("We could not update your product")
+                                .result(null)
+                                .build());
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                     .body(ResponseObject.builder()

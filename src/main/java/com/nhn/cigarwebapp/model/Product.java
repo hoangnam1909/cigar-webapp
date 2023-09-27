@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -43,9 +45,11 @@ public class Product implements Serializable {
     @NotNull
     private Integer unitsInStock;
 
+    @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
+    @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDate;
 
@@ -76,13 +80,13 @@ public class Product implements Serializable {
 
     @PrePersist
     void prePersist() {
-        this.createdDate = new Date();
+//        this.createdDate = new Date();
         this.active = true;
     }
 
-    @PostUpdate
-    void postUpdate() {
-        this.modifiedDate = new Date();
-    }
+//    @PostUpdate
+//    void postUpdate() {
+//        this.modifiedDate = new Date();
+//    }
 
 }

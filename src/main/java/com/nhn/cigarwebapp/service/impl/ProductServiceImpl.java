@@ -12,6 +12,7 @@ import com.nhn.cigarwebapp.model.Product;
 import com.nhn.cigarwebapp.model.ProductImage;
 import com.nhn.cigarwebapp.repository.ProductImageRepository;
 import com.nhn.cigarwebapp.repository.ProductRepository;
+import com.nhn.cigarwebapp.service.FileService;
 import com.nhn.cigarwebapp.service.ProductService;
 import com.nhn.cigarwebapp.specification.SpecificationMapper;
 import com.nhn.cigarwebapp.specification.product.ProductEnum;
@@ -22,16 +23,14 @@ import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -53,6 +52,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductImageRepository productImageRepository;
     private final SortMapper sortMapper;
     private final SpecificationMapper specificationMapper;
+    private final FileService fileService;
 
     @Override
     @Cacheable("countProductsOnSale")
@@ -152,16 +152,23 @@ public class ProductServiceImpl implements ProductService {
             @CacheEvict(value = "adminProducts", allEntries = true),
             @CacheEvict(value = "countProductsOnSale", allEntries = true),
     })
-    public ProductResponse add(ProductRequest request) {
+    public ProductResponse add(ProductRequest request, List<MultipartFile> files) {
         Product product = productMapper.toEntity(request);
         Product productSaving = productRepository.saveAndFlush(product);
 
-        request.getProductImagesLink()
-                .forEach(link -> productImageRepository
-                        .save(ProductImage.builder()
-                                .linkToImage(link)
-                                .product(product)
-                                .build()));
+        List<String> links = fileService.uploadFiles(files);
+        links.forEach(link -> productImageRepository
+                .save(ProductImage.builder()
+                        .linkToImage(link)
+                        .product(product)
+                        .build()));
+
+//        request.getProductImages()
+//                .forEach(link -> productImageRepository
+//                        .save(ProductImage.builder()
+//                                .linkToImage(link)
+//                                .product(product)
+//                                .build()));
 
         entityManager.refresh(entityManager.find(Product.class, productSaving.getId()));
         return productMapper.toResponse(productSaving);
@@ -169,35 +176,40 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    @Caching(put = {
-            @CachePut(key = "#id", value = "product")
-    }, evict = {
+    @Caching(evict = {
+            @CacheEvict(key = "#id", value = "product"),
+            @CacheEvict(key = "#id", value = "adminProduct"),
             @CacheEvict(value = "products", allEntries = true),
             @CacheEvict(value = "productSuggest", allEntries = true),
             @CacheEvict(value = "adminProducts", allEntries = true),
     })
-    public ProductResponse update(Long id, ProductUpdateRequest request) {
+    public ProductResponse update(Long id, ProductUpdateRequest request, List<MultipartFile> files) {
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
             productRepository.save(productMapper.toEntity(request, product));
             productImageRepository.deleteAllInBatch(product.getProductImages());
 
-            request.getProductImages().forEach(s ->
-                    productImageRepository
-                            .save(ProductImage.builder()
-                                    .linkToImage(s)
-                                    .product(product)
-                                    .build())
-            );
+            List<String> links = fileService.uploadFiles(files);
+            links.forEach(link -> productImageRepository
+                    .save(ProductImage.builder()
+                            .linkToImage(link)
+                            .product(product)
+                            .build()));
+
+//            request.getProductImages().forEach(s ->
+//                    productImageRepository
+//                            .save(ProductImage.builder()
+//                                    .linkToImage(s)
+//                                    .product(product)
+//                                    .build())
+//            );
 
             entityManager.flush();
-
             return productMapper.toResponse(product);
         }
 
         return null;
-
     }
 
     @Override

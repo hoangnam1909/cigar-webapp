@@ -62,6 +62,10 @@ public class SecurityConfiguration {
                                     "/api/v1/carts**",
                                     "/api/v1/carts/**")
                             .permitAll();
+                    request.requestMatchers(
+                                    "/api/v1/files**",
+                                    "/api/v1/files/**")
+                            .permitAll();
                     request.requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN");
                     request.anyRequest().authenticated();
                 })

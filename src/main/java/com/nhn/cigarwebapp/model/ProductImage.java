@@ -22,6 +22,9 @@ public class ProductImage implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String linkToImage;
 
+    @Column
+    private String filename;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     @JsonBackReference
