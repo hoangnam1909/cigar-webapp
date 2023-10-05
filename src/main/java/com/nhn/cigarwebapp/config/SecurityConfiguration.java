@@ -70,9 +70,9 @@ public class SecurityConfiguration {
                     request.anyRequest().authenticated();
                 })
                 .exceptionHandling(exceptionHandling -> {
-                    exceptionHandling.authenticationEntryPoint((request, response, authException) -> {
-                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    });
+//                    exceptionHandling.authenticationEntryPoint((request, response, authException) -> {
+//                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//                    });
 
                     exceptionHandling.accessDeniedHandler((request, response, accessDeniedException) -> {
                         response.setStatus(HttpServletResponse.SC_FORBIDDEN);

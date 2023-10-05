@@ -82,7 +82,7 @@ public class AdminProductController {
     public ResponseEntity<ResponseObject> updateEntireProducts(
             @PathVariable String id,
             @RequestPart("product") ProductUpdateRequest request,
-            @RequestPart("files") List<MultipartFile> files) {
+            @RequestPart(value = "files", required = false) List<MultipartFile> files) {
         try {
             ProductResponse productResponse = productService.update(Long.valueOf(id), request, files);
 

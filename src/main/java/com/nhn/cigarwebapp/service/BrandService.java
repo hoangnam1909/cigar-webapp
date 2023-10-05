@@ -19,7 +19,7 @@ public interface BrandService {
 
     List<BrandResponse> getBrands();
 
-    List<BrandAdminResponse> getAdminBrands(Map<String, String> params);
+    Page<BrandAdminResponse> getAdminBrands(Map<String, String> params);
 
     List<BrandWithProductsResponse> getTop(int top);
 

@@ -41,7 +41,7 @@ public class ProductSpecification implements Specification<Product> {
                 predicates.add(builder.equal(brandProductJoin.get("id"), criteria.getValue().toString()));
             } else if (criteria.getOperation().equals(SearchOperation.IS_ACTIVE)) {
                 predicates.add(builder.equal(
-                        root.get(criteria.getKey()).as(Boolean.class), criteria.getValue()));
+                        root.get(criteria.getKey()).as(Boolean.class), Boolean.parseBoolean((String) criteria.getValue())));
             } else if (criteria.getOperation().equals(SearchOperation.ID_NAME)) {
                 Predicate predicateId = builder.like(
                         builder.function("unaccent", String.class, builder.lower(root.get("id").as(String.class))),

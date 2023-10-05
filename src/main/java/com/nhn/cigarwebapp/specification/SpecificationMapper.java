@@ -68,6 +68,10 @@ public class SpecificationMapper {
             specification.add(new SearchCriteria(ProductEnum.NAME, params.get(ProductEnum.NAME), SearchOperation.MATCH));
         }
 
+        if (params.containsKey(ProductEnum.IS_ACTIVE)) {
+            specification.add(new SearchCriteria(ProductEnum.IS_ACTIVE, params.get(ProductEnum.IS_ACTIVE), SearchOperation.IS_ACTIVE));
+        }
+
         if (params.containsKey(ProductEnum.KEYWORD)) {
             specification.add(new SearchCriteria(ProductEnum.KEYWORD, params.get(ProductEnum.KEYWORD), SearchOperation.ID_NAME));
         }

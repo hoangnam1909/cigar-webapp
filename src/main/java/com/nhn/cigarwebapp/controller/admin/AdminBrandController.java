@@ -7,6 +7,7 @@ import com.nhn.cigarwebapp.dto.response.BrandResponse;
 import com.nhn.cigarwebapp.dto.response.admin.BrandAdminResponse;
 import com.nhn.cigarwebapp.service.BrandService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class AdminBrandController {
 
     @GetMapping
     public ResponseEntity<ResponseObject> getBrands(@RequestParam Map<String, String> params) {
-        List<BrandAdminResponse> brands = brandService.getAdminBrands(params);
+        Page<BrandAdminResponse> brands = brandService.getAdminBrands(params);
         if (!brands.isEmpty())
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()

@@ -1,8 +1,11 @@
-package com.nhn.cigarwebapp.auth;
+package com.nhn.cigarwebapp.controller.client;
 
 import com.nhn.cigarwebapp.common.ResponseObject;
 import com.nhn.cigarwebapp.config.JwtService;
+import com.nhn.cigarwebapp.dto.request.AuthenticationRequest;
 import com.nhn.cigarwebapp.dto.request.RefreshTokenRequest;
+import com.nhn.cigarwebapp.dto.request.RegisterRequest;
+import com.nhn.cigarwebapp.dto.response.AuthenticationResponse;
 import com.nhn.cigarwebapp.mapper.UserMapper;
 import com.nhn.cigarwebapp.model.User;
 import com.nhn.cigarwebapp.repository.UserRepository;

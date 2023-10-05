@@ -18,30 +18,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @AutoConfigureAfter(RedisAutoConfiguration.class)
 public class RedisConfig {
 
-//    @Value("${redis.host}")
-//    private String HOST_NAME;
-//
-//    @Value("${redis.port}")
-//    private Integer PORT;
-//
-//    @Value("${redis.host}")
-//    private String USERNAME;
-//
-//    @Value("${redis.host}")
-//    private String PASSWORD;
-//
-//    @Bean
-//    public LettuceConnectionFactory redisConnectionFactory() {
-//        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
-//        configuration.setHostName(HOST_NAME);
-//        configuration.setPort(PORT);
-//        configuration.setUsername(USERNAME);
-//        configuration.setPassword(PASSWORD);
-//        configuration.setDatabase(0);
-//
-//        return new LettuceConnectionFactory(configuration);
-//    }
-
     @Bean
     public RedisTemplate<String, Object> redisCacheTemplate(LettuceConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();

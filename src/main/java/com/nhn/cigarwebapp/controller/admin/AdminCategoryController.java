@@ -5,6 +5,7 @@ import com.nhn.cigarwebapp.dto.request.CategoryRequest;
 import com.nhn.cigarwebapp.dto.response.CategoryResponse;
 import com.nhn.cigarwebapp.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class AdminCategoryController {
 
     @GetMapping
     public ResponseEntity<ResponseObject> getCategories(@RequestParam Map<String, String> params) {
-        List<CategoryResponse> categoryList = categoryService.getAdminCategories(params);
+        Page<CategoryResponse> categoryList = categoryService.getAdminCategories(params);
 
         if (!categoryList.isEmpty())
             return ResponseEntity.ok()

@@ -23,18 +23,11 @@ public class AdminOrderController {
     @GetMapping
     public ResponseEntity<ResponseObject> getOrders(@RequestParam Map<String, String> params) {
         Page<OrderAdminResponse> orders = orderService.getAdminOrders(params);
-        if (!orders.isEmpty())
-            return ResponseEntity.ok()
-                    .body(ResponseObject.builder()
-                            .msg("Orders found")
-                            .result(orders)
-                            .build());
-        else
-            return ResponseEntity.ok()
-                    .body(ResponseObject.builder()
-                            .msg("No orders")
-                            .result(null)
-                            .build());
+        return ResponseEntity.ok()
+                .body(ResponseObject.builder()
+                        .msg("Orders found")
+                        .result(orders)
+                        .build());
     }
 
     @GetMapping("/{id}")

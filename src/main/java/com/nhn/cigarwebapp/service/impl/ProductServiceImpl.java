@@ -81,9 +81,10 @@ public class ProductServiceImpl implements ProductService {
         String sort = params.getOrDefault("sort", ProductSortEnum.DEFAULT);
 
         ProductSpecification specification = specificationMapper.productSpecification(params);
-        specification.add(new SearchCriteria(ProductEnum.IS_ACTIVE, true, SearchOperation.IS_ACTIVE));
+        specification.add(new SearchCriteria(ProductEnum.IS_ACTIVE, "true", SearchOperation.IS_ACTIVE));
 
         Pageable pageable = PageRequest.of(page - 1, size, sortMapper.getProductSort(sort));
+
         return productRepository.findAll(specification, pageable)
                 .map(productMapper::toResponse);
     }
@@ -99,13 +100,14 @@ public class ProductServiceImpl implements ProductService {
                     .createQuery(
                             "SELECT p " +
                                     "FROM Product p " +
-                                    "WHERE (p.brand.id = :brandId OR p.category.id = :categoryId) " +
-                                    "AND p.id != :productId " +
-                                    "AND p.active = true " +
+                                    "WHERE " +
+//                                    "(p.brand.id = :brandId OR p.category.id = :categoryId) AND " +
+                                    "p.id != :productId AND " +
+                                    "p.active = true " +
                                     "ORDER BY random()", Product.class)
                     .setParameter("productId", id)
-                    .setParameter("brandId", product.getBrand().getId())
-                    .setParameter("categoryId", product.getCategory().getId())
+//                    .setParameter("brandId", product.getBrand().getId())
+//                    .setParameter("categoryId", product.getCategory().getId())
                     .setMaxResults(count)
                     .getResultList();
             return products
@@ -188,22 +190,16 @@ public class ProductServiceImpl implements ProductService {
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
             productRepository.save(productMapper.toEntity(request, product));
-            productImageRepository.deleteAllInBatch(product.getProductImages());
 
-            List<String> links = fileService.uploadFiles(files);
-            links.forEach(link -> productImageRepository
-                    .save(ProductImage.builder()
-                            .linkToImage(link)
-                            .product(product)
-                            .build()));
-
-//            request.getProductImages().forEach(s ->
-//                    productImageRepository
-//                            .save(ProductImage.builder()
-//                                    .linkToImage(s)
-//                                    .product(product)
-//                                    .build())
-//            );
+            if (files != null) {
+                productImageRepository.deleteAllInBatch(product.getProductImages());
+                List<String> links = fileService.uploadFiles(files);
+                links.forEach(link -> productImageRepository
+                        .save(ProductImage.builder()
+                                .linkToImage(link)
+                                .product(product)
+                                .build()));
+            }
 
             entityManager.flush();
             return productMapper.toResponse(product);
@@ -235,6 +231,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     @Caching(evict = {
+            @CacheEvict(value = "product", allEntries = true),
             @CacheEvict(value = "products", allEntries = true),
             @CacheEvict(value = "productSuggest", allEntries = true),
             @CacheEvict(value = "adminProducts", allEntries = true),

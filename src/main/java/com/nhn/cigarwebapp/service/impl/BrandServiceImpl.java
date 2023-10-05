@@ -76,13 +76,17 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Cacheable(value = "adminBrands")
-    public List<BrandAdminResponse> getAdminBrands(Map<String, String> params) {
+    public Page<BrandAdminResponse> getAdminBrands(Map<String, String> params) {
+        int PAGE_SIZE = 15;
+
+        int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
+        int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
+
         BrandSpecification specification = specificationMapper.brandSpecification(params);
-        return brandRepository.findAll(specification)
-                .stream()
-                .map(brandMapper::toAdminResponse)
-                .sorted(Comparator.comparing(BrandAdminResponse::getId))
-                .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        return brandRepository.findAll(specification,pageable)
+                .map(brandMapper::toAdminResponse);
     }
 
     @Override
