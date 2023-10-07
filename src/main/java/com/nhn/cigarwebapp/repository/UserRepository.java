@@ -1,6 +1,6 @@
 package com.nhn.cigarwebapp.repository;
 
-import com.nhn.cigarwebapp.model.User;
+import com.nhn.cigarwebapp.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,7 +1,7 @@
 package com.nhn.cigarwebapp.mapper;
 
-import com.nhn.cigarwebapp.dto.response.ProductImageResponse;
-import com.nhn.cigarwebapp.model.ProductImage;
+import com.nhn.cigarwebapp.dto.response.product.ProductImageResponse;
+import com.nhn.cigarwebapp.entity.ProductImage;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -1,7 +1,7 @@
 package com.nhn.cigarwebapp.controller.client;
 
 import com.nhn.cigarwebapp.common.ResponseObject;
-import com.nhn.cigarwebapp.dto.response.CategoryResponse;
+import com.nhn.cigarwebapp.dto.response.category.CategoryResponse;
 import com.nhn.cigarwebapp.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

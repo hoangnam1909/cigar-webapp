@@ -2,8 +2,8 @@ package com.nhn.cigarwebapp.specification.order;
 
 import com.nhn.cigarwebapp.common.SearchCriteria;
 import com.nhn.cigarwebapp.common.SearchOperation;
-import com.nhn.cigarwebapp.model.*;
-import com.nhn.cigarwebapp.model.Order;
+import com.nhn.cigarwebapp.entity.Order;
+import com.nhn.cigarwebapp.entity.*;
 import jakarta.persistence.criteria.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;

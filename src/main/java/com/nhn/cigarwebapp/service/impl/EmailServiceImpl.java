@@ -1,7 +1,7 @@
 package com.nhn.cigarwebapp.service.impl;
 
-import com.nhn.cigarwebapp.model.Order;
-import com.nhn.cigarwebapp.model.User;
+import com.nhn.cigarwebapp.entity.Order;
+import com.nhn.cigarwebapp.entity.User;
 import com.nhn.cigarwebapp.service.EmailService;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

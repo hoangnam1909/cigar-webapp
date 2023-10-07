@@ -1,7 +1,7 @@
 package com.nhn.cigarwebapp.service;
 
-import com.nhn.cigarwebapp.dto.request.OrderStatusRequest;
-import com.nhn.cigarwebapp.dto.response.OrderStatusResponse;
+import com.nhn.cigarwebapp.dto.request.order.OrderStatusRequest;
+import com.nhn.cigarwebapp.dto.response.order.OrderStatusResponse;
 
 import java.util.List;
 

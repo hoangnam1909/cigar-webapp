@@ -1,14 +1,12 @@
 package com.nhn.cigarwebapp.service.impl;
 
-import com.nhn.cigarwebapp.dto.request.CustomerRequest;
-import com.nhn.cigarwebapp.dto.response.CustomerResponse;
+import com.nhn.cigarwebapp.dto.request.customer.CustomerRequest;
+import com.nhn.cigarwebapp.dto.response.customer.CustomerResponse;
+import com.nhn.cigarwebapp.entity.Customer;
 import com.nhn.cigarwebapp.mapper.CustomerMapper;
-import com.nhn.cigarwebapp.model.Customer;
 import com.nhn.cigarwebapp.repository.CustomerRepository;
 import com.nhn.cigarwebapp.service.CustomerService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.WordUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;

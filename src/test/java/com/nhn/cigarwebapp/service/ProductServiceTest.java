@@ -1,8 +1,8 @@
 package com.nhn.cigarwebapp.service;
 
-import com.nhn.cigarwebapp.model.Brand;
-import com.nhn.cigarwebapp.model.Category;
-import com.nhn.cigarwebapp.model.Product;
+import com.nhn.cigarwebapp.entity.Brand;
+import com.nhn.cigarwebapp.entity.Category;
+import com.nhn.cigarwebapp.entity.Product;
 import com.nhn.cigarwebapp.repository.BrandRepository;
 import com.nhn.cigarwebapp.repository.CategoryRepository;
 import com.nhn.cigarwebapp.repository.ProductRepository;

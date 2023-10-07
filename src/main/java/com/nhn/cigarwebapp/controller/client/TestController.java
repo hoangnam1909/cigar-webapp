@@ -3,6 +3,8 @@ package com.nhn.cigarwebapp.controller.client;
 import com.nhn.cigarwebapp.common.ResponseObject;
 import com.nhn.cigarwebapp.service.EmailService;
 import com.nhn.cigarwebapp.service.FileService;
+import com.nhn.cigarwebapp.service.MomoService;
+import com.nhn.cigarwebapp.service.VNPayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,8 @@ public class TestController {
 
     private final EmailService emailService;
     private final FileService fileService;
+    private final VNPayService vnPayService;
+    private final MomoService momoService;
 
     @GetMapping
     public ResponseEntity<ResponseObject> getProducts() {
@@ -48,6 +52,17 @@ public class TestController {
                         .msg("email sent")
                         .result(link)
                         .build());
+    }
+
+    @GetMapping("/payment/vnpay")
+    public ResponseEntity<?> vnpay() throws Exception {
+        return vnPayService.createPayment();
+    }
+
+    @GetMapping("/payment/momo")
+    public ResponseEntity<?> momo() {
+        System.err.println("momo ne");
+        return ResponseEntity.ok(momoService.createOrder());
     }
 
 }

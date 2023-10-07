@@ -1,10 +1,9 @@
 package com.nhn.cigarwebapp.service;
 
-import com.nhn.cigarwebapp.dto.request.ProductRequest;
-import com.nhn.cigarwebapp.dto.request.ProductUpdateRequest;
-import com.nhn.cigarwebapp.dto.response.ProductResponse;
-import com.nhn.cigarwebapp.dto.response.admin.OrderAdminResponse;
+import com.nhn.cigarwebapp.dto.request.product.ProductRequest;
+import com.nhn.cigarwebapp.dto.request.product.ProductUpdateRequest;
 import com.nhn.cigarwebapp.dto.response.admin.ProductAdminResponse;
+import com.nhn.cigarwebapp.dto.response.product.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -1,10 +1,10 @@
 package com.nhn.cigarwebapp.mapper;
 
-import com.nhn.cigarwebapp.dto.request.ProductRequest;
-import com.nhn.cigarwebapp.dto.request.ProductUpdateRequest;
-import com.nhn.cigarwebapp.dto.response.ProductResponse;
+import com.nhn.cigarwebapp.dto.request.product.ProductRequest;
+import com.nhn.cigarwebapp.dto.request.product.ProductUpdateRequest;
 import com.nhn.cigarwebapp.dto.response.admin.ProductAdminResponse;
-import com.nhn.cigarwebapp.model.Product;
+import com.nhn.cigarwebapp.dto.response.product.ProductResponse;
+import com.nhn.cigarwebapp.entity.Product;
 import com.nhn.cigarwebapp.repository.BrandRepository;
 import com.nhn.cigarwebapp.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,6 @@ public class ProductMapper {
     private final BrandRepository brandRepository;
     private final BrandMapper brandMapper;
     private final CategoryRepository categoryRepository;
-    private final AttributeValueMapper attributeValueMapper;
     private final ProductImageMapper productImageMapper;
 
     public Product toEntity(ProductRequest request) {
@@ -59,12 +58,6 @@ public class ProductMapper {
                         .stream()
                         .map(productImageMapper::toResponse)
                         .toList())
-//                .attributes(product.getAttributes() != null ?
-//                        product.getAttributes()
-//                                .stream()
-//                                .map(value -> attributeValueMapper.toProductResponse(value))
-//                                .collect(Collectors.toList())
-//                        : null)
                 .build();
     }
 
@@ -85,12 +78,6 @@ public class ProductMapper {
                         .stream()
                         .map(productImageMapper::toResponse)
                         .toList())
-//                .attributes(product.getAttributes() != null ?
-//                        product.getAttributes()
-//                                .stream()
-//                                .map(value -> attributeValueMapper.toProductResponse(value))
-//                                .collect(Collectors.toList())
-//                        : null)
                 .build();
     }
 

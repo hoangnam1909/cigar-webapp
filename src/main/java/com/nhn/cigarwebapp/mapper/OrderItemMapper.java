@@ -1,7 +1,7 @@
 package com.nhn.cigarwebapp.mapper;
 
-import com.nhn.cigarwebapp.dto.response.OrderItemResponse;
-import com.nhn.cigarwebapp.model.OrderItem;
+import com.nhn.cigarwebapp.dto.response.order.OrderItemResponse;
+import com.nhn.cigarwebapp.entity.OrderItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

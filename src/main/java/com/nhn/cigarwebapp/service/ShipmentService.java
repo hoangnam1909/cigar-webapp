@@ -1,6 +1,6 @@
 package com.nhn.cigarwebapp.service;
 
-import com.nhn.cigarwebapp.model.Shipment;
+import com.nhn.cigarwebapp.entity.Shipment;
 
 public interface ShipmentService {
 

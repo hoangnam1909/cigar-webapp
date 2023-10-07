@@ -1,8 +1,8 @@
 package com.nhn.cigarwebapp.controller.admin;
 
 import com.nhn.cigarwebapp.common.ResponseObject;
-import com.nhn.cigarwebapp.dto.request.CategoryRequest;
-import com.nhn.cigarwebapp.dto.response.CategoryResponse;
+import com.nhn.cigarwebapp.dto.request.category.CategoryRequest;
+import com.nhn.cigarwebapp.dto.response.category.CategoryResponse;
 import com.nhn.cigarwebapp.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

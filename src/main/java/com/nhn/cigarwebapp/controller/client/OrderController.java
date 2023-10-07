@@ -1,9 +1,9 @@
 package com.nhn.cigarwebapp.controller.client;
 
 import com.nhn.cigarwebapp.common.ResponseObject;
-import com.nhn.cigarwebapp.dto.request.OrderRequest;
-import com.nhn.cigarwebapp.dto.response.OrderResponse;
-import com.nhn.cigarwebapp.model.Order;
+import com.nhn.cigarwebapp.dto.request.order.OrderWithPaymentRequest;
+import com.nhn.cigarwebapp.dto.response.order.OrderResponse;
+import com.nhn.cigarwebapp.entity.Order;
 import com.nhn.cigarwebapp.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +37,10 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseObject> addOrder(@RequestBody OrderRequest request) {
+    public ResponseEntity<ResponseObject> addOrder(@RequestBody OrderWithPaymentRequest request) {
         try {
-            Order order = orderService.addOrder(request);
+            Order order = orderService.addOrderWithPayment(request);
+
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
                             .msg("Your order have been saved")

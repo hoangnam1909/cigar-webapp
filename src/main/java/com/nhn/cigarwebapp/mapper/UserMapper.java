@@ -1,7 +1,7 @@
 package com.nhn.cigarwebapp.mapper;
 
-import com.nhn.cigarwebapp.dto.response.UserInfoResponse;
-import com.nhn.cigarwebapp.model.User;
+import com.nhn.cigarwebapp.dto.response.auth.UserInfoResponse;
+import com.nhn.cigarwebapp.entity.User;
 import org.springframework.stereotype.Service;
 
 @Service

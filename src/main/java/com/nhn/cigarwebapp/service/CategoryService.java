@@ -1,7 +1,7 @@
 package com.nhn.cigarwebapp.service;
 
-import com.nhn.cigarwebapp.dto.request.CategoryRequest;
-import com.nhn.cigarwebapp.dto.response.CategoryResponse;
+import com.nhn.cigarwebapp.dto.request.category.CategoryRequest;
+import com.nhn.cigarwebapp.dto.response.category.CategoryResponse;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

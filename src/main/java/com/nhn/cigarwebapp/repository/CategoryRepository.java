@@ -1,6 +1,6 @@
 package com.nhn.cigarwebapp.repository;
 
-import com.nhn.cigarwebapp.model.Category;
+import com.nhn.cigarwebapp.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;

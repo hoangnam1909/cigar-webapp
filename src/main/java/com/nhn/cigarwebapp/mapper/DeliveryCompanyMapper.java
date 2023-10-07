@@ -1,7 +1,7 @@
 package com.nhn.cigarwebapp.mapper;
 
 import com.nhn.cigarwebapp.dto.response.admin.DeliveryCompanyAdminResponse;
-import com.nhn.cigarwebapp.model.DeliveryCompany;
+import com.nhn.cigarwebapp.entity.DeliveryCompany;
 import org.springframework.stereotype.Service;
 
 @Service

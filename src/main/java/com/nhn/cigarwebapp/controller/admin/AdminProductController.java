@@ -1,11 +1,10 @@
 package com.nhn.cigarwebapp.controller.admin;
 
 import com.nhn.cigarwebapp.common.ResponseObject;
-import com.nhn.cigarwebapp.dto.request.ProductRequest;
-import com.nhn.cigarwebapp.dto.request.ProductUpdateRequest;
-import com.nhn.cigarwebapp.dto.response.ProductResponse;
-import com.nhn.cigarwebapp.dto.response.admin.OrderAdminResponse;
+import com.nhn.cigarwebapp.dto.request.product.ProductRequest;
+import com.nhn.cigarwebapp.dto.request.product.ProductUpdateRequest;
 import com.nhn.cigarwebapp.dto.response.admin.ProductAdminResponse;
+import com.nhn.cigarwebapp.dto.response.product.ProductResponse;
 import com.nhn.cigarwebapp.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

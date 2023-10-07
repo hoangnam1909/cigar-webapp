@@ -1,7 +1,7 @@
 package com.nhn.cigarwebapp.service;
 
-import com.nhn.cigarwebapp.model.Order;
-import com.nhn.cigarwebapp.model.User;
+import com.nhn.cigarwebapp.entity.Order;
+import com.nhn.cigarwebapp.entity.User;
 
 import java.util.Date;
 

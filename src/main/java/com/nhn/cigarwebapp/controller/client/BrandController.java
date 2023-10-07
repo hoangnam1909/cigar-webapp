@@ -1,9 +1,9 @@
 package com.nhn.cigarwebapp.controller.client;
 
 import com.nhn.cigarwebapp.common.ResponseObject;
-import com.nhn.cigarwebapp.dto.response.BrandResponse;
-import com.nhn.cigarwebapp.dto.response.BrandWithProductsResponse;
-import com.nhn.cigarwebapp.dto.response.ProductResponse;
+import com.nhn.cigarwebapp.dto.response.brand.BrandResponse;
+import com.nhn.cigarwebapp.dto.response.brand.BrandWithProductsResponse;
+import com.nhn.cigarwebapp.dto.response.product.ProductResponse;
 import com.nhn.cigarwebapp.service.BrandService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

@@ -8,6 +8,10 @@ import com.nhn.cigarwebapp.specification.category.CategoryEnum;
 import com.nhn.cigarwebapp.specification.category.CategorySpecification;
 import com.nhn.cigarwebapp.specification.order.OrderEnum;
 import com.nhn.cigarwebapp.specification.order.OrderSpecification;
+import com.nhn.cigarwebapp.specification.payment.PaymentEnum;
+import com.nhn.cigarwebapp.specification.payment.PaymentSpecification;
+import com.nhn.cigarwebapp.specification.payment_destination.PaymentDestinationEnum;
+import com.nhn.cigarwebapp.specification.payment_destination.PaymentDestinationSpecification;
 import com.nhn.cigarwebapp.specification.product.ProductEnum;
 import com.nhn.cigarwebapp.specification.product.ProductSpecification;
 import org.springframework.stereotype.Component;
@@ -92,6 +96,30 @@ public class SpecificationMapper {
 
         if (params.containsKey(OrderEnum.KEYWORD)) {
             specification.add(new SearchCriteria(OrderEnum.KEYWORD, params.get(OrderEnum.KEYWORD), SearchOperation.ID_NAME));
+        }
+
+        return specification;
+    }
+
+    public PaymentSpecification paymentSpecification(Map<String, String> params) {
+        PaymentSpecification specification = new PaymentSpecification();
+
+        if (params.containsKey(PaymentEnum.PAYMENT_ORDER_ID)) {
+            specification.add(new SearchCriteria(PaymentEnum.PAYMENT_ORDER_ID, params.get(PaymentEnum.PAYMENT_ORDER_ID), SearchOperation.EQUAL));
+        }
+
+        if (params.containsKey(PaymentEnum.REQUEST_ID)) {
+            specification.add(new SearchCriteria(PaymentEnum.REQUEST_ID, params.get(PaymentEnum.REQUEST_ID), SearchOperation.EQUAL));
+        }
+
+        return specification;
+    }
+
+    public PaymentDestinationSpecification paymentDestinationSpecification(Map<String, String> params) {
+        PaymentDestinationSpecification specification = new PaymentDestinationSpecification();
+
+        if (params.containsKey(PaymentDestinationEnum.IS_ACTIVE)) {
+            specification.add(new SearchCriteria(PaymentDestinationEnum.IS_ACTIVE, params.get(PaymentDestinationEnum.IS_ACTIVE), SearchOperation.IS_ACTIVE));
         }
 
         return specification;

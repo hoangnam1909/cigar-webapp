@@ -1,13 +1,13 @@
 package com.nhn.cigarwebapp.service.impl;
 
-import com.nhn.cigarwebapp.dto.request.AuthenticationRequest;
-import com.nhn.cigarwebapp.dto.response.AuthenticationResponse;
-import com.nhn.cigarwebapp.dto.request.RegisterRequest;
 import com.nhn.cigarwebapp.config.JwtRefreshTokenService;
 import com.nhn.cigarwebapp.config.JwtService;
-import com.nhn.cigarwebapp.dto.request.RefreshTokenRequest;
-import com.nhn.cigarwebapp.model.Role;
-import com.nhn.cigarwebapp.model.User;
+import com.nhn.cigarwebapp.dto.request.auth.AuthenticationRequest;
+import com.nhn.cigarwebapp.dto.request.auth.RefreshTokenRequest;
+import com.nhn.cigarwebapp.dto.request.auth.RegisterRequest;
+import com.nhn.cigarwebapp.dto.response.auth.AuthenticationResponse;
+import com.nhn.cigarwebapp.entity.Role;
+import com.nhn.cigarwebapp.entity.User;
 import com.nhn.cigarwebapp.repository.UserRepository;
 import com.nhn.cigarwebapp.service.AuthenticationService;
 import com.nhn.cigarwebapp.service.EmailService;

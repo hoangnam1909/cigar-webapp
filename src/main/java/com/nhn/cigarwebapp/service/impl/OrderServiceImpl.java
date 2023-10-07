@@ -1,21 +1,19 @@
 package com.nhn.cigarwebapp.service.impl;
 
-import com.nhn.cigarwebapp.dto.request.OrderRequest;
-import com.nhn.cigarwebapp.dto.response.OrderResponse;
+import com.nhn.cigarwebapp.dto.request.order.OrderRequest;
+import com.nhn.cigarwebapp.dto.request.order.OrderWithPaymentRequest;
 import com.nhn.cigarwebapp.dto.response.admin.OrderAdminResponse;
+import com.nhn.cigarwebapp.dto.response.order.OrderResponse;
+import com.nhn.cigarwebapp.entity.*;
 import com.nhn.cigarwebapp.mapper.CustomerMapper;
 import com.nhn.cigarwebapp.mapper.OrderMapper;
 import com.nhn.cigarwebapp.mapper.SortMapper;
-import com.nhn.cigarwebapp.model.*;
 import com.nhn.cigarwebapp.repository.*;
-import com.nhn.cigarwebapp.service.CustomerService;
-import com.nhn.cigarwebapp.service.EmailService;
-import com.nhn.cigarwebapp.service.OrderService;
-import com.nhn.cigarwebapp.service.ShipmentService;
+import com.nhn.cigarwebapp.service.*;
 import com.nhn.cigarwebapp.specification.SpecificationMapper;
 import com.nhn.cigarwebapp.specification.order.OrderSpecification;
 import com.nhn.cigarwebapp.specification.sort.OrderSortEnum;
-import com.nhn.cigarwebapp.util.MyStringUtils;
+import com.nhn.cigarwebapp.utils.MyStringUtils;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -57,9 +55,12 @@ public class OrderServiceImpl implements OrderService {
     private final SpecificationMapper specificationMapper;
     private final CustomerService customerService;
     private final EmailService emailService;
+    private final MomoService momoService;
+    private final PaymentRepository paymentRepository;
+    private final PaymentDestinationRepository paymentDestinationRepository;
 
     @Override
-    @Cacheable(key = "#params", value = "order")
+    @Cacheable(key = "#params", value = "orders")
     public OrderResponse getOrder(@RequestParam Map<String, String> params) {
         if (params.containsKey("orderId") && params.containsKey("phone")) {
             Optional<Order> orderOptional = orderRepository.findById(Long.valueOf(params.get("orderId")));
@@ -74,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Cacheable(key = "#params", value = "adminOrders")
+    @Cacheable(key = "#params", value = "orders")
     public Page<OrderAdminResponse> getAdminOrders(@RequestParam Map<String, String> params) {
         int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
         int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
@@ -83,23 +84,27 @@ public class OrderServiceImpl implements OrderService {
         OrderSpecification specification = specificationMapper.orderSpecification(params);
         Pageable pageable = PageRequest.of(page - 1, size, sortMapper.getOrderSort(sort));
 
-        return orderRepository.findAll(specification, pageable)
+        return orderRepository
+                .findAll(specification, pageable)
                 .map(orderMapper::toAdminResponse);
     }
 
     @Override
-    @Cacheable(key = "#id", value = "adminOrders")
+    @Cacheable(key = "#id", value = "orders")
     public OrderAdminResponse getAdminOrder(Long id) {
-        Optional<Order> order = orderRepository.findById(id);
-        return order.map(orderMapper::toAdminResponse).orElse(null);
+        Optional<Order> orderOptional = orderRepository.findById(id);
+        if (orderOptional.isPresent())
+            return orderMapper.toAdminResponse(orderOptional.get());
+        else
+            return null;
     }
 
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "adminOrders", allEntries = true),
+            @CacheEvict(value = "orders", allEntries = true),
     })
-    public Order addOrder(OrderRequest request) {
+    public Order addOrderWithPayment(OrderWithPaymentRequest request) {
         Optional<Customer> customerOptional = customerRepository
                 .findByFullNameAndPhone(MyStringUtils.normalizeFullName(request.getFullName()),
                         StringUtils.normalizeSpace(request.getPhone()));
@@ -129,34 +134,59 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.saveAndFlush(order);
 
         request.getOrderItems()
-                .forEach(orderItemRequest -> {
-                    orderItemRepository
-                            .saveAndFlush(OrderItem.builder()
-                                    .order(order)
-                                    .product(productRepository.getReferenceById(orderItemRequest.getProductId()))
-                                    .quantity(orderItemRequest.getQuantity())
-                                    .build());
-                });
+                .forEach(orderItemRequest ->
+                        orderItemRepository
+                                .saveAndFlush(OrderItem.builder()
+                                        .order(order)
+                                        .product(productRepository.getReferenceById(orderItemRequest.getProductId()))
+                                        .quantity(orderItemRequest.getQuantity())
+                                        .build())
+                );
 
         entityManager.refresh(order);
         emailService.sendOrderConfirmationEmail(order);
+
+        if (request.getPaymentDestinationId().equalsIgnoreCase("cod")) {
+            Payment payment = Payment.builder()
+                    .paidAmount(order.getTotalPrice().longValue())
+                    .isPaid(false)
+                    .paymentUrl(null)
+                    .paymentDestination(paymentDestinationRepository.getReferenceById(request.getPaymentDestinationId()))
+                    .order(orderRepository.getReferenceById(order.getId()))
+                    .build();
+            paymentRepository.save(payment);
+            entityManager.refresh(order);
+        } else if (request.getPaymentDestinationId().equalsIgnoreCase("momo")) {
+            Map momoCreateOrderResponse = momoService.createOrder(order);
+            Payment payment = Payment.builder()
+                    .paidAmount(order.getTotalPrice().longValue())
+                    .isPaid(false)
+                    .requestId((String) momoCreateOrderResponse.get("requestId"))
+                    .paymentOrderId((String) momoCreateOrderResponse.get("orderId"))
+                    .paymentUrl((String) momoCreateOrderResponse.get("payUrl"))
+                    .paymentDestination(paymentDestinationRepository.getReferenceById(request.getPaymentDestinationId()))
+                    .order(orderRepository.getReferenceById(order.getId()))
+                    .build();
+
+            paymentRepository.save(payment);
+            entityManager.refresh(order);
+        }
+
         return order;
     }
 
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "order", allEntries = true),
-            @CacheEvict(value = "adminOrders", allEntries = true),
+            @CacheEvict(value = "orders", allEntries = true),
     })
-    public OrderAdminResponse partialUpdateOrder(Long id, Map<String, Object> params) {
+    public Order partialUpdateOrder(Long id, Map<String, Object> params) {
         Optional<Order> orderOptional = orderRepository.findById(id);
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
             if (params.containsKey("orderStatusId"))
-                order.setOrderStatus(
-                        orderStatusRepository
-                                .getReferenceById(Long.valueOf((String) params.get("orderStatusId"))));
+                order.setOrderStatus(orderStatusRepository
+                        .getReferenceById(Long.valueOf((String) params.get("orderStatusId"))));
 
             if (params.containsKey("trackingNumber")) {
                 String trackingNumber = (String) params.get("trackingNumber");
@@ -176,7 +206,7 @@ public class OrderServiceImpl implements OrderService {
             }
 
             orderRepository.saveAndFlush(order);
-            return orderMapper.toAdminResponse(order);
+            return order;
         }
 
         return null;
@@ -185,8 +215,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "order", allEntries = true),
-            @CacheEvict(value = "adminOrders", allEntries = true),
+            @CacheEvict(value = "orders", allEntries = true),
     })
     public void deleteOrder(Long id) {
         try {

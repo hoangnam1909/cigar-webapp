@@ -1,6 +1,6 @@
 package com.nhn.cigarwebapp.repository;
 
-import com.nhn.cigarwebapp.model.ProductImage;
+import com.nhn.cigarwebapp.entity.ProductImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

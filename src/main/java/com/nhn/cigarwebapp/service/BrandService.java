@@ -2,10 +2,10 @@ package com.nhn.cigarwebapp.service;
 
 import com.nhn.cigarwebapp.dto.request.admin.BrandCreationRequest;
 import com.nhn.cigarwebapp.dto.request.admin.BrandUpdateRequest;
-import com.nhn.cigarwebapp.dto.response.BrandResponse;
-import com.nhn.cigarwebapp.dto.response.BrandWithProductsResponse;
-import com.nhn.cigarwebapp.dto.response.ProductResponse;
 import com.nhn.cigarwebapp.dto.response.admin.BrandAdminResponse;
+import com.nhn.cigarwebapp.dto.response.brand.BrandResponse;
+import com.nhn.cigarwebapp.dto.response.brand.BrandWithProductsResponse;
+import com.nhn.cigarwebapp.dto.response.product.ProductResponse;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

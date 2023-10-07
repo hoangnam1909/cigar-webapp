@@ -1,17 +1,15 @@
 package com.nhn.cigarwebapp.service.impl;
 
-import com.nhn.cigarwebapp.dto.request.CategoryRequest;
-import com.nhn.cigarwebapp.dto.response.CategoryResponse;
+import com.nhn.cigarwebapp.dto.request.category.CategoryRequest;
+import com.nhn.cigarwebapp.dto.response.category.CategoryResponse;
+import com.nhn.cigarwebapp.entity.Category;
 import com.nhn.cigarwebapp.mapper.CategoryMapper;
 import com.nhn.cigarwebapp.mapper.SortMapper;
-import com.nhn.cigarwebapp.model.Category;
 import com.nhn.cigarwebapp.repository.CategoryRepository;
 import com.nhn.cigarwebapp.service.CategoryService;
 import com.nhn.cigarwebapp.specification.SpecificationMapper;
 import com.nhn.cigarwebapp.specification.category.CategorySpecification;
-import com.nhn.cigarwebapp.specification.sort.ProductSortEnum;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;

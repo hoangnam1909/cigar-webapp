@@ -2,9 +2,9 @@ package com.nhn.cigarwebapp.specification.product;
 
 import com.nhn.cigarwebapp.common.SearchCriteria;
 import com.nhn.cigarwebapp.common.SearchOperation;
-import com.nhn.cigarwebapp.model.Brand;
-import com.nhn.cigarwebapp.model.Category;
-import com.nhn.cigarwebapp.model.Product;
+import com.nhn.cigarwebapp.entity.Brand;
+import com.nhn.cigarwebapp.entity.Category;
+import com.nhn.cigarwebapp.entity.Product;
 import jakarta.persistence.criteria.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;

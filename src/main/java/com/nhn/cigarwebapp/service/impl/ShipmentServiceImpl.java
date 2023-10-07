@@ -1,6 +1,6 @@
 package com.nhn.cigarwebapp.service.impl;
 
-import com.nhn.cigarwebapp.model.Shipment;
+import com.nhn.cigarwebapp.entity.Shipment;
 import com.nhn.cigarwebapp.repository.ShipmentRepository;
 import com.nhn.cigarwebapp.service.ShipmentService;
 import lombok.RequiredArgsConstructor;

@@ -1,9 +1,10 @@
 package com.nhn.cigarwebapp.dto.response.admin;
 
-import com.nhn.cigarwebapp.dto.response.CustomerResponse;
-import com.nhn.cigarwebapp.dto.response.OrderItemResponse;
-import com.nhn.cigarwebapp.model.OrderStatus;
-import com.nhn.cigarwebapp.model.Shipment;
+import com.nhn.cigarwebapp.dto.response.customer.CustomerResponse;
+import com.nhn.cigarwebapp.dto.response.order.OrderItemResponse;
+import com.nhn.cigarwebapp.dto.response.payment.PaymentResponse;
+import com.nhn.cigarwebapp.entity.OrderStatus;
+import com.nhn.cigarwebapp.entity.Shipment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,5 +28,7 @@ public class OrderAdminResponse implements Serializable {
     private List<OrderItemResponse> orderItems;
     private OrderStatus orderStatus;
     private Shipment shipment;
+    private PaymentResponse payment;
+
 
 }

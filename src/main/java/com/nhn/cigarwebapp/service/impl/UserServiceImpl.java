@@ -1,6 +1,6 @@
 package com.nhn.cigarwebapp.service.impl;
 
-import com.nhn.cigarwebapp.model.User;
+import com.nhn.cigarwebapp.entity.User;
 import com.nhn.cigarwebapp.repository.UserRepository;
 import com.nhn.cigarwebapp.service.UserService;
 import lombok.RequiredArgsConstructor;

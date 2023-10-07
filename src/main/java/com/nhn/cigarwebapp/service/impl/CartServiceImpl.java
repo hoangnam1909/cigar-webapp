@@ -1,14 +1,10 @@
 package com.nhn.cigarwebapp.service.impl;
 
-import com.nhn.cigarwebapp.common.SearchCriteria;
-import com.nhn.cigarwebapp.common.SearchOperation;
-import com.nhn.cigarwebapp.dto.response.CartProductResponse;
+import com.nhn.cigarwebapp.dto.response.product.CartProductResponse;
+import com.nhn.cigarwebapp.entity.Product;
 import com.nhn.cigarwebapp.mapper.CartMapper;
-import com.nhn.cigarwebapp.model.Product;
 import com.nhn.cigarwebapp.repository.ProductRepository;
 import com.nhn.cigarwebapp.service.CartService;
-import com.nhn.cigarwebapp.specification.product.ProductEnum;
-import com.nhn.cigarwebapp.specification.product.ProductSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;

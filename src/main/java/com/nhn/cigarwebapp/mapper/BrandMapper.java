@@ -2,11 +2,11 @@ package com.nhn.cigarwebapp.mapper;
 
 import com.nhn.cigarwebapp.dto.request.admin.BrandCreationRequest;
 import com.nhn.cigarwebapp.dto.request.admin.BrandUpdateRequest;
-import com.nhn.cigarwebapp.dto.response.BrandResponse;
-import com.nhn.cigarwebapp.dto.response.BrandWithProductsResponse;
-import com.nhn.cigarwebapp.dto.response.ProductResponse;
 import com.nhn.cigarwebapp.dto.response.admin.BrandAdminResponse;
-import com.nhn.cigarwebapp.model.Brand;
+import com.nhn.cigarwebapp.dto.response.brand.BrandResponse;
+import com.nhn.cigarwebapp.dto.response.brand.BrandWithProductsResponse;
+import com.nhn.cigarwebapp.dto.response.product.ProductResponse;
+import com.nhn.cigarwebapp.entity.Brand;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

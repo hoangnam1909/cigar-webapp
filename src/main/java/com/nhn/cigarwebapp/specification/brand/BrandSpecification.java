@@ -2,7 +2,7 @@ package com.nhn.cigarwebapp.specification.brand;
 
 import com.nhn.cigarwebapp.common.SearchCriteria;
 import com.nhn.cigarwebapp.common.SearchOperation;
-import com.nhn.cigarwebapp.model.Brand;
+import com.nhn.cigarwebapp.entity.Brand;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;

@@ -1,8 +1,8 @@
 package com.nhn.cigarwebapp.service;
 
-import com.nhn.cigarwebapp.dto.request.CustomerRequest;
-import com.nhn.cigarwebapp.dto.response.CustomerResponse;
-import com.nhn.cigarwebapp.model.Customer;
+import com.nhn.cigarwebapp.dto.request.customer.CustomerRequest;
+import com.nhn.cigarwebapp.dto.response.customer.CustomerResponse;
+import com.nhn.cigarwebapp.entity.Customer;
 
 import java.util.List;
 

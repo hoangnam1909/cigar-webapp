@@ -1,9 +1,10 @@
 package com.nhn.cigarwebapp.service;
 
-import com.nhn.cigarwebapp.dto.request.OrderRequest;
-import com.nhn.cigarwebapp.dto.response.OrderResponse;
+import com.nhn.cigarwebapp.dto.request.order.OrderRequest;
+import com.nhn.cigarwebapp.dto.request.order.OrderWithPaymentRequest;
 import com.nhn.cigarwebapp.dto.response.admin.OrderAdminResponse;
-import com.nhn.cigarwebapp.model.Order;
+import com.nhn.cigarwebapp.dto.response.order.OrderResponse;
+import com.nhn.cigarwebapp.entity.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -17,9 +18,9 @@ public interface OrderService {
 
     OrderAdminResponse getAdminOrder(Long id);
 
-    Order addOrder(OrderRequest request);
+    Order addOrderWithPayment(OrderWithPaymentRequest request);
 
-    OrderAdminResponse partialUpdateOrder(Long id, Map<String, Object> params);
+    Order partialUpdateOrder(Long id, Map<String, Object> params);
 
     void deleteOrder(Long id);
 

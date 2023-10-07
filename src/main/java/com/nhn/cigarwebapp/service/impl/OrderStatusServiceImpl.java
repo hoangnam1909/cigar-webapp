@@ -1,9 +1,9 @@
 package com.nhn.cigarwebapp.service.impl;
 
-import com.nhn.cigarwebapp.dto.request.OrderStatusRequest;
-import com.nhn.cigarwebapp.dto.response.OrderStatusResponse;
+import com.nhn.cigarwebapp.dto.request.order.OrderStatusRequest;
+import com.nhn.cigarwebapp.dto.response.order.OrderStatusResponse;
+import com.nhn.cigarwebapp.entity.OrderStatus;
 import com.nhn.cigarwebapp.mapper.OrderStatusMapper;
-import com.nhn.cigarwebapp.model.OrderStatus;
 import com.nhn.cigarwebapp.repository.OrderStatusRepository;
 import com.nhn.cigarwebapp.service.OrderStatusService;
 import lombok.RequiredArgsConstructor;
