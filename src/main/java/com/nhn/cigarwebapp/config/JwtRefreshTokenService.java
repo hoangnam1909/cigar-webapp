@@ -18,7 +18,7 @@ import java.util.function.Function;
 @Service
 public class JwtRefreshTokenService {
 
-    @Value("${jwtHS256SecretKey}")
+    @Value("${jwt-HS256-secret-key}")
     private String SECRET_KEY;
 
     public String extractUsername(String token) {

@@ -14,7 +14,7 @@ public class PaymentResponse implements Serializable {
 
     private Date createdDate;
     private Long paidAmount;
-    private Boolean status;
+    private Boolean isPaid;
     private String paymentUrl;
     private PaymentDestinationResponse paymentDestination;
 

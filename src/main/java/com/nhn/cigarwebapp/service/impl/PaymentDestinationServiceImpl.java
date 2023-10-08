@@ -23,7 +23,7 @@ public class PaymentDestinationServiceImpl implements PaymentDestinationService 
     private final PaymentDestinationMapper paymentDestinationMapper;
 
     @Override
-    @Cacheable("paymentDestinations")
+    @Cacheable("List<PaymentDestinationResponse>")
     public List<PaymentDestinationResponse> getPaymentDestinations() {
         PaymentDestinationSpecification specification = new PaymentDestinationSpecification();
         specification.add(new SearchCriteria(PaymentDestinationEnum.IS_ACTIVE, "true", SearchOperation.IS_ACTIVE));

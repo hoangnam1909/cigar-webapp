@@ -1,6 +1,5 @@
 package com.nhn.cigarwebapp.service.impl;
 
-import com.nhn.cigarwebapp.dto.request.order.OrderRequest;
 import com.nhn.cigarwebapp.dto.request.order.OrderWithPaymentRequest;
 import com.nhn.cigarwebapp.dto.response.admin.OrderAdminResponse;
 import com.nhn.cigarwebapp.dto.response.order.OrderResponse;
@@ -60,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentDestinationRepository paymentDestinationRepository;
 
     @Override
-    @Cacheable(key = "#params", value = "orders")
+//    @Cacheable(key = "#params", value = "orders")
     public OrderResponse getOrder(@RequestParam Map<String, String> params) {
         if (params.containsKey("orderId") && params.containsKey("phone")) {
             Optional<Order> orderOptional = orderRepository.findById(Long.valueOf(params.get("orderId")));
@@ -75,7 +74,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Cacheable(key = "#params", value = "orders")
+    @Cacheable(key = "#params", value = "Page<OrderAdminResponse>")
     public Page<OrderAdminResponse> getAdminOrders(@RequestParam Map<String, String> params) {
         int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
         int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
@@ -90,7 +89,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Cacheable(key = "#id", value = "orders")
+    @Cacheable(key = "#id", value = "OrderAdminResponse")
     public OrderAdminResponse getAdminOrder(Long id) {
         Optional<Order> orderOptional = orderRepository.findById(id);
         if (orderOptional.isPresent())
@@ -102,7 +101,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "orders", allEntries = true),
+            @CacheEvict(value = "OrderAdminResponse", allEntries = true),
+            @CacheEvict(value = "Page<OrderAdminResponse>", allEntries = true),
     })
     public Order addOrderWithPayment(OrderWithPaymentRequest request) {
         Optional<Customer> customerOptional = customerRepository
@@ -178,7 +178,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "orders", allEntries = true),
+            @CacheEvict(value = "OrderAdminResponse", allEntries = true),
+            @CacheEvict(value = "Page<OrderAdminResponse>", allEntries = true),
     })
     public Order partialUpdateOrder(Long id, Map<String, Object> params) {
         Optional<Order> orderOptional = orderRepository.findById(id);
@@ -215,7 +216,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "orders", allEntries = true),
+            @CacheEvict(value = "OrderAdminResponse", allEntries = true),
+            @CacheEvict(value = "Page<OrderAdminResponse>", allEntries = true),
     })
     public void deleteOrder(Long id) {
         try {

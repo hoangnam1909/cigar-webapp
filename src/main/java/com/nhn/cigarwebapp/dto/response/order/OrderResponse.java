@@ -1,6 +1,7 @@
 package com.nhn.cigarwebapp.dto.response.order;
 
 import com.nhn.cigarwebapp.dto.response.customer.CustomerResponse;
+import com.nhn.cigarwebapp.dto.response.payment.PaymentResponse;
 import com.nhn.cigarwebapp.entity.OrderStatus;
 import com.nhn.cigarwebapp.entity.Shipment;
 import lombok.AllArgsConstructor;
@@ -26,5 +27,6 @@ public class OrderResponse implements Serializable {
     private Double totalPrice;
     private Shipment shipment;
     private List<OrderItemResponse> orderItems;
+    private PaymentResponse payment;
 
 }

@@ -32,7 +32,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    @Cacheable(value = "customers")
+    @Cacheable(value = "List<CustomerResponse>")
     public List<CustomerResponse> getCustomers() {
         return customerRepository.findAll()
                 .stream()
@@ -42,7 +42,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "customers", allEntries = true)
+    @CacheEvict(value = "List<CustomerResponse>", allEntries = true)
     public void addCustomer(Customer customer) {
         try {
             customerMapper.toResponse(customerRepository.saveAndFlush(customer));
@@ -52,7 +52,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    @CacheEvict(value = "customers", allEntries = true)
+    @CacheEvict(value = "List<CustomerResponse>", allEntries = true)
     public void addCustomer(CustomerRequest request) {
         try {
             Customer customer = customerMapper.toEntity(request);
@@ -64,7 +64,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "customers", allEntries = true)
+    @CacheEvict(value = "List<CustomerResponse>", allEntries = true)
     public void addCustomers(List<CustomerRequest> requestList) {
         requestList.stream()
                 .map(customerMapper::toEntity)

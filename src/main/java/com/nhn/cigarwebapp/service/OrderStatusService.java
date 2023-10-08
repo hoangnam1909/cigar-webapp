@@ -11,6 +11,4 @@ public interface OrderStatusService {
 
     OrderStatusResponse add(OrderStatusRequest request);
 
-//    void add(List<OrderStatusRequest> requestList);
-
 }

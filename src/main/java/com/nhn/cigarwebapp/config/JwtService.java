@@ -20,7 +20,7 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtService {
 
-    @Value("${jwtSecretKey}")
+    @Value("${jwt-secret-key}")
     private String SECRET_KEY;
 
     public String extractUsername(String token) {

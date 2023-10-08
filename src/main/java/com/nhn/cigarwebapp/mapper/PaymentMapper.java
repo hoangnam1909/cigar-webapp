@@ -15,7 +15,7 @@ public class PaymentMapper {
         return PaymentResponse.builder()
                 .createdDate(payment.getCreatedDate())
                 .paidAmount(payment.getPaidAmount())
-                .status(payment.getIsPaid())
+                .isPaid(payment.getIsPaid())
                 .paymentUrl(payment.getPaymentUrl())
                 .paymentDestination(destinationMapper.toResponse(payment.getPaymentDestination()))
                 .build();

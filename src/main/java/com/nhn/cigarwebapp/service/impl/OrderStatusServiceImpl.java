@@ -23,7 +23,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
     private final OrderStatusMapper orderStatusMapper;
 
     @Override
-    @Cacheable("orderStatuses")
+    @Cacheable("List<OrderStatusResponse>")
     public List<OrderStatusResponse> getOrderStatuses() {
         return orderStatusRepository.findAll()
                 .stream()
@@ -33,7 +33,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "orderStatuses", allEntries = true)
+    @CacheEvict(value = "List<OrderStatusResponse>", allEntries = true)
     public OrderStatusResponse add(OrderStatusRequest request) {
         try {
             OrderStatus orderStatus = orderStatusMapper.toEntity(request);
@@ -43,17 +43,5 @@ public class OrderStatusServiceImpl implements OrderStatusService {
             return null;
         }
     }
-
-//    @Override
-//    @Transactional
-//    public void add(List<OrderStatusRequest> requestList) {
-//        try {
-//            requestList
-//                    .forEach(request ->
-//                            orderStatusRepository.saveAndFlush(orderStatusMapper.toEntity(request)));
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//    }
 
 }

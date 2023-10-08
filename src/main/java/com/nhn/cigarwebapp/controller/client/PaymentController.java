@@ -12,8 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,16 +30,11 @@ public class PaymentController {
             specification.add(new SearchCriteria(PaymentEnum.PAYMENT_ORDER_ID, params.get(PaymentEnum.PAYMENT_ORDER_ID), SearchOperation.EQUAL));
             specification.add(new SearchCriteria(PaymentEnum.REQUEST_ID, params.get(PaymentEnum.REQUEST_ID), SearchOperation.EQUAL));
 
-            Optional<Payment> paymentOptional = paymentRepository.findOne(specification);
-//            return ResponseEntity.ok()
-//                    .body(ResponseObject.builder()
-//                            .msg("Updated paid status")
-//                            .result(paymentOptional.get())
-//                            .build());
+            List<Payment> payments = paymentRepository.findAll(specification);
 
-            if (paymentOptional.isPresent()) {
+            if (payments.size() == 1) {
                 System.err.println("is present");
-                Payment payment = paymentOptional.get();
+                Payment payment = payments.get(0);
                 boolean isPaid = momoService.checkTransactionStatus(params);
                 payment.setIsPaid(isPaid);
                 paymentRepository.save(payment);

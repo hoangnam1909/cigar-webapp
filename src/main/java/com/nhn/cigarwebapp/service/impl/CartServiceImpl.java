@@ -27,7 +27,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    @Cacheable(key = "#ids", value = "productsInCart")
+    @Cacheable(key = "#ids", value = "CartProductResponse")
     public List<CartProductResponse> getProductsInCart(Set<Long> ids) {
         List<Product> products = productRepository.findAllById(ids);
         return products

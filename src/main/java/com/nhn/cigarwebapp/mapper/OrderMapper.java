@@ -24,6 +24,7 @@ public class OrderMapper {
                 .note(order.getNote())
                 .orderItems(orderItemMapper.toResponses(order.getOrderItems()))
                 .shipment(order.getShipment())
+                .payment(paymentMapper.toResponse(order.getPayment()))
                 .build();
     }
 

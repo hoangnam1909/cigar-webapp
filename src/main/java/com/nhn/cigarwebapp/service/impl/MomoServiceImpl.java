@@ -20,33 +20,36 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MomoServiceImpl implements MomoService {
 
-    @Value("${payment.momo.partnerCode}")
+    @Value("${payment.momo.partner-code}")
     public String partnerCode;
 
-    @Value("${payment.momo.accessKey}")
+    @Value("${payment.momo.access-key}")
     public String accessKey;
 
-    @Value("${payment.momo.secretKey}")
+    @Value("${payment.momo.secret-key}")
     public String secretKey;
 
     //    @Value("${payment.momo.returnUrl}")
     @Value("${settings.cors_origin}")
     public String returnUrl;
 
-    @Value("${payment.momo.ipnUrl}")
+    @Value("${payment.momo.ipn-url}")
     public String ipnUrl;
 
-    @Value("${payment.momo.requestType}")
+    @Value("${payment.momo.request-type}")
     public String requestType;
 
-    @Value("${payment.momo.paymentUrl}")
+    @Value("${payment.momo.payment-url}")
     public String paymentUrl;
 
-    @Value("${payment.momo.queryUrl}")
+    @Value("${payment.momo.query-url}")
     public String queryUrl;
 
-    @Value("${payment.momo.confirmUrl}")
+    @Value("${payment.momo.confirm-url}")
     public String confirmUrl;
+
+    @Value("${payment.momo.prefix-orderid}")
+    public String prefixOrderId;
 
     private final ObjectMapper objectMapper;
 
@@ -94,7 +97,7 @@ public class MomoServiceImpl implements MomoService {
                 .partnerCode(partnerCode)
                 .requestId(RandomStringUtils.randomNumeric(10) + "id")
                 .amount((long) amount)
-                .orderId("CFB-" + order.getId())
+                .orderId(prefixOrderId + order.getId())
                 .orderInfo("Thanh toan don hang #" + order.getId())
                 .redirectUrl(returnUrl + "/payment-result")
                 .ipnUrl("https://momo.vn")

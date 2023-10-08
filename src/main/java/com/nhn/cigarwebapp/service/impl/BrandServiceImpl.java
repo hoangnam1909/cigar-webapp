@@ -46,14 +46,14 @@ public class BrandServiceImpl implements BrandService {
     private final ProductService productService;
 
     @Override
-    @Cacheable(key = "#id", value = "brands")
+    @Cacheable(key = "#id", value = "BrandResponse")
     public BrandResponse getBrand(Long id) {
         Optional<Brand> brand = brandRepository.findById(id);
         return brand.map(brandMapper::toResponse).orElse(null);
     }
 
     @Override
-    @Cacheable(key = "#id + '_' + #page + '_' + #size", value = "brands")
+    @Cacheable(key = "#id + '_' + #page + '_' + #size", value = "BrandResponse")
     public Page<ProductResponse> getProductOfBrand(Long id, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
@@ -65,7 +65,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    @Cacheable(value = "brands")
+    @Cacheable(value = "BrandResponse")
     public List<BrandResponse> getBrands() {
         return brandRepository.findAll()
                 .stream()
@@ -75,7 +75,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    @Cacheable(value = "adminBrands")
+    @Cacheable(value = "BrandAdminResponse")
     public Page<BrandAdminResponse> getAdminBrands(Map<String, String> params) {
         int PAGE_SIZE = 15;
 
@@ -90,7 +90,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    @Cacheable(key = "#top", value = "topBrands")
+    @Cacheable(key = "#top", value = "BrandWithProductsResponse")
     public List<BrandWithProductsResponse> getTop(int top) {
         List<Brand> brands = entityManager
                 .createQuery(

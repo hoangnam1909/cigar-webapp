@@ -55,13 +55,13 @@ public class ProductServiceImpl implements ProductService {
     private final FileService fileService;
 
     @Override
-    @Cacheable("countProductsOnSale")
+    @Cacheable("CountProductsOnSale")
     public Long countProductsOnSale() {
         return productRepository.countAllByActiveIsTrue();
     }
 
     @Override
-    @Cacheable(key = "#id", value = "product")
+    @Cacheable(key = "#id", value = "ProductResponse")
     public ProductResponse getProduct(Long id) {
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
@@ -74,7 +74,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Cacheable(key = "#params", value = "products")
+    @Cacheable(key = "#params", value = "Page<ProductResponse>")
     public Page<ProductResponse> getProducts(Map<String, String> params) {
         int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
         int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
@@ -90,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Cacheable(key = "{#id, #count}", value = "productSuggest")
+    @Cacheable(key = "{#id, #count}", value = "List<ProductSuggestResponse>")
     public List<ProductResponse> getSuggestProducts(Long id, int count) {
         Optional<Product> productOptional = productRepository.findById(id);
 
@@ -121,7 +121,7 @@ public class ProductServiceImpl implements ProductService {
 
     // ADMIN SERVICES
     @Override
-    @Cacheable(key = "#id", value = "adminProduct")
+    @Cacheable(key = "#id", value = "ProductAdminResponse")
     public ProductAdminResponse getAdminProduct(Long id) {
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
@@ -132,7 +132,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Cacheable(key = "#params", value = "adminProducts")
+    @Cacheable(key = "#params", value = "Page<ProductAdminResponse>")
     public Page<ProductAdminResponse> getAdminProducts(Map<String, String> params) {
         int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
         int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
@@ -149,10 +149,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "products", allEntries = true),
-            @CacheEvict(value = "productSuggest", allEntries = true),
-            @CacheEvict(value = "adminProducts", allEntries = true),
-            @CacheEvict(value = "countProductsOnSale", allEntries = true),
+            @CacheEvict(value = "Page<ProductResponse>", allEntries = true),
+            @CacheEvict(value = "List<ProductSuggestResponse>", allEntries = true),
+            @CacheEvict(value = "Page<ProductAdminResponse>", allEntries = true),
+            @CacheEvict(value = "CountProductsOnSale", allEntries = true),
     })
     public ProductResponse add(ProductRequest request, List<MultipartFile> files) {
         Product product = productMapper.toEntity(request);
@@ -165,13 +165,6 @@ public class ProductServiceImpl implements ProductService {
                         .product(product)
                         .build()));
 
-//        request.getProductImages()
-//                .forEach(link -> productImageRepository
-//                        .save(ProductImage.builder()
-//                                .linkToImage(link)
-//                                .product(product)
-//                                .build()));
-
         entityManager.refresh(entityManager.find(Product.class, productSaving.getId()));
         return productMapper.toResponse(productSaving);
     }
@@ -179,11 +172,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(key = "#id", value = "product"),
-            @CacheEvict(key = "#id", value = "adminProduct"),
-            @CacheEvict(value = "products", allEntries = true),
-            @CacheEvict(value = "productSuggest", allEntries = true),
-            @CacheEvict(value = "adminProducts", allEntries = true),
+            @CacheEvict(key = "#id", value = "ProductResponse"),
+            @CacheEvict(key = "#id", value = "ProductAdminResponse"),
+            @CacheEvict(value = "Page<ProductResponse>", allEntries = true),
+            @CacheEvict(value = "List<ProductSuggestResponse>", allEntries = true),
+            @CacheEvict(value = "Page<ProductAdminResponse>", allEntries = true),
     })
     public ProductResponse update(Long id, ProductUpdateRequest request, List<MultipartFile> files) {
         Optional<Product> productOptional = productRepository.findById(id);
@@ -211,11 +204,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(key = "#id", value = "product"),
-            @CacheEvict(key = "#id", value = "adminProduct"),
-            @CacheEvict(value = "products", allEntries = true),
-            @CacheEvict(value = "productSuggest", allEntries = true),
-            @CacheEvict(value = "adminProducts", allEntries = true),
+            @CacheEvict(key = "#id", value = "ProductResponse"),
+            @CacheEvict(key = "#id", value = "ProductAdminResponse"),
+            @CacheEvict(value = "Page<ProductResponse>", allEntries = true),
+            @CacheEvict(value = "List<ProductSuggestResponse>", allEntries = true),
+            @CacheEvict(value = "Page<ProductAdminResponse>", allEntries = true),
     })
     public void partialUpdateProduct(Long id, Map<String, Object> params) {
         Optional<Product> productOptional = productRepository.findById(id);
@@ -231,11 +224,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "product", allEntries = true),
-            @CacheEvict(value = "products", allEntries = true),
-            @CacheEvict(value = "productSuggest", allEntries = true),
-            @CacheEvict(value = "adminProducts", allEntries = true),
-            @CacheEvict(value = "countProductsOnSale", allEntries = true),
+            @CacheEvict(value = "ProductResponse", allEntries = true),
+            @CacheEvict(value = "Page<ProductResponse>", allEntries = true),
+            @CacheEvict(value = "List<ProductSuggestResponse>", allEntries = true),
+            @CacheEvict(value = "Page<ProductAdminResponse>", allEntries = true),
+            @CacheEvict(value = "CountProductsOnSale", allEntries = true),
     })
     public void delete(Long id) {
         productRepository.deleteById(id);

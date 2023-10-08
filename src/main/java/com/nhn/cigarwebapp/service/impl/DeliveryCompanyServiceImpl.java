@@ -17,8 +17,8 @@ public class DeliveryCompanyServiceImpl implements DeliveryCompanyService {
     private final DeliveryCompanyRepository deliveryCompanyRepository;
     private final DeliveryCompanyMapper deliveryCompanyMapper;
 
-    @Cacheable("deliveryCompanies")
     @Override
+    @Cacheable("List<DeliveryCompanyAdminResponse>")
     public List<DeliveryCompanyAdminResponse> getDeliveryCompanies() {
         return deliveryCompanyRepository.findAll()
                 .stream()

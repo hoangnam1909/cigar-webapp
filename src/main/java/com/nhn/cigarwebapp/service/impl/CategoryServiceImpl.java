@@ -4,7 +4,6 @@ import com.nhn.cigarwebapp.dto.request.category.CategoryRequest;
 import com.nhn.cigarwebapp.dto.response.category.CategoryResponse;
 import com.nhn.cigarwebapp.entity.Category;
 import com.nhn.cigarwebapp.mapper.CategoryMapper;
-import com.nhn.cigarwebapp.mapper.SortMapper;
 import com.nhn.cigarwebapp.repository.CategoryRepository;
 import com.nhn.cigarwebapp.service.CategoryService;
 import com.nhn.cigarwebapp.specification.SpecificationMapper;
@@ -29,10 +28,9 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final SpecificationMapper specificationMapper;
-    private final SortMapper sortMapper;
 
     @Override
-    @Cacheable(value = "categories")
+    @Cacheable(value = "List<CategoryResponse>")
     public List<CategoryResponse> getCategories() {
         CategorySpecification specification = specificationMapper.categorySpecification(new HashMap<>());
         return categoryRepository.findAll(specification)
@@ -43,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @Cacheable(key = "#params", value = "adminCategories")
+    @Cacheable(key = "#params", value = "Page<CategoryResponse>")
     public Page<CategoryResponse> getAdminCategories(Map<String, String> params) {
         int PAGE_SIZE = 15;
 
@@ -59,8 +57,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "categories", allEntries = true),
-            @CacheEvict(value = "adminCategories", allEntries = true),
+            @CacheEvict(value = "CategoryResponse", allEntries = true),
     })
     public void addCategory(CategoryRequest request) {
         Category category = categoryMapper.toEntity(request);
@@ -68,7 +65,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @Cacheable(key = "#id", value = "categories")
+    @Cacheable(key = "#id", value = "CategoryResponse")
     public CategoryResponse getCategoryDetail(Long id) {
         Optional<Category> category = categoryRepository.findById(id);
         return category.map(categoryMapper::toResponse).orElse(null);
@@ -76,10 +73,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Caching(put = {
-            @CachePut(key = "#id", value = "categories")
+            @CachePut(key = "#id", value = "CategoryResponse")
     }, evict = {
-            @CacheEvict(value = "categories", allEntries = true),
-            @CacheEvict(value = "adminCategories", allEntries = true),
+            @CacheEvict(value = "List<CategoryResponse>", allEntries = true),
+            @CacheEvict(value = "Page<CategoryResponse>", allEntries = true),
     })
     public CategoryResponse updateCategory(Long id, CategoryRequest request) {
         Optional<Category> categoryOptional = categoryRepository.findById(id);
@@ -96,8 +93,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "categories", allEntries = true),
-            @CacheEvict(value = "adminCategories", allEntries = true),
+            @CacheEvict(value = "List<CategoryResponse>", allEntries = true),
+            @CacheEvict(value = "Page<CategoryResponse>", allEntries = true),
     })
     public boolean deleteCategory(Long id) {
         Optional<Category> category = categoryRepository.findById(id);
