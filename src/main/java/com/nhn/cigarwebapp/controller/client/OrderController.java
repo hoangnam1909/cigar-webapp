@@ -39,7 +39,7 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<ResponseObject> addOrder(@RequestBody OrderWithPaymentRequest request) {
         try {
-            Order order = orderService.addOrderWithPayment(request);
+            Order order = orderService.addOrder(request);
 
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()

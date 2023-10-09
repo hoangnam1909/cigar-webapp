@@ -53,6 +53,15 @@ public class ProductSpecification implements Specification<Product> {
 
                 predicates.add(builder.or(predicateId, predicateName));
             }
+            if (criteria.getOperation().equals(SearchOperation.IN_STOCK)) {
+                if (Boolean.parseBoolean((String) criteria.getValue())) {
+                    predicates.add(builder.greaterThan(
+                            root.get("unitsInStock"), 0));
+                } else {
+                    predicates.add(builder.lessThanOrEqualTo(
+                            root.get("unitsInStock"), 0));
+                }
+            }
         }
 
         return builder.and(predicates.toArray(new Predicate[0]));

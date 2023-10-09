@@ -40,6 +40,23 @@ public class AdminBrandController {
                             .build());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseObject> getBrands(@PathVariable(name = "id") Long id) {
+        BrandAdminResponse brand = brandService.getAdminBrand(id);
+        if (brand != null)
+            return ResponseEntity.ok()
+                    .body(ResponseObject.builder()
+                            .msg("Brands founds")
+                            .result(brand)
+                            .build());
+        else
+            return ResponseEntity.ok()
+                    .body(ResponseObject.builder()
+                            .msg("No content")
+                            .result(null)
+                            .build());
+    }
+
     @PostMapping
     public ResponseEntity<ResponseObject> insertBrand(@RequestBody BrandCreationRequest request) {
         try {

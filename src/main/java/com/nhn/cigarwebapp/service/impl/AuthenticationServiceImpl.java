@@ -1,17 +1,22 @@
 package com.nhn.cigarwebapp.service.impl;
 
+import com.nhn.cigarwebapp.common.ResponseObject;
 import com.nhn.cigarwebapp.config.JwtRefreshTokenService;
 import com.nhn.cigarwebapp.config.JwtService;
 import com.nhn.cigarwebapp.dto.request.auth.AuthenticationRequest;
 import com.nhn.cigarwebapp.dto.request.auth.RefreshTokenRequest;
 import com.nhn.cigarwebapp.dto.request.auth.RegisterRequest;
 import com.nhn.cigarwebapp.dto.response.auth.AuthenticationResponse;
+import com.nhn.cigarwebapp.dto.response.auth.UserInfoResponse;
 import com.nhn.cigarwebapp.entity.Role;
 import com.nhn.cigarwebapp.entity.User;
+import com.nhn.cigarwebapp.mapper.UserMapper;
 import com.nhn.cigarwebapp.repository.UserRepository;
 import com.nhn.cigarwebapp.service.AuthenticationService;
 import com.nhn.cigarwebapp.service.EmailService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +37,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtRefreshTokenService jwtRefreshTokenService;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
+    private final UserMapper userMapper;
 
     public AuthenticationResponse refreshToken(RefreshTokenRequest request) {
         String username = jwtRefreshTokenService.extractUsername(request.getRefreshToken());
@@ -84,6 +91,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .token(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    @Override
+    @Cacheable(key = "#token", value = "UserInfoResponse")
+    public UserInfoResponse currentUser(String token) {
+        String username = jwtService.extractUsername(token);
+        Optional<User> user = userRepository.findByUsername(username);
+        return user.map(userMapper::toResponse).orElse(null);
     }
 
 }

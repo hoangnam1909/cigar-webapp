@@ -17,7 +17,7 @@ public interface OrderService {
 
     OrderAdminResponse getAdminOrder(Long id);
 
-    Order addOrderWithPayment(OrderWithPaymentRequest request);
+    Order addOrder(OrderWithPaymentRequest request);
 
     Order partialUpdateOrder(Long id, Map<String, Object> params);
 

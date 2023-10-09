@@ -19,7 +19,8 @@ public enum SearchOperation {
     IS_ACTIVE,
     ORDER_STATUS_ID,
     DELIVERY_COMPANY_ID,
-    ID_NAME
+    ID_NAME,
+    IN_STOCK
 
 }
 

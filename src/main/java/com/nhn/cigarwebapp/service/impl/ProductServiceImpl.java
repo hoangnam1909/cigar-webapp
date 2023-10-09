@@ -224,11 +224,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "ProductResponse", allEntries = true),
+            @CacheEvict(value = "CountProductsOnSale", allEntries = true),
+            @CacheEvict(key = "#id", value = "ProductResponse"),
+            @CacheEvict(key = "#id", value = "ProductAdminResponse"),
             @CacheEvict(value = "Page<ProductResponse>", allEntries = true),
             @CacheEvict(value = "List<ProductSuggestResponse>", allEntries = true),
             @CacheEvict(value = "Page<ProductAdminResponse>", allEntries = true),
-            @CacheEvict(value = "CountProductsOnSale", allEntries = true),
     })
     public void delete(Long id) {
         productRepository.deleteById(id);

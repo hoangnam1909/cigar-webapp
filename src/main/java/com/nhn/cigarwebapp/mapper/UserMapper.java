@@ -8,14 +8,14 @@ import org.springframework.stereotype.Service;
 public class UserMapper {
 
     public UserInfoResponse toResponse(User user) {
-        return new UserInfoResponse(
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                user.getUsername(),
-                user.getRole()
-        );
+        return UserInfoResponse.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .username(user.getUsername())
+                .role(user.getRole())
+                .build();
     }
 
 }

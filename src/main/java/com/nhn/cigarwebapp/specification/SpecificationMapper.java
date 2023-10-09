@@ -80,6 +80,10 @@ public class SpecificationMapper {
             specification.add(new SearchCriteria(ProductEnum.KEYWORD, params.get(ProductEnum.KEYWORD), SearchOperation.ID_NAME));
         }
 
+        if (params.containsKey(ProductEnum.IN_STOCK)) {
+            specification.add(new SearchCriteria(ProductEnum.IN_STOCK, params.get(ProductEnum.IN_STOCK), SearchOperation.IN_STOCK));
+        }
+
         return specification;
     }
 

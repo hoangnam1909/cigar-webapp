@@ -90,7 +90,7 @@ public class EmailServiceImpl implements EmailService {
             MimeMessage message = getMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, CHARACTER_ENCODING);
             helper.setPriority(1);
-            helper.setSubject("Có 1 yêu cầu truy cập Tài khoản Cigar For Boss từ thiết bị khác");
+            helper.setSubject("Có phiên đăng nhập vào tài khoản Cigar For Boss");
             helper.setFrom(fromEmail, FROM_NAME);
             helper.setTo(user.getEmail());
             helper.setText(text, true);

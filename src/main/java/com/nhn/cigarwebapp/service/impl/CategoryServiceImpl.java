@@ -16,6 +16,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -49,7 +50,7 @@ public class CategoryServiceImpl implements CategoryService {
         int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
 
         CategorySpecification specification = specificationMapper.categorySpecification(params);
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("id")));
 
         return categoryRepository.findAll(specification, pageable)
                 .map(categoryMapper::toResponse);
@@ -57,7 +58,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "CategoryResponse", allEntries = true),
+            @CacheEvict(value = "List<CategoryResponse>", allEntries = true),
+            @CacheEvict(value = "Page<CategoryResponse>", allEntries = true),
     })
     public void addCategory(CategoryRequest request) {
         Category category = categoryMapper.toEntity(request);
@@ -66,7 +68,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Cacheable(key = "#id", value = "CategoryResponse")
-    public CategoryResponse getCategoryDetail(Long id) {
+    public CategoryResponse getCategory(Long id) {
         Optional<Category> category = categoryRepository.findById(id);
         return category.map(categoryMapper::toResponse).orElse(null);
     }
@@ -82,7 +84,7 @@ public class CategoryServiceImpl implements CategoryService {
         Optional<Category> categoryOptional = categoryRepository.findById(id);
         if (categoryOptional.isPresent()) {
             Category category = categoryOptional.get();
-            category.setName(request.name());
+            category.setName(request.getName());
             categoryRepository.save(category);
 
             return categoryMapper.toResponse(category);
@@ -93,6 +95,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Caching(evict = {
+            @CacheEvict(key = "#id", value = "CategoryResponse"),
             @CacheEvict(value = "List<CategoryResponse>", allEntries = true),
             @CacheEvict(value = "Page<CategoryResponse>", allEntries = true),
     })

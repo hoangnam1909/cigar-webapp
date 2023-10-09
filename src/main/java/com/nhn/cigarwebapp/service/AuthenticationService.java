@@ -4,14 +4,17 @@ import com.nhn.cigarwebapp.dto.request.auth.AuthenticationRequest;
 import com.nhn.cigarwebapp.dto.request.auth.RefreshTokenRequest;
 import com.nhn.cigarwebapp.dto.request.auth.RegisterRequest;
 import com.nhn.cigarwebapp.dto.response.auth.AuthenticationResponse;
+import com.nhn.cigarwebapp.dto.response.auth.UserInfoResponse;
 
 
 public interface AuthenticationService {
 
-    public AuthenticationResponse refreshToken(RefreshTokenRequest request);
+     AuthenticationResponse refreshToken(RefreshTokenRequest request);
 
-    public AuthenticationResponse register(RegisterRequest request);
+     AuthenticationResponse register(RegisterRequest request);
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request);
+     AuthenticationResponse authenticate(AuthenticationRequest request);
+
+    UserInfoResponse currentUser(String token);
 
 }

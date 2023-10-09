@@ -1,14 +1,13 @@
 package com.nhn.cigarwebapp.dto.request.admin;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@Getter
+@Setter
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class BrandCreationRequest {
 
     private String name;
@@ -16,6 +15,5 @@ public class BrandCreationRequest {
     private String description;
     private String image;
     private String country;
-    private Integer isBestSeller;
 
 }

@@ -59,10 +59,10 @@ public class AdminCategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseObject> updateCategory(@PathVariable(name = "id") String id,
+    public ResponseEntity<ResponseObject> updateCategory(@PathVariable Long id,
                                                          @RequestBody CategoryRequest request) {
         try {
-            CategoryResponse response = categoryService.updateCategory(Long.valueOf(id), request);
+            CategoryResponse response = categoryService.updateCategory(id, request);
 
             if (response != null)
                 return ResponseEntity.ok()
@@ -74,7 +74,7 @@ public class AdminCategoryController {
                 return ResponseEntity.badRequest()
                         .body(ResponseObject.builder()
                                 .msg("Something went wrong")
-                                .result(response)
+                                .result(null)
                                 .build());
         } catch (Exception e) {
             return ResponseEntity.ok()

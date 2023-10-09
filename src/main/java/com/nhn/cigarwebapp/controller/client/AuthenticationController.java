@@ -6,6 +6,7 @@ import com.nhn.cigarwebapp.dto.request.auth.AuthenticationRequest;
 import com.nhn.cigarwebapp.dto.request.auth.RefreshTokenRequest;
 import com.nhn.cigarwebapp.dto.request.auth.RegisterRequest;
 import com.nhn.cigarwebapp.dto.response.auth.AuthenticationResponse;
+import com.nhn.cigarwebapp.dto.response.auth.UserInfoResponse;
 import com.nhn.cigarwebapp.entity.User;
 import com.nhn.cigarwebapp.mapper.UserMapper;
 import com.nhn.cigarwebapp.repository.UserRepository;
@@ -42,16 +43,13 @@ public class AuthenticationController {
 
     @GetMapping("/current-user/{token}")
     public ResponseEntity<ResponseObject> currentUser(@PathVariable String token) {
-        String username = jwtService.extractUsername(token);
-        Optional<User> user = userRepository.findByUsername(username);
-        if (user.isPresent()) {
-            if (jwtService.isTokenValid(token, user.get()))
-                return ResponseEntity.ok()
-                        .body(ResponseObject.builder()
-                                .msg("Current user info")
-                                .result(userMapper.toResponse(user.get()))
-                                .build());
-        }
+        UserInfoResponse userInfoResponse = authenticationService.currentUser(token);
+        if (userInfoResponse != null)
+            return ResponseEntity.ok()
+                    .body(ResponseObject.builder()
+                            .msg("Current user info")
+                            .result(userInfoResponse)
+                            .build());
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }

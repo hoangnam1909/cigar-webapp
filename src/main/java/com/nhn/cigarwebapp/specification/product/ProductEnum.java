@@ -7,5 +7,6 @@ public class ProductEnum {
     public static final String NAME = "name";
     public static final String IS_ACTIVE = "active";
     public static final String KEYWORD = "kw";
+    public static final String IN_STOCK = "inStock";
 
 }

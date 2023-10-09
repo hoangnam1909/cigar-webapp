@@ -10,7 +10,7 @@ public class CategoryMapper {
 
     public Category toEntity(CategoryRequest request) {
         return Category.builder()
-                .name(request.name())
+                .name(request.getName())
                 .build();
     }
 

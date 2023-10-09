@@ -21,7 +21,6 @@ public class BrandMapper {
                 .description(request.getDescription())
                 .image(request.getImage())
                 .country(request.getCountry())
-                .isBestSeller(request.getIsBestSeller())
                 .build();
     }
 

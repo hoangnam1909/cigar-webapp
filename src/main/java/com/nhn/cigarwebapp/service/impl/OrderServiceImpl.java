@@ -92,19 +92,25 @@ public class OrderServiceImpl implements OrderService {
     @Cacheable(key = "#id", value = "OrderAdminResponse")
     public OrderAdminResponse getAdminOrder(Long id) {
         Optional<Order> orderOptional = orderRepository.findById(id);
-        if (orderOptional.isPresent())
-            return orderMapper.toAdminResponse(orderOptional.get());
-        else
-            return null;
+        return orderOptional.map(orderMapper::toAdminResponse).orElse(null);
     }
 
     @Override
     @Transactional
     @Caching(evict = {
+            @CacheEvict(value = "List<CartProductResponse>", allEntries = true),
             @CacheEvict(value = "OrderAdminResponse", allEntries = true),
             @CacheEvict(value = "Page<OrderAdminResponse>", allEntries = true),
+
+            @CacheEvict(value = "List<CartProductResponse>", allEntries = true),
+
+            @CacheEvict(value = "ProductResponse", allEntries = true),
+            @CacheEvict(value = "ProductAdminResponse", allEntries = true),
+            @CacheEvict(value = "Page<ProductResponse>", allEntries = true),
+            @CacheEvict(value = "List<ProductSuggestResponse>", allEntries = true),
+            @CacheEvict(value = "Page<ProductAdminResponse>", allEntries = true),
     })
-    public Order addOrderWithPayment(OrderWithPaymentRequest request) {
+    public Order addOrder(OrderWithPaymentRequest request) {
         Optional<Customer> customerOptional = customerRepository
                 .findByFullNameAndPhone(MyStringUtils.normalizeFullName(request.getFullName()),
                         StringUtils.normalizeSpace(request.getPhone()));
@@ -134,13 +140,22 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.saveAndFlush(order);
 
         request.getOrderItems()
-                .forEach(orderItemRequest ->
-                        orderItemRepository
-                                .saveAndFlush(OrderItem.builder()
-                                        .order(order)
-                                        .product(productRepository.getReferenceById(orderItemRequest.getProductId()))
-                                        .quantity(orderItemRequest.getQuantity())
-                                        .build())
+                .forEach(orderItemRequest -> {
+                            Optional<Product> productOptional = productRepository.findById(orderItemRequest.getProductId());
+                            if (productOptional.isPresent()) {
+                                Product product = productOptional.get();
+                                orderItemRepository
+                                        .saveAndFlush(OrderItem.builder()
+                                                .order(order)
+                                                .product(productRepository.getReferenceById(product.getId()))
+                                                .quantity(orderItemRequest.getQuantity())
+                                                .build());
+
+                                int newQuantity = product.getUnitsInStock() - orderItemRequest.getQuantity();
+                                product.setUnitsInStock(Math.max(newQuantity, 0));
+                                productRepository.save(product);
+                            }
+                        }
                 );
 
         entityManager.refresh(order);

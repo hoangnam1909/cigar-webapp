@@ -25,6 +25,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,12 +49,13 @@ public class BrandServiceImpl implements BrandService {
     @Override
     @Cacheable(key = "#id", value = "BrandResponse")
     public BrandResponse getBrand(Long id) {
-        Optional<Brand> brand = brandRepository.findById(id);
-        return brand.map(brandMapper::toResponse).orElse(null);
+        return brandRepository.findById(id)
+                .map(brandMapper::toResponse)
+                .orElse(null);
     }
 
     @Override
-    @Cacheable(key = "#id + '_' + #page + '_' + #size", value = "BrandResponse")
+    @Cacheable(key = "#id + '_' + #page + '_' + #size", value = "Page<ProductResponse>")
     public Page<ProductResponse> getProductOfBrand(Long id, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
@@ -65,7 +67,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    @Cacheable(value = "BrandResponse")
+    @Cacheable(value = "List<BrandResponse>")
     public List<BrandResponse> getBrands() {
         return brandRepository.findAll()
                 .stream()
@@ -75,7 +77,15 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    @Cacheable(value = "BrandAdminResponse")
+    @Cacheable(key = "#id", value = "BrandAdminResponse")
+    public BrandAdminResponse getAdminBrand(Long id) {
+        return brandRepository.findById(id)
+                .map(brandMapper::toAdminResponse)
+                .orElse(null);
+    }
+
+    @Override
+    @Cacheable(value = "Page<BrandAdminResponse>")
     public Page<BrandAdminResponse> getAdminBrands(Map<String, String> params) {
         int PAGE_SIZE = 15;
 
@@ -83,14 +93,14 @@ public class BrandServiceImpl implements BrandService {
         int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
 
         BrandSpecification specification = specificationMapper.brandSpecification(params);
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("id")));
 
-        return brandRepository.findAll(specification,pageable)
+        return brandRepository.findAll(specification, pageable)
                 .map(brandMapper::toAdminResponse);
     }
 
     @Override
-    @Cacheable(key = "#top", value = "BrandWithProductsResponse")
+    @Cacheable(key = "#top", value = "List<BrandWithProductsResponse>")
     public List<BrandWithProductsResponse> getTop(int top) {
         List<Brand> brands = entityManager
                 .createQuery(
@@ -121,9 +131,9 @@ public class BrandServiceImpl implements BrandService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "topBrands", allEntries = true),
-            @CacheEvict(value = "brands", allEntries = true),
-            @CacheEvict(value = "adminBrands", allEntries = true),
+            @CacheEvict(value = "List<BrandResponse>", allEntries = true),
+            @CacheEvict(value = "Page<BrandAdminResponse>", allEntries = true),
+            @CacheEvict(value = "List<BrandWithProductsResponse>", allEntries = true),
     })
     public void addBrand(BrandCreationRequest request) {
         Brand brand = brandMapper.toEntity(request);
@@ -133,11 +143,12 @@ public class BrandServiceImpl implements BrandService {
     @Override
     @Transactional
     @Caching(put = {
-            @CachePut(key = "#id", value = "brands")
+            @CachePut(key = "#id", value = "BrandResponse")
     }, evict = {
-            @CacheEvict(value = "topBrands", allEntries = true),
-            @CacheEvict(value = "brands", allEntries = true),
-            @CacheEvict(value = "adminBrands", allEntries = true),
+            @CacheEvict(key = "#id", value = "BrandAdminResponse"),
+            @CacheEvict(value = "List<BrandResponse>", allEntries = true),
+            @CacheEvict(value = "Page<BrandAdminResponse>", allEntries = true),
+            @CacheEvict(value = "List<BrandWithProductsResponse>", allEntries = true),
     })
     public BrandResponse update(Long id, BrandUpdateRequest request) {
         Optional<Brand> brandOptional = brandRepository.findById(id);
