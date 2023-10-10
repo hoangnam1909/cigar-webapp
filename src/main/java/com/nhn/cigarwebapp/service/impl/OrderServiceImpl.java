@@ -1,5 +1,6 @@
 package com.nhn.cigarwebapp.service.impl;
 
+import com.nhn.cigarwebapp.dto.request.order.OrderItemRequest;
 import com.nhn.cigarwebapp.dto.request.order.OrderWithPaymentRequest;
 import com.nhn.cigarwebapp.dto.response.admin.OrderAdminResponse;
 import com.nhn.cigarwebapp.dto.response.order.OrderResponse;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -96,13 +98,27 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public boolean checkProductsIsInStock(List<OrderItemRequest> orderItems) {
+        // order item not valid
+        List<OrderItemRequest> result = orderItems
+                .stream()
+                .filter(orderItem -> {
+                    Optional<Product> productOptional = productRepository.findById(orderItem.getProductId());
+                    return orderItem.getQuantity() <= 0 ||
+                            productOptional.get().getUnitsInStock() < orderItem.getQuantity() ||
+                            !productOptional.get().getActive();
+                })
+                .toList();
+
+        return result.isEmpty();
+    }
+
+    @Override
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "List<CartProductResponse>", allEntries = true),
             @CacheEvict(value = "OrderAdminResponse", allEntries = true),
             @CacheEvict(value = "Page<OrderAdminResponse>", allEntries = true),
-
-            @CacheEvict(value = "List<CartProductResponse>", allEntries = true),
 
             @CacheEvict(value = "ProductResponse", allEntries = true),
             @CacheEvict(value = "ProductAdminResponse", allEntries = true),

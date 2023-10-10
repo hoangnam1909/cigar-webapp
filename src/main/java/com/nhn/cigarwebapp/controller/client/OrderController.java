@@ -39,13 +39,16 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<ResponseObject> addOrder(@RequestBody OrderWithPaymentRequest request) {
         try {
-            Order order = orderService.addOrder(request);
-
-            return ResponseEntity.ok()
-                    .body(ResponseObject.builder()
-                            .msg("Your order have been saved")
-                            .result(order)
-                            .build());
+            if (orderService.checkProductsIsInStock(request.getOrderItems())) {
+                Order order = orderService.addOrder(request);
+                return ResponseEntity.ok()
+                        .body(ResponseObject.builder()
+                                .msg("Your order have been saved")
+                                .result(order)
+                                .build());
+            } else {
+                throw new IllegalArgumentException("Product items is invalid");
+            }
         } catch (Exception ex) {
             return ResponseEntity.badRequest()
                     .body(ResponseObject.builder()

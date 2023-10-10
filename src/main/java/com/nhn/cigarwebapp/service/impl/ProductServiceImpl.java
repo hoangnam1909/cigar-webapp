@@ -177,6 +177,7 @@ public class ProductServiceImpl implements ProductService {
             @CacheEvict(value = "Page<ProductResponse>", allEntries = true),
             @CacheEvict(value = "List<ProductSuggestResponse>", allEntries = true),
             @CacheEvict(value = "Page<ProductAdminResponse>", allEntries = true),
+            @CacheEvict(value = "List<CartProductResponse>", allEntries = true),
     })
     public ProductResponse update(Long id, ProductUpdateRequest request, List<MultipartFile> files) {
         Optional<Product> productOptional = productRepository.findById(id);
@@ -209,6 +210,7 @@ public class ProductServiceImpl implements ProductService {
             @CacheEvict(value = "Page<ProductResponse>", allEntries = true),
             @CacheEvict(value = "List<ProductSuggestResponse>", allEntries = true),
             @CacheEvict(value = "Page<ProductAdminResponse>", allEntries = true),
+            @CacheEvict(value = "List<CartProductResponse>", allEntries = true),
     })
     public void partialUpdateProduct(Long id, Map<String, Object> params) {
         Optional<Product> productOptional = productRepository.findById(id);
@@ -230,6 +232,7 @@ public class ProductServiceImpl implements ProductService {
             @CacheEvict(value = "Page<ProductResponse>", allEntries = true),
             @CacheEvict(value = "List<ProductSuggestResponse>", allEntries = true),
             @CacheEvict(value = "Page<ProductAdminResponse>", allEntries = true),
+            @CacheEvict(value = "List<CartProductResponse>", allEntries = true),
     })
     public void delete(Long id) {
         productRepository.deleteById(id);

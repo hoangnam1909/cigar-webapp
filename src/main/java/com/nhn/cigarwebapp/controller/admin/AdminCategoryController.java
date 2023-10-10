@@ -24,19 +24,11 @@ public class AdminCategoryController {
     @GetMapping
     public ResponseEntity<ResponseObject> getCategories(@RequestParam Map<String, String> params) {
         Page<CategoryResponse> categoryList = categoryService.getAdminCategories(params);
-
-        if (!categoryList.isEmpty())
-            return ResponseEntity.ok()
-                    .body(ResponseObject.builder()
-                            .msg("Categories founds")
-                            .result(categoryList)
-                            .build());
-        else
-            return ResponseEntity.ok()
-                    .body(ResponseObject.builder()
-                            .msg("No content")
-                            .result(List.of())
-                            .build());
+        return ResponseEntity.ok()
+                .body(ResponseObject.builder()
+                        .msg("Categories founds")
+                        .result(categoryList)
+                        .build());
     }
 
     @PostMapping

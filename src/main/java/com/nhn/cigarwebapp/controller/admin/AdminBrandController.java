@@ -26,22 +26,15 @@ public class AdminBrandController {
     @GetMapping
     public ResponseEntity<ResponseObject> getBrands(@RequestParam Map<String, String> params) {
         Page<BrandAdminResponse> brands = brandService.getAdminBrands(params);
-        if (!brands.isEmpty())
-            return ResponseEntity.ok()
-                    .body(ResponseObject.builder()
-                            .msg("Brands founds")
-                            .result(brands)
-                            .build());
-        else
-            return ResponseEntity.ok()
-                    .body(ResponseObject.builder()
-                            .msg("No content")
-                            .result(List.of())
-                            .build());
+        return ResponseEntity.ok()
+                .body(ResponseObject.builder()
+                        .msg("Brands founds")
+                        .result(brands)
+                        .build());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseObject> getBrands(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<ResponseObject> getBrand(@PathVariable(name = "id") Long id) {
         BrandAdminResponse brand = brandService.getAdminBrand(id);
         if (brand != null)
             return ResponseEntity.ok()
