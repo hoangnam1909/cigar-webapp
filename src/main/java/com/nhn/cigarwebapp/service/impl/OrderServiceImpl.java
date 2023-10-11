@@ -61,13 +61,15 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentDestinationRepository paymentDestinationRepository;
 
     @Override
-//    @Cacheable(key = "#params", value = "orders")
+//    @Cacheable(key = "#params", value = "OrderResponse")
     public OrderResponse getOrder(@RequestParam Map<String, String> params) {
         if (params.containsKey("orderId") && params.containsKey("phone")) {
             Optional<Order> orderOptional = orderRepository.findById(Long.valueOf(params.get("orderId")));
             if (orderOptional.isPresent()) {
                 Order order = orderOptional.get();
-                if (order.getCustomer().getPhone().equals(params.get("phone")))
+                String phoneNumberInput = params.get("phone").trim().replaceAll("\\s", "");
+                if (order.getCustomer().getPhone()
+                        .equals(phoneNumberInput))
                     return orderMapper.toResponse(order);
             }
         }
@@ -164,6 +166,7 @@ public class OrderServiceImpl implements OrderService {
                                         .saveAndFlush(OrderItem.builder()
                                                 .order(order)
                                                 .product(productRepository.getReferenceById(product.getId()))
+                                                .price(product.getSalePrice())
                                                 .quantity(orderItemRequest.getQuantity())
                                                 .build());
 

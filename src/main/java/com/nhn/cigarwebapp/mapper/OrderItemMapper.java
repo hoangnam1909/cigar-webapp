@@ -17,6 +17,7 @@ public class OrderItemMapper {
         return OrderItemResponse.builder()
                 .id(orderItem.getId())
                 .product(productMapper.toResponse(orderItem.getProduct()))
+                .price(orderItem.getPrice())
                 .quantity(orderItem.getQuantity())
                 .createdAt(orderItem.getCreatedAt())
                 .build();

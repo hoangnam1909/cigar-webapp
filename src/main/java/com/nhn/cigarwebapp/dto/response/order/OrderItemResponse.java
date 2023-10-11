@@ -17,6 +17,7 @@ public class OrderItemResponse implements Serializable {
 
     private Long id;
     private ProductResponse product;
+    private Integer price;
     private Integer quantity;
     private Date createdAt;
 

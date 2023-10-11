@@ -3,6 +3,7 @@ package com.nhn.cigarwebapp.specification.category;
 import com.nhn.cigarwebapp.common.SearchCriteria;
 import com.nhn.cigarwebapp.common.SearchOperation;
 import com.nhn.cigarwebapp.entity.Category;
+import com.nhn.cigarwebapp.entity.Category_;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -66,11 +67,11 @@ public class CategorySpecification implements Specification<Category> {
                 predicates.add(builder.not(root.get(criteria.getKey())).in(criteria.getValue()));
             } else if (criteria.getOperation().equals(SearchOperation.ID_NAME)) {
                 Predicate predicateId = builder.like(
-                        builder.function("unaccent", String.class, builder.lower(root.get("id").as(String.class))),
+                        builder.function("unaccent", String.class, builder.lower(root.get(Category_.ID).as(String.class))),
                         "%" + StringUtils.stripAccents(criteria.getValue().toString().toLowerCase().trim()) + "%");
 
                 Predicate predicateName = builder.like(
-                        builder.function("unaccent", String.class, builder.lower(root.get("name"))),
+                        builder.function("unaccent", String.class, builder.lower(root.get(Category_.NAME))),
                         "%" + StringUtils.stripAccents(criteria.getValue().toString().toLowerCase().trim()) + "%");
 
                 predicates.add(builder.or(predicateId, predicateName));

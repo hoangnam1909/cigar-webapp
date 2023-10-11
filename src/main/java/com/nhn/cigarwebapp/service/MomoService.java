@@ -12,6 +12,8 @@ public interface MomoService {
 
     boolean checkTransactionStatus(Map<String, String> params);
 
+    boolean checkTransactionStatus(Order order);
+
     boolean confirmPayment(Map<String, String> params);
 
 }

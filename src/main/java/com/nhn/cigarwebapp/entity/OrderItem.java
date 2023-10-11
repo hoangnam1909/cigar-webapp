@@ -3,6 +3,7 @@ package com.nhn.cigarwebapp.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.io.Serializable;
@@ -30,6 +31,9 @@ public class OrderItem implements Serializable {
     @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
+
+    @Column
+    private Integer price;
 
     @Column
     private Integer quantity;

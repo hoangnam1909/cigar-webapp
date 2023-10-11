@@ -2,9 +2,7 @@ package com.nhn.cigarwebapp.specification.product;
 
 import com.nhn.cigarwebapp.common.SearchCriteria;
 import com.nhn.cigarwebapp.common.SearchOperation;
-import com.nhn.cigarwebapp.entity.Brand;
-import com.nhn.cigarwebapp.entity.Category;
-import com.nhn.cigarwebapp.entity.Product;
+import com.nhn.cigarwebapp.entity.*;
 import jakarta.persistence.criteria.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -30,37 +28,49 @@ public class ProductSpecification implements Specification<Product> {
 
         for (SearchCriteria criteria : criteriaList) {
             if (criteria.getOperation().equals(SearchOperation.MATCH)) {
+
                 predicates.add(builder.like(
                         builder.function("unaccent", String.class, builder.lower(root.get(criteria.getKey()))),
                         "%" + StringUtils.stripAccents(criteria.getValue().toString().toLowerCase().trim()) + "%"));
+
             } else if (criteria.getOperation().equals(SearchOperation.CATEGORY_ID)) {
-                Join<Category, Product> categoryProductJoin = root.join("category");
-                predicates.add(builder.equal(categoryProductJoin.get("id"), criteria.getValue().toString()));
+
+                Join<Category, Product> categoryProductJoin = root.join(Product_.CATEGORY);
+                predicates.add(builder.equal(categoryProductJoin.get(Category_.ID), criteria.getValue().toString()));
+
             } else if (criteria.getOperation().equals(SearchOperation.BRAND_ID)) {
-                Join<Brand, Product> brandProductJoin = root.join("brand");
-                predicates.add(builder.equal(brandProductJoin.get("id"), criteria.getValue().toString()));
+
+                Join<Brand, Product> brandProductJoin = root.join(Product_.BRAND);
+                predicates.add(builder.equal(brandProductJoin.get(Brand_.ID), criteria.getValue().toString()));
+
             } else if (criteria.getOperation().equals(SearchOperation.IS_ACTIVE)) {
+
                 predicates.add(builder.equal(
                         root.get(criteria.getKey()).as(Boolean.class), Boolean.parseBoolean((String) criteria.getValue())));
+
             } else if (criteria.getOperation().equals(SearchOperation.ID_NAME)) {
+
                 Predicate predicateId = builder.like(
-                        builder.function("unaccent", String.class, builder.lower(root.get("id").as(String.class))),
+                        builder.function("unaccent", String.class, builder.lower(root.get(Product_.ID).as(String.class))),
                         "%" + StringUtils.stripAccents(criteria.getValue().toString().toLowerCase().trim()) + "%");
 
                 Predicate predicateName = builder.like(
-                        builder.function("unaccent", String.class, builder.lower(root.get("name"))),
+                        builder.function("unaccent", String.class, builder.lower(root.get(Product_.NAME))),
                         "%" + StringUtils.stripAccents(criteria.getValue().toString().toLowerCase().trim()) + "%");
 
                 predicates.add(builder.or(predicateId, predicateName));
+
             }
             if (criteria.getOperation().equals(SearchOperation.IN_STOCK)) {
+
                 if (Boolean.parseBoolean((String) criteria.getValue())) {
                     predicates.add(builder.greaterThan(
-                            root.get("unitsInStock"), 0));
+                            root.get(Product_.UNITS_IN_STOCK), 0));
                 } else {
                     predicates.add(builder.lessThanOrEqualTo(
-                            root.get("unitsInStock"), 0));
+                            root.get(Product_.UNITS_IN_STOCK), 0));
                 }
+
             }
         }
 

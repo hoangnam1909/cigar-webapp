@@ -29,25 +29,30 @@ public class OrderSpecification implements Specification<Order> {
 
         for (SearchCriteria criteria : criteriaList) {
             if (criteria.getOperation().equals(SearchOperation.ORDER_STATUS_ID)) {
-                Join<OrderStatus, Order> statusOrderJoin = root.join("orderStatus");
 
-                predicates.add(builder.equal(statusOrderJoin.get("id"), criteria.getValue().toString()));
+                Join<OrderStatus, Order> orderStatus = root.join(Order_.ORDER_STATUS);
+                predicates.add(builder.equal(orderStatus.get(OrderStatus_.ID), criteria.getValue().toString()));
+
             } else if (criteria.getOperation().equals(SearchOperation.DELIVERY_COMPANY_ID)) {
-                Join<Shipment, Order> shipment = root.join("shipment");
-                Join<DeliveryCompany, Shipment> deliveryCompany = shipment.join("deliveryCompany");
 
-                predicates.add(builder.equal(deliveryCompany.get("id"), criteria.getValue().toString()));
+                Join<Shipment, Order> shipment = root.join(Order_.SHIPMENT);
+                Join<DeliveryCompany, Shipment> deliveryCompany = shipment.join(Shipment_.DELIVERY_COMPANY);
+
+                predicates.add(builder.equal(deliveryCompany.get(DeliveryCompany_.ID), criteria.getValue().toString()));
+
             } else if (criteria.getOperation().equals(SearchOperation.ID_NAME)) {
+
                 Predicate predicateId = builder.like(
-                        builder.function("unaccent", String.class, builder.lower(root.get("id").as(String.class))),
+                        builder.function("unaccent", String.class, builder.lower(root.get(Order_.ID).as(String.class))),
                         "%" + StringUtils.stripAccents(criteria.getValue().toString().toLowerCase().trim()) + "%");
 
-                Join<Customer, Order> customer = root.join("customer");
+                Join<Customer, Order> customer = root.join(Order_.CUSTOMER);
                 Predicate predicateName = builder.like(
-                        builder.function("unaccent", String.class, builder.lower(customer.get("fullName"))),
+                        builder.function("unaccent", String.class, builder.lower(customer.get(Customer_.FULL_NAME))),
                         "%" + StringUtils.stripAccents(criteria.getValue().toString().toLowerCase().trim()) + "%");
 
                 predicates.add(builder.or(predicateId, predicateName));
+
             }
         }
 

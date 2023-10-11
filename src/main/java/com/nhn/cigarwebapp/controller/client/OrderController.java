@@ -22,7 +22,7 @@ public class OrderController {
     public ResponseEntity<ResponseObject> trackingOrder(@RequestParam Map<String, String> params) {
         OrderResponse orderResponse = orderService.getOrder(params);
 
-        if (orderResponse != null && orderResponse.getCustomer().getPhone().equals(params.get("phone")))
+        if (orderResponse != null)
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
                             .msg("Order found with id = " + params.get("orderId"))
