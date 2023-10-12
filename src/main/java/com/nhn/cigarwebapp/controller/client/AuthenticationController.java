@@ -7,7 +7,6 @@ import com.nhn.cigarwebapp.dto.request.auth.RefreshTokenRequest;
 import com.nhn.cigarwebapp.dto.request.auth.RegisterRequest;
 import com.nhn.cigarwebapp.dto.response.auth.AuthenticationResponse;
 import com.nhn.cigarwebapp.dto.response.auth.UserInfoResponse;
-import com.nhn.cigarwebapp.entity.User;
 import com.nhn.cigarwebapp.mapper.UserMapper;
 import com.nhn.cigarwebapp.repository.UserRepository;
 import com.nhn.cigarwebapp.service.AuthenticationService;
@@ -16,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/auth")

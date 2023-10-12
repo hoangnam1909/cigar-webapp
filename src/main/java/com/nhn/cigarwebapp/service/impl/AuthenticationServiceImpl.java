@@ -1,6 +1,5 @@
 package com.nhn.cigarwebapp.service.impl;
 
-import com.nhn.cigarwebapp.common.ResponseObject;
 import com.nhn.cigarwebapp.config.JwtRefreshTokenService;
 import com.nhn.cigarwebapp.config.JwtService;
 import com.nhn.cigarwebapp.dto.request.auth.AuthenticationRequest;
@@ -16,7 +15,6 @@ import com.nhn.cigarwebapp.service.AuthenticationService;
 import com.nhn.cigarwebapp.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;

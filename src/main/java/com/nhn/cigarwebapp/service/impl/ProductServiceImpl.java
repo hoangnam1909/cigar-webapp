@@ -103,6 +103,7 @@ public class ProductServiceImpl implements ProductService {
                                     "WHERE " +
 //                                    "(p.brand.id = :brandId OR p.category.id = :categoryId) AND " +
                                     "p.id != :productId AND " +
+                                    "p.unitsInStock > 0 AND " +
                                     "p.active = true " +
                                     "ORDER BY random()", Product.class)
                     .setParameter("productId", id)

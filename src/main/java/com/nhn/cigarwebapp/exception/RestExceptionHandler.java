@@ -16,9 +16,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponseObject errorHandler(IllegalArgumentException ex, WebRequest request) {
-        String responseString = "IllegalArgumentException";
         return ErrorResponseObject.builder()
-                .message(responseString)
+                .message(ex.getMessage())
                 .errorCode("400")
                 .time(new Date())
                 .build();

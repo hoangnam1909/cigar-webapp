@@ -41,7 +41,6 @@ public class OrderServiceImpl implements OrderService {
     private int PAGE_SIZE;
 
     private final EntityManager entityManager;
-
     private final CustomerMapper customerMapper;
     private final CustomerRepository customerRepository;
     private final OrderRepository orderRepository;
@@ -61,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentDestinationRepository paymentDestinationRepository;
 
     @Override
-//    @Cacheable(key = "#params", value = "OrderResponse")
+    @Cacheable(key = "#params.get('orderId')", value = "OrderResponse")
     public OrderResponse getOrder(@RequestParam Map<String, String> params) {
         if (params.containsKey("orderId") && params.containsKey("phone")) {
             Optional<Order> orderOptional = orderRepository.findById(Long.valueOf(params.get("orderId")));
@@ -100,7 +99,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public boolean checkProductsIsInStock(List<OrderItemRequest> orderItems) {
+    public boolean checkProductsIsValidForOrder(List<OrderItemRequest> orderItems) {
         // order item not valid
         List<OrderItemRequest> result = orderItems
                 .stream()
@@ -118,15 +117,15 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "List<CartProductResponse>", allEntries = true),
             @CacheEvict(value = "OrderAdminResponse", allEntries = true),
+            @CacheEvict(value = "List<CartProductResponse>", allEntries = true),
             @CacheEvict(value = "Page<OrderAdminResponse>", allEntries = true),
 
             @CacheEvict(value = "ProductResponse", allEntries = true),
             @CacheEvict(value = "ProductAdminResponse", allEntries = true),
             @CacheEvict(value = "Page<ProductResponse>", allEntries = true),
-            @CacheEvict(value = "List<ProductSuggestResponse>", allEntries = true),
             @CacheEvict(value = "Page<ProductAdminResponse>", allEntries = true),
+            @CacheEvict(value = "List<ProductSuggestResponse>", allEntries = true),
     })
     public Order addOrder(OrderWithPaymentRequest request) {
         Optional<Customer> customerOptional = customerRepository
@@ -212,6 +211,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     @Caching(evict = {
+            @CacheEvict(value = "OrderResponse", key = "#id"),
             @CacheEvict(value = "OrderAdminResponse", allEntries = true),
             @CacheEvict(value = "Page<OrderAdminResponse>", allEntries = true),
     })
@@ -250,7 +250,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "OrderAdminResponse", allEntries = true),
+            @CacheEvict(value = "OrderResponse", key = "#id"),
+            @CacheEvict(value = "OrderAdminResponse", key = "#id"),
             @CacheEvict(value = "Page<OrderAdminResponse>", allEntries = true),
     })
     public void deleteOrder(Long id) {

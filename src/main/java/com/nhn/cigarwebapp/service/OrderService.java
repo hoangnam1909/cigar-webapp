@@ -19,7 +19,7 @@ public interface OrderService {
 
     OrderAdminResponse getAdminOrder(Long id);
 
-    boolean checkProductsIsInStock(List<OrderItemRequest> orderItems);
+    boolean checkProductsIsValidForOrder(List<OrderItemRequest> orderItems);
 
     Order addOrder(OrderWithPaymentRequest request);
 
