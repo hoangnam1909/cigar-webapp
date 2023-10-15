@@ -21,7 +21,6 @@ public class PaymentDestinationController {
     @GetMapping
     public ResponseEntity<ResponseObject> getProducts() {
         List<PaymentDestinationResponse> responses = paymentDestinationService.getPaymentDestinations();
-
         return ResponseEntity.ok()
                 .body(ResponseObject.builder()
                         .msg("Payment destinations found")

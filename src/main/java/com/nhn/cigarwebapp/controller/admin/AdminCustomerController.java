@@ -4,6 +4,8 @@ import com.nhn.cigarwebapp.common.ResponseObject;
 import com.nhn.cigarwebapp.dto.request.customer.CustomerRequest;
 import com.nhn.cigarwebapp.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +15,8 @@ import java.util.List;
 @RequestMapping("/api/v1/admin/customers")
 @RequiredArgsConstructor
 public class AdminCustomerController {
+
+    Logger logger = LoggerFactory.getLogger(AdminCustomerController.class);
 
     private final CustomerService customerService;
 
@@ -35,10 +39,11 @@ public class AdminCustomerController {
                             .result("")
                             .build());
         } catch (Exception ex) {
+            logger.error(ex.getMessage());
             return ResponseEntity.internalServerError()
                     .body(ResponseObject.builder()
-                            .msg("Error")
-                            .result(ex.getMessage())
+                            .msg("Error!")
+                            .result("Internal Server Error")
                             .build());
         }
     }

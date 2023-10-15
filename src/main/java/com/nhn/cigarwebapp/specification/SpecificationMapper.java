@@ -112,8 +112,8 @@ public class SpecificationMapper {
             specification.add(new SearchCriteria(PaymentEnum.PAYMENT_ORDER_ID, params.get(PaymentEnum.PAYMENT_ORDER_ID), SearchOperation.EQUAL));
         }
 
-        if (params.containsKey(PaymentEnum.REQUEST_ID)) {
-            specification.add(new SearchCriteria(PaymentEnum.REQUEST_ID, params.get(PaymentEnum.REQUEST_ID), SearchOperation.EQUAL));
+        if (params.containsKey(PaymentEnum.MOMO_REQUEST_ID)) {
+            specification.add(new SearchCriteria(PaymentEnum.MOMO_REQUEST_ID, params.get(PaymentEnum.MOMO_REQUEST_ID), SearchOperation.EQUAL));
         }
 
         return specification;

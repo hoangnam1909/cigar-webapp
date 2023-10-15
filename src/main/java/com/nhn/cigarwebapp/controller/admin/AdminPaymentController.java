@@ -3,6 +3,8 @@ package com.nhn.cigarwebapp.controller.admin;
 import com.nhn.cigarwebapp.common.ResponseObject;
 import com.nhn.cigarwebapp.service.PaymentService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,22 +18,25 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("hasAuthority('ADMIN')")
 public class AdminPaymentController {
 
+    Logger logger = LoggerFactory.getLogger(AdminPaymentController.class);
+
     private final PaymentService paymentService;
 
     @PatchMapping("/update-payment-status/{orderId}")
     public ResponseEntity<ResponseObject> updatePaymentStatus(@PathVariable Long orderId) {
         try {
-            paymentService.updatePaymentStatus(orderId);
+            boolean isPaid = paymentService.updatePaymentStatus(orderId);
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
                             .msg("Payment status updated!")
-                            .result(null)
+                            .result(isPaid)
                             .build());
         } catch (Exception ex) {
-            return ResponseEntity.badRequest()
+            logger.error(ex.getMessage());
+            return ResponseEntity.internalServerError()
                     .body(ResponseObject.builder()
                             .msg("Error!")
-                            .result(ex.getMessage())
+                            .result("Internal Server Error")
                             .build());
         }
     }

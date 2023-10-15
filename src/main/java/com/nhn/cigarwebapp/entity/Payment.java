@@ -33,13 +33,13 @@ public class Payment implements Serializable {
 
     @Column
     @JsonIgnore
-    private String requestId;
+    private String referenceId;
 
     @Column
     @JsonIgnore
     private String paymentOrderId;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String paymentUrl;
 
     @ManyToOne

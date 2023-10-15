@@ -4,6 +4,8 @@ import com.nhn.cigarwebapp.common.ResponseObject;
 import com.nhn.cigarwebapp.dto.response.product.ProductResponse;
 import com.nhn.cigarwebapp.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/products")
 public class ProductController {
+
+    Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     private final ProductService productService;
 
@@ -56,10 +60,11 @@ public class ProductController {
                             .result(productService.countProductsOnSale())
                             .build());
         } catch (Exception ex) {
-            return ResponseEntity.badRequest()
+            logger.error(ex.getMessage());
+            return ResponseEntity.internalServerError()
                     .body(ResponseObject.builder()
-                            .msg("Error")
-                            .result(ex.getMessage())
+                            .msg("Error!")
+                            .result("Internal Server Error")
                             .build());
         }
     }

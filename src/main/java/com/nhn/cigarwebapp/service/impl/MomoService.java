@@ -6,10 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhn.cigarwebapp.dto.request.payment.MomoOneTimePaymentRequest;
 import com.nhn.cigarwebapp.entity.Order;
 import com.nhn.cigarwebapp.entity.Payment;
-import com.nhn.cigarwebapp.service.MomoService;
+import com.nhn.cigarwebapp.service.PaymentGatewayService;
 import com.nhn.cigarwebapp.utils.HashHelper;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
@@ -19,45 +19,44 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
-@RequiredArgsConstructor
-public class MomoServiceImpl implements MomoService {
+@Service("momoService")
+public class MomoService implements PaymentGatewayService {
 
     @Value("${payment.momo.partner-code}")
-    public String partnerCode;
+    private String partnerCode;
 
     @Value("${payment.momo.access-key}")
-    public String accessKey;
+    private String accessKey;
 
     @Value("${payment.momo.secret-key}")
-    public String secretKey;
+    private String secretKey;
 
-    //    @Value("${payment.momo.returnUrl}")
     @Value("${settings.cors_origin}")
-    public String returnUrl;
+    private String returnUrl;
 
     @Value("${payment.momo.ipn-url}")
-    public String ipnUrl;
+    private String ipnUrl;
 
     @Value("${payment.momo.request-type}")
-    public String requestType;
+    private String requestType;
 
     @Value("${payment.momo.payment-url}")
-    public String paymentUrl;
+    private String paymentUrl;
 
     @Value("${payment.momo.query-url}")
-    public String queryUrl;
+    private String queryUrl;
 
     @Value("${payment.momo.confirm-url}")
-    public String confirmUrl;
+    private String confirmUrl;
 
     @Value("${payment.momo.prefix-orderid}")
-    public String prefixOrderId;
+    private String prefixOrderId;
 
-    private final ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Override
-    public Map createOrder() {
+    public Map createPayment() {
         long amount = 12000;
 
         MomoOneTimePaymentRequest request = MomoOneTimePaymentRequest.builder()
@@ -93,13 +92,15 @@ public class MomoServiceImpl implements MomoService {
     }
 
     @Override
-    public Map createOrder(Order order) {
-        double amount = order.getTotalPrice() / 100;
+    public Map createPayment(Order order) {
+        long amount = (long) (order.getTotalPrice() / 1000);
 
         MomoOneTimePaymentRequest request = MomoOneTimePaymentRequest.builder()
                 .partnerCode(partnerCode)
-                .requestId(RandomStringUtils.randomNumeric(10) + "id")
-                .amount((long) amount)
+                .requestId(String.format("%s.id%s",
+                        RandomStringUtils.randomNumeric(10),
+                        order.getId()))
+                .amount(amount)
                 .orderId(prefixOrderId + order.getId())
                 .orderInfo("Thanh toan don hang #" + order.getId())
                 .redirectUrl(returnUrl + "/payment-result")
@@ -120,7 +121,6 @@ public class MomoServiceImpl implements MomoService {
         try {
             JsonNode jsonNode = objectMapper.readTree(response);
             Map map = objectMapper.convertValue(jsonNode, Map.class);
-            System.err.println(map.get("payUrl"));
 
             return map;
         } catch (JsonProcessingException e) {
@@ -176,7 +176,7 @@ public class MomoServiceImpl implements MomoService {
     public boolean checkTransactionStatus(Order order) {
         Payment payment = order.getPayment();
 
-        String requestId = payment.getRequestId();
+        String requestId = payment.getReferenceId();
         String orderId = prefixOrderId + order.getId();
 
         String rawHash = "accessKey=" + accessKey +

@@ -17,6 +17,7 @@ import com.nhn.cigarwebapp.utils.MyStringUtils;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -55,9 +56,14 @@ public class OrderServiceImpl implements OrderService {
     private final SpecificationMapper specificationMapper;
     private final CustomerService customerService;
     private final EmailService emailService;
-    private final MomoService momoService;
     private final PaymentRepository paymentRepository;
     private final PaymentDestinationRepository paymentDestinationRepository;
+
+    @Qualifier("momoService")
+    private final PaymentGatewayService momoService;
+
+    @Qualifier("vnPayService")
+    private final PaymentGatewayService vnPayService;
 
     @Override
     @Cacheable(key = "#params.get('orderId')", value = "OrderResponse")
@@ -189,20 +195,35 @@ public class OrderServiceImpl implements OrderService {
                     .build();
             paymentRepository.save(payment);
             entityManager.refresh(order);
-        } else if (request.getPaymentDestinationId().equalsIgnoreCase("momo")) {
-            Map momoCreateOrderResponse = momoService.createOrder(order);
-            Payment payment = Payment.builder()
-                    .paidAmount(order.getTotalPrice().longValue())
-                    .isPaid(false)
-                    .requestId((String) momoCreateOrderResponse.get("requestId"))
-                    .paymentOrderId((String) momoCreateOrderResponse.get("orderId"))
-                    .paymentUrl((String) momoCreateOrderResponse.get("payUrl"))
-                    .paymentDestination(paymentDestinationRepository.getReferenceById(request.getPaymentDestinationId()))
-                    .order(orderRepository.getReferenceById(order.getId()))
-                    .build();
+        } else {
+            Payment payment = null;
+            if (request.getPaymentDestinationId().equalsIgnoreCase("momo")) {
+                Map momoResponse = momoService.createPayment(order);
+                payment = Payment.builder()
+                        .paidAmount(order.getTotalPrice().longValue())
+                        .isPaid(false)
+                        .referenceId((String) momoResponse.get("requestId"))
+                        .paymentOrderId((String) momoResponse.get("orderId"))
+                        .paymentUrl((String) momoResponse.get("payUrl"))
+                        .paymentDestination(paymentDestinationRepository.getReferenceById(request.getPaymentDestinationId()))
+                        .order(orderRepository.getReferenceById(order.getId()))
+                        .build();
+            } else if (request.getPaymentDestinationId().equalsIgnoreCase("vnpay")){
+                Map vnPayResponse = vnPayService.createPayment(order);
+                payment = Payment.builder()
+                        .paidAmount(order.getTotalPrice().longValue())
+                        .isPaid(false)
+                        .referenceId((String) vnPayResponse.get("referenceId"))
+                        .paymentUrl((String) vnPayResponse.get("payUrl"))
+                        .paymentDestination(paymentDestinationRepository.getReferenceById(request.getPaymentDestinationId()))
+                        .order(orderRepository.getReferenceById(order.getId()))
+                        .build();
+            }
 
-            paymentRepository.save(payment);
-            entityManager.refresh(order);
+            if (payment != null) {
+                paymentRepository.save(payment);
+                entityManager.refresh(order);
+            }
         }
 
         return order;

@@ -7,6 +7,8 @@ import com.nhn.cigarwebapp.dto.response.admin.ProductAdminResponse;
 import com.nhn.cigarwebapp.dto.response.product.ProductResponse;
 import com.nhn.cigarwebapp.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,8 @@ import java.util.Map;
 @RequestMapping("/api/v1/admin/products")
 @RequiredArgsConstructor
 public class AdminProductController {
+
+    Logger logger = LoggerFactory.getLogger(AdminProductController.class);
 
     private final ProductService productService;
 
@@ -64,11 +68,12 @@ public class AdminProductController {
                             .msg("Your products have been saved")
                             .result(productResponse)
                             .build());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.internalServerError()
                     .body(ResponseObject.builder()
-                            .msg("We could not save your products")
-                            .result(e.getMessage())
+                            .msg("Error!")
+                            .result("Internal Server Error")
                             .build());
         }
     }
@@ -97,11 +102,12 @@ public class AdminProductController {
                                 .msg("We could not update your product")
                                 .result(null)
                                 .build());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.internalServerError()
                     .body(ResponseObject.builder()
-                            .msg("We could not update your product")
-                            .result(e.getMessage())
+                            .msg("Error!")
+                            .result("Internal Server Error")
                             .build());
         }
     }
@@ -117,11 +123,11 @@ public class AdminProductController {
                             .result("")
                             .build());
         } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-            return ResponseEntity.badRequest()
+            logger.error(ex.getMessage());
+            return ResponseEntity.internalServerError()
                     .body(ResponseObject.builder()
-                            .msg("Something went wrong!!!")
-                            .result(ex.getMessage())
+                            .msg("Error!")
+                            .result("Internal Server Error")
                             .build());
         }
     }
@@ -137,11 +143,11 @@ public class AdminProductController {
                             .result("")
                             .build());
         } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-            return ResponseEntity.badRequest()
+            logger.error(ex.getMessage());
+            return ResponseEntity.internalServerError()
                     .body(ResponseObject.builder()
-                            .msg("We could not delete your product")
-                            .result("")
+                            .msg("Error!")
+                            .result("Internal Server Error")
                             .build());
         }
     }

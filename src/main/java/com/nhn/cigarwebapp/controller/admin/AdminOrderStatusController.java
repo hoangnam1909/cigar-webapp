@@ -5,6 +5,8 @@ import com.nhn.cigarwebapp.dto.request.order.OrderStatusRequest;
 import com.nhn.cigarwebapp.dto.response.order.OrderStatusResponse;
 import com.nhn.cigarwebapp.service.OrderStatusService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @PreAuthorize("hasAuthority('ADMIN')")
 public class AdminOrderStatusController {
+
+    Logger logger = LoggerFactory.getLogger(AdminOrderStatusController.class);
 
     private final OrderStatusService orderStatusService;
 
@@ -53,11 +57,11 @@ public class AdminOrderStatusController {
                                 .result(null)
                                 .build());
         } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-            return ResponseEntity.badRequest()
+            logger.error(ex.getMessage());
+            return ResponseEntity.internalServerError()
                     .body(ResponseObject.builder()
-                            .msg("Could not save your order status")
-                            .result(ex.getMessage())
+                            .msg("Error!")
+                            .result("Internal Server Error")
                             .build());
         }
     }

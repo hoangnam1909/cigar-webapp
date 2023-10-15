@@ -6,6 +6,8 @@ import com.nhn.cigarwebapp.dto.response.order.OrderResponse;
 import com.nhn.cigarwebapp.entity.Order;
 import com.nhn.cigarwebapp.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/orders")
 public class OrderController {
+
+    Logger logger = LoggerFactory.getLogger(OrderController.class);
 
     private final OrderService orderService;
 
@@ -50,10 +54,11 @@ public class OrderController {
                 throw new IllegalArgumentException("Product items is invalid");
             }
         } catch (Exception ex) {
-            return ResponseEntity.badRequest()
+            logger.error(ex.getMessage());
+            return ResponseEntity.internalServerError()
                     .body(ResponseObject.builder()
-                            .msg("We could not save your order")
-                            .result(ex.getMessage())
+                            .msg("Error!")
+                            .result("Internal Server Error")
                             .build());
         }
     }

@@ -5,6 +5,8 @@ import com.nhn.cigarwebapp.dto.response.admin.OrderAdminResponse;
 import com.nhn.cigarwebapp.entity.Order;
 import com.nhn.cigarwebapp.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +19,8 @@ import java.util.Map;
 @RequestMapping("/api/v1/admin/orders")
 @PreAuthorize("hasAuthority('ADMIN')")
 public class AdminOrderController {
+
+    Logger logger = LoggerFactory.getLogger(AdminOrderController.class);
 
     private final OrderService orderService;
 
@@ -65,11 +69,11 @@ public class AdminOrderController {
                                 .result(null)
                                 .build());
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return ResponseEntity.badRequest()
+            logger.error(ex.getMessage());
+            return ResponseEntity.internalServerError()
                     .body(ResponseObject.builder()
-                            .msg("Something went wrong!!!")
-                            .result(ex.getMessage())
+                            .msg("Error!")
+                            .result("Internal Server Error")
                             .build());
         }
     }
@@ -84,11 +88,11 @@ public class AdminOrderController {
                             .result(null)
                             .build());
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return ResponseEntity.badRequest()
+            logger.error(ex.getMessage());
+            return ResponseEntity.internalServerError()
                     .body(ResponseObject.builder()
-                            .msg("Something went wrong!!!")
-                            .result(ex.getMessage())
+                            .msg("Error!")
+                            .result("Internal Server Error")
                             .build());
         }
     }

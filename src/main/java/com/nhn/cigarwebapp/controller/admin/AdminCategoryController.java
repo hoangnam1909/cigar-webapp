@@ -5,6 +5,8 @@ import com.nhn.cigarwebapp.dto.request.category.CategoryRequest;
 import com.nhn.cigarwebapp.dto.response.category.CategoryResponse;
 import com.nhn.cigarwebapp.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +19,8 @@ import java.util.Map;
 @RequestMapping("/api/v1/admin/categories")
 @PreAuthorize("hasAuthority('ADMIN')")
 public class AdminCategoryController {
+
+    Logger logger = LoggerFactory.getLogger(AdminCategoryController.class);
 
     private final CategoryService categoryService;
 
@@ -40,11 +44,12 @@ public class AdminCategoryController {
                             .msg("Your category have been saved")
                             .result("")
                             .build());
-        } catch (Exception e) {
-            return ResponseEntity.ok()
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.internalServerError()
                     .body(ResponseObject.builder()
-                            .msg("We could not save your category")
-                            .result(e.getMessage())
+                            .msg("Error!")
+                            .result("Internal Server Error")
                             .build());
         }
     }
@@ -67,11 +72,12 @@ public class AdminCategoryController {
                                 .msg("Something went wrong")
                                 .result(null)
                                 .build());
-        } catch (Exception e) {
-            return ResponseEntity.ok()
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.internalServerError()
                     .body(ResponseObject.builder()
-                            .msg("We could not save your category")
-                            .result(e.getMessage())
+                            .msg("Error!")
+                            .result("Internal Server Error")
                             .build());
         }
     }
@@ -93,11 +99,12 @@ public class AdminCategoryController {
                                 .msg("Something went wrong")
                                 .result(null)
                                 .build());
-        } catch (Exception e) {
-            return ResponseEntity.ok()
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.internalServerError()
                     .body(ResponseObject.builder()
-                            .msg("We could not delete your category")
-                            .result(e.getMessage())
+                            .msg("Error!")
+                            .result("Internal Server Error")
                             .build());
         }
     }

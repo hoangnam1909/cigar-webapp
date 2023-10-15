@@ -4,11 +4,11 @@ import com.nhn.cigarwebapp.entity.Order;
 
 import java.util.Map;
 
-public interface MomoService {
+public interface PaymentGatewayService {
 
-    Map createOrder();
+    Map createPayment();
 
-    Map createOrder(Order order);
+    Map createPayment(Order order);
 
     boolean checkTransactionStatus(Map<String, String> params);
 

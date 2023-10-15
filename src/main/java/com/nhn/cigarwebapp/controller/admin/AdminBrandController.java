@@ -7,6 +7,8 @@ import com.nhn.cigarwebapp.dto.response.admin.BrandAdminResponse;
 import com.nhn.cigarwebapp.dto.response.brand.BrandResponse;
 import com.nhn.cigarwebapp.service.BrandService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +21,8 @@ import java.util.Map;
 @RequestMapping("/api/v1/admin/brands")
 @PreAuthorize("hasAuthority('ADMIN')")
 public class AdminBrandController {
+
+    Logger logger = LoggerFactory.getLogger(AdminBrandController.class);
 
     private final BrandService brandService;
 
@@ -59,11 +63,12 @@ public class AdminBrandController {
                             .msg("Your brands have been saved")
                             .result("")
                             .build());
-        } catch (Exception e) {
-            return ResponseEntity.ok()
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.internalServerError()
                     .body(ResponseObject.builder()
-                            .msg("We could not save your brands")
-                            .result(e.getMessage())
+                            .msg("Error!")
+                            .result("Internal Server Error")
                             .build());
         }
     }
@@ -86,11 +91,12 @@ public class AdminBrandController {
                                 .msg("Something went wrong")
                                 .result(null)
                                 .build());
-        } catch (Exception e) {
-            return ResponseEntity.ok()
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.internalServerError()
                     .body(ResponseObject.builder()
-                            .msg("We could not save your brand")
-                            .result(e.getMessage())
+                            .msg("Error!")
+                            .result("Internal Server Error")
                             .build());
         }
     }

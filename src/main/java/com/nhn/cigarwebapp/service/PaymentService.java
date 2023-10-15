@@ -1,7 +1,11 @@
 package com.nhn.cigarwebapp.service;
 
+import java.util.Map;
+
 public interface PaymentService {
 
-    void updatePaymentStatus(Long orderId);
+    boolean updatePaymentStatus(Long orderId);
+
+    boolean updatePaymentStatus(Map<String, String> params);
 
 }
