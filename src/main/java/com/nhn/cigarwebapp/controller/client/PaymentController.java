@@ -24,21 +24,21 @@ public class PaymentController {
 
     @PatchMapping("/update-payment-status")
     public ResponseEntity<ResponseObject> updatePaymentStatus(@RequestBody Map<String, String> params) {
-        try {
+//        try {
             boolean isPaid = paymentService.updatePaymentStatus(params);
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
                             .msg("Updated paid status")
                             .result(isPaid)
                             .build());
-        } catch (Exception ex) {
-            logger.error(ex.getMessage());
-            return ResponseEntity.internalServerError()
-                    .body(ResponseObject.builder()
-                            .msg("Error!")
-                            .result("Internal Server Error")
-                            .build());
-        }
+//        } catch (Exception ex) {
+//            logger.error(ex.getMessage());
+//            return ResponseEntity.internalServerError()
+//                    .body(ResponseObject.builder()
+//                            .msg("Error!")
+//                            .result("Internal Server Error")
+//                            .build());
+//        }
     }
 
 //    @GetMapping("/confirm-payment")

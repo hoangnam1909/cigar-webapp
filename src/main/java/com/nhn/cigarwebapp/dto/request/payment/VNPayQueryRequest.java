@@ -4,35 +4,36 @@ import com.nhn.cigarwebapp.utils.HashHelper;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @Builder
 public class VNPayQueryRequest {
 
-    private String vnpRequestId;
-    private String vnpVersion;
-    private String vnpCommand;
-    private String vnpTmnCode;
-    private String vnpTxnRef;
-    private String vnpOrderInfo;
-    private Long vnpTransactionDate;
-    private Long vnpCreateDate;
-    private String vnpIpAddr;
-    private String vnpSecureHash;
+    private String vnp_RequestId;
+    private String vnp_Version;
+    private String vnp_Command;
+    private String vnp_TmnCode;
+    private String vnp_TxnRef;
+    private String vnp_OrderInfo;
+    private Long vnp_TransactionDate;
+    private Long vnp_CreateDate;
+    private String vnp_IpAddr;
+    private String vnp_SecureHash;
 
     public void createSignature(String secretKey) {
-        String rawHash = vnpRequestId + "|" +
-                vnpVersion + "|" +
-                vnpCommand + "|" +
-                vnpTmnCode + "|" +
-                vnpTxnRef + "|" +
-                vnpTransactionDate + "|" +
-                vnpCreateDate + "|" +
-                vnpIpAddr + "|" +
-                vnpOrderInfo;
+        String rawHash = vnp_RequestId + "|" +
+                vnp_Version + "|" +
+                vnp_Command + "|" +
+                vnp_TmnCode + "|" +
+                vnp_TxnRef + "|" +
+                vnp_TransactionDate + "|" +
+                vnp_CreateDate + "|" +
+                vnp_IpAddr + "|" +
+                vnp_OrderInfo;
 
-        vnpSecureHash = HashHelper.HmacSHA512(rawHash, secretKey);
+        vnp_SecureHash = HashHelper.HmacSHA512(rawHash, secretKey);
     }
 
 }

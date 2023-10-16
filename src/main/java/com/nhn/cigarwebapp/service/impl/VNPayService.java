@@ -138,14 +138,15 @@ public class VNPayService implements PaymentGatewayService {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 
             VNPayQueryRequest request = VNPayQueryRequest.builder()
-                    .vnpRequestId(vnp_RequestId)
-                    .vnpVersion(vnpVersion)
-                    .vnpCommand(vnpCommandQuery)
-                    .vnpTmnCode(vnpTmnCode)
-                    .vnpTxnRef(referenceId)
-                    .vnpOrderInfo("Kiem tra ket qua thanh toan giao dich" + referenceId)
-                    .vnpTransactionDate(Long.valueOf(formatter.format(cld.getTime())))
-                    .vnpIpAddr("127.0.0.1")
+                    .vnp_RequestId(vnp_RequestId)
+                    .vnp_Version(vnpVersion)
+                    .vnp_Command(vnpCommandQuery)
+                    .vnp_TmnCode(vnpTmnCode)
+                    .vnp_TxnRef(referenceId)
+                    .vnp_OrderInfo("Kiem tra ket qua thanh toan giao dich" + referenceId)
+                    .vnp_TransactionDate(Long.valueOf(formatter.format(cld.getTime())))
+                    .vnp_CreateDate(Long.valueOf(formatter.format(cld.getTime())))
+                    .vnp_IpAddr("127.0.0.1")
                     .build();
 
             request.createSignature(secretKey);
@@ -159,7 +160,11 @@ public class VNPayService implements PaymentGatewayService {
             try {
                 JsonNode jsonNode = objectMapper.readTree(response);
                 Map map = objectMapper.convertValue(jsonNode, Map.class);
-                return map.get("vnp_ResponseCode").toString().equals("00");
+
+                if (map.containsKey("vnp_TransactionStatus"))
+                    return map.get("vnp_TransactionStatus").toString().equals("00");
+                else
+                    return false;
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
@@ -180,14 +185,15 @@ public class VNPayService implements PaymentGatewayService {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 
         VNPayQueryRequest request = VNPayQueryRequest.builder()
-                .vnpRequestId(vnp_RequestId)
-                .vnpVersion(vnpVersion)
-                .vnpCommand(vnpCommandQuery)
-                .vnpTmnCode(vnpTmnCode)
-                .vnpTxnRef(payment.getReferenceId())
-                .vnpOrderInfo("Kiem tra ket qua thanh toan don hang #" + order.getId())
-                .vnpTransactionDate(Long.valueOf(formatter.format(cld.getTime())))
-                .vnpIpAddr("127.0.0.1")
+                .vnp_RequestId(vnp_RequestId)
+                .vnp_Version(vnpVersion)
+                .vnp_Command(vnpCommandQuery)
+                .vnp_TmnCode(vnpTmnCode)
+                .vnp_TxnRef(payment.getReferenceId())
+                .vnp_OrderInfo("Kiem tra ket qua thanh toan don hang #" + order.getId())
+                .vnp_TransactionDate(Long.valueOf(formatter.format(cld.getTime())))
+                .vnp_CreateDate(Long.valueOf(formatter.format(cld.getTime())))
+                .vnp_IpAddr("127.0.0.1")
                 .build();
 
         request.createSignature(secretKey);
@@ -197,11 +203,11 @@ public class VNPayService implements PaymentGatewayService {
                 queryUrl,
                 request,
                 String.class);
-
+        System.err.println(response);
         try {
             JsonNode jsonNode = objectMapper.readTree(response);
             Map map = objectMapper.convertValue(jsonNode, Map.class);
-            return map.get("vnp_ResponseCode").toString().equals("00");
+            return map.get("vnp_TransactionStatus").toString().equals("00");
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
