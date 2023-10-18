@@ -1,6 +1,8 @@
 package com.nhn.cigarwebapp.controller.admin;
 
 import com.nhn.cigarwebapp.common.ResponseObject;
+import com.nhn.cigarwebapp.dto.request.admin.AdminOrderCreationRequest;
+import com.nhn.cigarwebapp.dto.request.order.OrderWithPaymentRequest;
 import com.nhn.cigarwebapp.dto.response.admin.OrderAdminResponse;
 import com.nhn.cigarwebapp.entity.Order;
 import com.nhn.cigarwebapp.service.OrderService;
@@ -49,6 +51,29 @@ public class AdminOrderController {
                             .msg("No order with id = " + id)
                             .result(null)
                             .build());
+    }
+
+    @PostMapping
+    public ResponseEntity<ResponseObject> addOrder(@RequestBody AdminOrderCreationRequest request) {
+        try {
+            if (orderService.checkProductsIsValidForOrder(request.getOrderItems())) {
+                Order order = orderService.adminAddOrder(request);
+                return ResponseEntity.ok()
+                        .body(ResponseObject.builder()
+                                .msg("Your order have been saved")
+                                .result(order)
+                                .build());
+            } else {
+                throw new IllegalArgumentException("Product items is invalid");
+            }
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.internalServerError()
+                    .body(ResponseObject.builder()
+                            .msg("Error!")
+                            .result(ex.getMessage())
+                            .build());
+        }
     }
 
     @PatchMapping("/{id}")

@@ -25,13 +25,22 @@ public class PaymentController {
     @PatchMapping("/update-payment-status")
     public ResponseEntity<ResponseObject> updatePaymentStatus(@RequestBody Map<String, String> params) {
 //        try {
-            boolean isPaid = paymentService.updatePaymentStatus(params);
+            long orderId;
+            if (params.containsKey("orderId"))
+                orderId = Long.parseLong(params.get("orderId").split("-")[1].substring(3));
+            else if (params.containsKey("vnp_TxnRef"))
+                orderId = Long.parseLong(params.get("vnp_TxnRef").split("-")[1].substring(3));
+            else
+                orderId = -1;
+
+            boolean isPaid = paymentService.updatePaymentStatus(orderId, params);
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
                             .msg("Updated paid status")
                             .result(isPaid)
                             .build());
 //        } catch (Exception ex) {
+//            ex.printStackTrace();
 //            logger.error(ex.getMessage());
 //            return ResponseEntity.internalServerError()
 //                    .body(ResponseObject.builder()

@@ -24,12 +24,22 @@ public class AdminPaymentController {
 
     @PatchMapping("/update-payment-status/{orderId}")
     public ResponseEntity<ResponseObject> updatePaymentStatus(@PathVariable Long orderId) {
+        boolean isPaid = paymentService.updatePaymentStatus(orderId);
+        return ResponseEntity.ok()
+                .body(ResponseObject.builder()
+                        .msg("Payment status updated!")
+                        .result(isPaid)
+                        .build());
+    }
+
+    @PatchMapping("/recreate-payment-url/{orderId}")
+    public ResponseEntity<ResponseObject> recreatePaymentUrl(@PathVariable Long orderId) {
         try {
-            boolean isPaid = paymentService.updatePaymentStatus(orderId);
+            paymentService.recreatePaymentUrl(orderId);
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
-                            .msg("Payment status updated!")
-                            .result(isPaid)
+                            .msg("Recreate payment url successfully!")
+                            .result(null)
                             .build());
         } catch (Exception ex) {
             logger.error(ex.getMessage());

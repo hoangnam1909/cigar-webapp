@@ -1,5 +1,6 @@
 package com.nhn.cigarwebapp.service;
 
+import com.nhn.cigarwebapp.dto.request.admin.AdminOrderCreationRequest;
 import com.nhn.cigarwebapp.dto.request.order.OrderItemRequest;
 import com.nhn.cigarwebapp.dto.request.order.OrderWithPaymentRequest;
 import com.nhn.cigarwebapp.dto.response.admin.OrderAdminResponse;
@@ -22,6 +23,8 @@ public interface OrderService {
     boolean checkProductsIsValidForOrder(List<OrderItemRequest> orderItems);
 
     Order addOrder(OrderWithPaymentRequest request);
+
+    Order adminAddOrder(AdminOrderCreationRequest request);
 
     Order partialUpdateOrder(Long id, Map<String, Object> params);
 

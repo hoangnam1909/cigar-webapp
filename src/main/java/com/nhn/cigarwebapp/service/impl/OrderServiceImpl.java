@@ -1,5 +1,6 @@
 package com.nhn.cigarwebapp.service.impl;
 
+import com.nhn.cigarwebapp.dto.request.admin.AdminOrderCreationRequest;
 import com.nhn.cigarwebapp.dto.request.order.OrderItemRequest;
 import com.nhn.cigarwebapp.dto.request.order.OrderWithPaymentRequest;
 import com.nhn.cigarwebapp.dto.response.admin.OrderAdminResponse;
@@ -17,6 +18,7 @@ import com.nhn.cigarwebapp.utils.MyStringUtils;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -28,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
@@ -106,6 +109,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public boolean checkProductsIsValidForOrder(List<OrderItemRequest> orderItems) {
+        if (orderItems.isEmpty()) return false;
+
         // order item not valid
         List<OrderItemRequest> result = orderItems
                 .stream()
@@ -123,7 +128,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "OrderAdminResponse", allEntries = true),
+//            @CacheEvict(value = "OrderAdminResponse", allEntries = true),
             @CacheEvict(value = "List<CartProductResponse>", allEntries = true),
             @CacheEvict(value = "Page<OrderAdminResponse>", allEntries = true),
 
@@ -208,7 +213,120 @@ public class OrderServiceImpl implements OrderService {
                         .paymentDestination(paymentDestinationRepository.getReferenceById(request.getPaymentDestinationId()))
                         .order(orderRepository.getReferenceById(order.getId()))
                         .build();
-            } else if (request.getPaymentDestinationId().equalsIgnoreCase("vnpay")){
+            } else if (request.getPaymentDestinationId().equalsIgnoreCase("vnpay")) {
+                Map vnPayResponse = vnPayService.createPayment(order);
+                payment = Payment.builder()
+                        .paidAmount(order.getTotalPrice().longValue())
+                        .isPaid(false)
+                        .referenceId((String) vnPayResponse.get("referenceId"))
+                        .paymentUrl((String) vnPayResponse.get("payUrl"))
+                        .paymentDestination(paymentDestinationRepository.getReferenceById(request.getPaymentDestinationId()))
+                        .order(orderRepository.getReferenceById(order.getId()))
+                        .build();
+            }
+
+            if (payment != null) {
+                paymentRepository.save(payment);
+                entityManager.refresh(order);
+            }
+        }
+
+        return order;
+    }
+
+    @Override
+    @Transactional
+    @Caching(evict = {
+//            @CacheEvict(value = "OrderAdminResponse", allEntries = true),
+            @CacheEvict(value = "List<CartProductResponse>", allEntries = true),
+            @CacheEvict(value = "Page<OrderAdminResponse>", allEntries = true),
+
+            @CacheEvict(value = "ProductResponse", allEntries = true),
+            @CacheEvict(value = "ProductAdminResponse", allEntries = true),
+            @CacheEvict(value = "Page<ProductResponse>", allEntries = true),
+            @CacheEvict(value = "Page<ProductAdminResponse>", allEntries = true),
+            @CacheEvict(value = "List<ProductSuggestResponse>", allEntries = true),
+    })
+    public Order adminAddOrder(AdminOrderCreationRequest request) {
+        Optional<Customer> customerOptional = customerRepository
+                .findByFullNameAndPhone(MyStringUtils.normalizeFullName(request.getFullName()),
+                        StringUtils.normalizeSpace(request.getPhone()));
+        Customer customer;
+
+        if (customerOptional.isPresent()) {
+            customer = customerOptional.get();
+        } else {
+            customer = customerMapper.toEntity(request);
+            customerService.addCustomer(customer);
+        }
+
+        AtomicReference<Double> total = new AtomicReference<>(0.0);
+        request.getOrderItems()
+                .forEach(orderItemRequest -> {
+                    Optional<Product> product = productRepository.findById(orderItemRequest.getProductId());
+                    product.ifPresent(value -> total.updateAndGet(v -> v + value.getSalePrice() * orderItemRequest.getQuantity()));
+                });
+
+        Order order = Order.builder()
+                .customer(customerRepository.getReferenceById(customer.getId()))
+                .orderStatus(orderStatusRepository.getReferenceById(request.getOrderStatusId()))
+                .shipment(shipmentRepository.save(Shipment.builder()
+                        .address(request.getDeliveryAddress())
+                        .deliveryCompany(deliveryCompanyRepository.getReferenceById(request.getDeliveryCompanyId()))
+                        .build()))
+                .totalPrice(total.get())
+                .note(request.getNote())
+                .build();
+
+        orderRepository.saveAndFlush(order);
+
+        request.getOrderItems()
+                .forEach(orderItemRequest -> {
+                            Optional<Product> productOptional = productRepository.findById(orderItemRequest.getProductId());
+                            if (productOptional.isPresent()) {
+                                Product product = productOptional.get();
+                                orderItemRepository
+                                        .saveAndFlush(OrderItem.builder()
+                                                .order(order)
+                                                .product(productRepository.getReferenceById(product.getId()))
+                                                .price(product.getSalePrice())
+                                                .quantity(orderItemRequest.getQuantity())
+                                                .build());
+
+                                int newQuantity = product.getUnitsInStock() - orderItemRequest.getQuantity();
+                                product.setUnitsInStock(Math.max(newQuantity, 0));
+                                productRepository.save(product);
+                            }
+                        }
+                );
+
+        entityManager.refresh(order);
+        emailService.sendOrderConfirmationEmail(order);
+
+        if (request.getPaymentDestinationId().equalsIgnoreCase("cod")) {
+            Payment payment = Payment.builder()
+                    .paidAmount(order.getTotalPrice().longValue())
+                    .isPaid(false)
+                    .paymentUrl(null)
+                    .paymentDestination(paymentDestinationRepository.getReferenceById(request.getPaymentDestinationId()))
+                    .order(orderRepository.getReferenceById(order.getId()))
+                    .build();
+            paymentRepository.save(payment);
+            entityManager.refresh(order);
+        } else {
+            Payment payment = null;
+            if (request.getPaymentDestinationId().equalsIgnoreCase("momo")) {
+                Map momoResponse = momoService.createPayment(order);
+                payment = Payment.builder()
+                        .paidAmount(order.getTotalPrice().longValue())
+                        .isPaid(false)
+                        .referenceId((String) momoResponse.get("requestId"))
+                        .paymentOrderId((String) momoResponse.get("orderId"))
+                        .paymentUrl((String) momoResponse.get("payUrl"))
+                        .paymentDestination(paymentDestinationRepository.getReferenceById(request.getPaymentDestinationId()))
+                        .order(orderRepository.getReferenceById(order.getId()))
+                        .build();
+            } else if (request.getPaymentDestinationId().equalsIgnoreCase("vnpay")) {
                 Map vnPayResponse = vnPayService.createPayment(order);
                 payment = Payment.builder()
                         .paidAmount(order.getTotalPrice().longValue())
@@ -233,7 +351,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "OrderResponse", key = "#id"),
-            @CacheEvict(value = "OrderAdminResponse", allEntries = true),
+            @CacheEvict(value = "OrderAdminResponse", key = "#id"),
             @CacheEvict(value = "Page<OrderAdminResponse>", allEntries = true),
     })
     public Order partialUpdateOrder(Long id, Map<String, Object> params) {

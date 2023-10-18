@@ -68,41 +68,72 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
+
     @Override
-    public boolean updatePaymentStatus(Map<String, String> params) {
-        PaymentSpecification specification = new PaymentSpecification();
-        Payment payment;
+    @Caching(evict = {
+            @CacheEvict(value = "OrderResponse", key = "#orderId"),
+            @CacheEvict(value = "OrderAdminResponse", key = "#orderId"),
+    })
+    public boolean updatePaymentStatus(Long orderId, Map<String, String> params) {
+        if (orderId < 0) throw new IllegalArgumentException("Return URL is not valid");
 
-        if (params.containsKey(PaymentEnum.MOMO_REQUEST_ID)) {
-            specification.add(new SearchCriteria(Payment_.PAYMENT_ORDER_ID, params.get(PaymentEnum.PAYMENT_ORDER_ID), SearchOperation.EQUAL));
-            specification.add(new SearchCriteria(Payment_.REFERENCE_ID, params.get(PaymentEnum.MOMO_REQUEST_ID), SearchOperation.EQUAL));
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            Payment payment = order.getPayment();
+            boolean isPaid = false;
 
-            List<Payment> payments = paymentRepository.findAll(specification);
-            if (payments.size() == 1) {
-                payment = payments.get(0);
-                boolean isPaid = momoService.checkTransactionStatus(params);
+            if (payment.getPaymentDestination().getId().equals("momo")) {
+                isPaid = momoService.checkTransactionStatus(orderId, params);
                 payment.setIsPaid(isPaid);
-                paymentRepository.save(payment);
-
-                return isPaid;
+            } else if (payment.getPaymentDestination().getId().equals("vnpay")) {
+                isPaid = vnPayService.checkTransactionStatus(orderId, params);
+                payment.setIsPaid(isPaid);
             }
-        } else if (params.containsKey(PaymentEnum.VNPAY_REFERENCE_ID)) {
-            specification.add(new SearchCriteria(Payment_.REFERENCE_ID, params.get(PaymentEnum.VNPAY_REFERENCE_ID), SearchOperation.EQUAL));
 
-            List<Payment> payments = paymentRepository.findAll(specification);
-            if (payments.size() == 1) {
-                payment = payments.get(0);
-                boolean isPaid = vnPayService.checkTransactionStatus(params);
-                payment.setIsPaid(isPaid);
+            paymentRepository.save(payment);
+            return isPaid;
+        } else {
+            throw new IllegalArgumentException("Could not found order with id " + orderId);
+        }
+    }
+
+    @Override
+    @Caching(evict = {
+            @CacheEvict(value = "OrderResponse", key = "#orderId"),
+            @CacheEvict(value = "OrderAdminResponse", key = "#orderId"),
+    })
+    public void recreatePaymentUrl(Long orderId) {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            Payment payment = order.getPayment();
+
+            if (payment.getPaymentDestination().getId().equals("cod")) {
+                throw new IllegalArgumentException("Can not recreate payment url with Cash on delivery");
+            } else if (payment.getPaymentDestination().getId().equals("momo")) {
+                Map momoResponse = momoService.createPayment(order);
+                System.err.println(momoResponse);
+
+                payment.setIsPaid(false);
+                payment.setReferenceId((String) momoResponse.get("requestId"));
+                payment.setPaymentOrderId((String) momoResponse.get("orderId"));
+                payment.setPaymentUrl((String) momoResponse.get("payUrl"));
+                System.err.println(momoResponse.get("payUrl"));
+
                 paymentRepository.save(payment);
+            } else if (payment.getPaymentDestination().getId().equals("vnpay")) {
+                Map vnPayResponse = vnPayService.createPayment(order);
 
-                return isPaid;
+                payment.setIsPaid(false);
+                payment.setReferenceId((String) vnPayResponse.get("referenceId"));
+                payment.setPaymentUrl((String) vnPayResponse.get("payUrl"));
+
+                paymentRepository.save(payment);
             }
         } else {
-            throw new IllegalArgumentException("Return URL is not valid");
+            throw new IllegalArgumentException("Order id do not exist");
         }
-
-        return false;
     }
 
 }

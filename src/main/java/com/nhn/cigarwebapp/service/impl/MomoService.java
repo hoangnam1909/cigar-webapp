@@ -50,46 +50,13 @@ public class MomoService implements PaymentGatewayService {
     private String confirmUrl;
 
     @Value("${payment.momo.prefix-orderid}")
-    private String prefixOrderId;
+    private String momoPrefixOrderId;
 
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Override
-    public Map createPayment() {
-        long amount = 12000;
-
-        MomoOneTimePaymentRequest request = MomoOneTimePaymentRequest.builder()
-                .partnerCode(partnerCode)
-                .requestId(RandomStringUtils.randomNumeric(10) + "id")
-                .amount(amount)
-                .orderId("DH" + RandomStringUtils.randomNumeric(8))
-                .orderInfo("Thanh toan don hang #" + RandomStringUtils.randomNumeric(8))
-                .redirectUrl("https://momo.vn")
-                .ipnUrl("https://momo.vn")
-                .requestType(requestType)
-                .extraData("")
-                .lang("vi")
-                .build();
-
-        request.createSignature(accessKey, secretKey);
-
-        RestTemplate template = new RestTemplate();
-        String response = template.postForObject(
-                paymentUrl,
-                request,
-                String.class);
-
-        try {
-            JsonNode jsonNode = objectMapper.readTree(response);
-            Map map = objectMapper.convertValue(jsonNode, Map.class);
-            System.err.println(map.get("payUrl"));
-
-            return map;
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Override
     public Map createPayment(Order order) {
@@ -101,7 +68,10 @@ public class MomoService implements PaymentGatewayService {
                         RandomStringUtils.randomNumeric(10),
                         order.getId()))
                 .amount(amount)
-                .orderId(prefixOrderId + order.getId())
+                .orderId(String.format("%s%s-%s",
+                        momoPrefixOrderId,
+                        order.getId(),
+                        RandomStringUtils.randomAlphanumeric(5)))
                 .orderInfo("Thanh toan don hang #" + order.getId())
                 .redirectUrl(returnUrl + "/payment-result")
                 .ipnUrl("https://momo.vn")
@@ -112,16 +82,15 @@ public class MomoService implements PaymentGatewayService {
 
         request.createSignature(accessKey, secretKey);
 
-        RestTemplate template = new RestTemplate();
-        String response = template.postForObject(
+        String response = restTemplate.postForObject(
                 paymentUrl,
                 request,
                 String.class);
+        System.err.println(response);
 
         try {
             JsonNode jsonNode = objectMapper.readTree(response);
             Map map = objectMapper.convertValue(jsonNode, Map.class);
-
             return map;
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -129,15 +98,16 @@ public class MomoService implements PaymentGatewayService {
     }
 
     @Override
-    public boolean checkTransactionStatus(Map<String, String> params) {
-        if (params.containsKey("requestId") &&
-                params.containsKey("paymentOrderId")) {
-
+    @Caching(evict = {
+            @CacheEvict(value = "OrderResponse", key = "#orderId"),
+    })
+    public boolean checkTransactionStatus(Long orderId, Map<String, String> params) {
+        if (params.containsKey("requestId") && params.containsKey("orderId")) {
             String requestId = params.get("requestId");
-            String orderId = params.get("paymentOrderId");
+            String momoOrderId = params.get("orderId");
 
             String rawHash = "accessKey=" + accessKey +
-                    "&orderId=" + orderId +
+                    "&orderId=" + momoOrderId +
                     "&partnerCode=" + partnerCode +
                     "&requestId=" + requestId;
             String signature = HashHelper.HmacSHA256(rawHash, secretKey);
@@ -145,16 +115,16 @@ public class MomoService implements PaymentGatewayService {
             Map<String, String> requestBody = new HashMap<>();
             requestBody.put("partnerCode", partnerCode);
             requestBody.put("requestId", requestId);
-            requestBody.put("orderId", orderId);
+            requestBody.put("orderId", momoOrderId);
             requestBody.put("signature", signature);
             requestBody.put("lang", "vi");
 
-            RestTemplate template = new RestTemplate();
-            String response = template.postForObject(
+            String response = restTemplate.postForObject(
                     queryUrl,
                     requestBody,
                     String.class
             );
+            System.err.println(response);
 
             try {
                 JsonNode jsonNode = objectMapper.readTree(response);
@@ -171,13 +141,13 @@ public class MomoService implements PaymentGatewayService {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "OrderAdminResponse", allEntries = true),
+            @CacheEvict(value = "OrderAdminResponse", key = "#order.getId()"),
     })
     public boolean checkTransactionStatus(Order order) {
         Payment payment = order.getPayment();
 
         String requestId = payment.getReferenceId();
-        String orderId = prefixOrderId + order.getId();
+        String orderId = payment.getPaymentOrderId();
 
         String rawHash = "accessKey=" + accessKey +
                 "&orderId=" + orderId +
@@ -192,12 +162,12 @@ public class MomoService implements PaymentGatewayService {
         requestBody.put("signature", signature);
         requestBody.put("lang", "vi");
 
-        RestTemplate template = new RestTemplate();
-        String response = template.postForObject(
+        String response = restTemplate.postForObject(
                 queryUrl,
                 requestBody,
                 String.class
         );
+        System.err.println(response);
 
         try {
             JsonNode jsonNode = objectMapper.readTree(response);
@@ -207,47 +177,6 @@ public class MomoService implements PaymentGatewayService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public boolean confirmPayment(Map<String, String> params) {
-//        if (params.containsKey("requestId") &&
-//                params.containsKey("orderId")) {
-//
-//            String requestId = params.get("requestId");
-//            String orderId = params.get("orderId");
-//
-//            String rawHash = "accessKey=" + accessKey +
-//                    "&orderId=" + orderId +
-//                    "&partnerCode=" + partnerCode +
-//                    "&requestId=" + requestId;
-//            String signature = HashHelper.HmacSHA256(rawHash, secretKey);
-//
-//            Map<String, String> requestBody = new HashMap<>();
-//            requestBody.put("partnerCode", partnerCode);
-//            requestBody.put("requestId", requestId);
-//            requestBody.put("orderId", orderId);
-//            requestBody.put("signature", signature);
-//            requestBody.put("lang", "vi");
-//
-//            RestTemplate template = new RestTemplate();
-//            String response = template.postForObject(
-//                    confirmUrl,
-//                    requestBody,
-//                    String.class
-//            );
-//
-//            try {
-//                JsonNode jsonNode = objectMapper.readTree(response);
-//                Map map = objectMapper.convertValue(jsonNode, Map.class);
-//
-//                return map.get("resultCode").toString().equals("0");
-//            } catch (JsonProcessingException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
-
-        return false;
     }
 
 }

@@ -40,6 +40,13 @@ public class OrderSpecification implements Specification<Order> {
 
                 predicates.add(builder.equal(deliveryCompany.get(DeliveryCompany_.ID), criteria.getValue().toString()));
 
+            } else if (criteria.getOperation().equals(SearchOperation.ORDER_PAYMENT_DESTINATION)) {
+
+                Join<Payment, Order> payment = root.join(Order_.PAYMENT);
+                Join<PaymentDestination, Payment> paymentDestination = payment.join(Payment_.PAYMENT_DESTINATION);
+
+                predicates.add(builder.equal(paymentDestination.get(PaymentDestination_.ID), criteria.getValue().toString()));
+
             } else if (criteria.getOperation().equals(SearchOperation.ID_NAME)) {
 
                 Predicate predicateId = builder.like(

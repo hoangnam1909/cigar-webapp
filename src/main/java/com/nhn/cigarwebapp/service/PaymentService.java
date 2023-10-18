@@ -6,6 +6,9 @@ public interface PaymentService {
 
     boolean updatePaymentStatus(Long orderId);
 
-    boolean updatePaymentStatus(Map<String, String> params);
+    boolean updatePaymentStatus(Long orderId, Map<String, String> params);
+
+    void recreatePaymentUrl(Long orderId);
+
 
 }

@@ -102,14 +102,18 @@ public class SpecificationMapper {
             specification.add(new SearchCriteria(OrderEnum.KEYWORD, params.get(OrderEnum.KEYWORD), SearchOperation.ID_NAME));
         }
 
+        if (params.containsKey(OrderEnum.PAYMENT_DESTINATION)) {
+            specification.add(new SearchCriteria(OrderEnum.PAYMENT_DESTINATION, params.get(OrderEnum.PAYMENT_DESTINATION), SearchOperation.ORDER_PAYMENT_DESTINATION));
+        }
+
         return specification;
     }
 
     public PaymentSpecification paymentSpecification(Map<String, String> params) {
         PaymentSpecification specification = new PaymentSpecification();
 
-        if (params.containsKey(PaymentEnum.PAYMENT_ORDER_ID)) {
-            specification.add(new SearchCriteria(PaymentEnum.PAYMENT_ORDER_ID, params.get(PaymentEnum.PAYMENT_ORDER_ID), SearchOperation.EQUAL));
+        if (params.containsKey(PaymentEnum.MOMO_ORDER_ID)) {
+            specification.add(new SearchCriteria(PaymentEnum.MOMO_ORDER_ID, params.get(PaymentEnum.MOMO_ORDER_ID), SearchOperation.EQUAL));
         }
 
         if (params.containsKey(PaymentEnum.MOMO_REQUEST_ID)) {

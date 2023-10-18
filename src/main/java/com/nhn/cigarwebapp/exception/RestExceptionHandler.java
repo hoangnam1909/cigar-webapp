@@ -1,7 +1,9 @@
 package com.nhn.cigarwebapp.exception;
 
 import com.nhn.cigarwebapp.common.ErrorResponseObject;
+import com.nhn.cigarwebapp.common.ResponseObject;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -13,14 +15,27 @@ import java.util.Date;
 @RestControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
+//    @ExceptionHandler(value = {IllegalArgumentException.class})
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    protected ErrorResponseObject errorHandler(IllegalArgumentException ex, WebRequest request) {
+//        return ErrorResponseObject.builder()
+//                .message(ex.getMessage())
+//                .errorCode("400")
+//                .time(new Date())
+//                .build();
+//    }
+
     @ExceptionHandler(value = {IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ErrorResponseObject errorHandler(IllegalArgumentException ex, WebRequest request) {
-        return ErrorResponseObject.builder()
-                .message(ex.getMessage())
-                .errorCode("400")
-                .time(new Date())
-                .build();
+    protected ResponseEntity<ErrorResponseObject> IllegalArgumentExceptionHandler(IllegalArgumentException ex, WebRequest request) {
+        System.err.println("hehe");
+        return ResponseEntity.badRequest()
+                .body(ErrorResponseObject.builder()
+                        .message(ex.getMessage())
+                        .errorCode("400")
+                        .time(new Date())
+                        .build());
+
     }
 
 }

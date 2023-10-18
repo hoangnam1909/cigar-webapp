@@ -20,7 +20,8 @@ public enum SearchOperation {
     ORDER_STATUS_ID,
     DELIVERY_COMPANY_ID,
     ID_NAME,
-    IN_STOCK
+    IN_STOCK,
+    ORDER_PAYMENT_DESTINATION
 
 }
 
