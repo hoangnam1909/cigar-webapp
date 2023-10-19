@@ -18,7 +18,6 @@ import com.nhn.cigarwebapp.utils.MyStringUtils;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -30,7 +29,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +40,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class OrderServiceImpl implements OrderService {
 
     @Value("${order.default-page-size}")
-    private int PAGE_SIZE;
+    private static int pageSize;
 
     private final EntityManager entityManager;
     private final CustomerMapper customerMapper;
@@ -89,7 +87,7 @@ public class OrderServiceImpl implements OrderService {
     @Cacheable(key = "#params", value = "Page<OrderAdminResponse>")
     public Page<OrderAdminResponse> getAdminOrders(@RequestParam Map<String, String> params) {
         int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
-        int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
+        int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : pageSize;
         String sort = params.getOrDefault("sort", OrderSortEnum.CREATED_AT_DESC);
 
         OrderSpecification specification = specificationMapper.orderSpecification(params);

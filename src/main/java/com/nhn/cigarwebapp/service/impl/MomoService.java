@@ -59,7 +59,7 @@ public class MomoService implements PaymentGatewayService {
     private RestTemplate restTemplate;
 
     @Override
-    public Map createPayment(Order order) {
+    public Map<String, Object> createPayment(Order order) {
         long amount = (long) (order.getTotalPrice() / 1000);
 
         MomoOneTimePaymentRequest request = MomoOneTimePaymentRequest.builder()
@@ -86,14 +86,12 @@ public class MomoService implements PaymentGatewayService {
                 paymentUrl,
                 request,
                 String.class);
-        System.err.println(response);
 
         try {
             JsonNode jsonNode = objectMapper.readTree(response);
-            Map map = objectMapper.convertValue(jsonNode, Map.class);
-            return map;
+            return objectMapper.convertValue(jsonNode, Map.class);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 

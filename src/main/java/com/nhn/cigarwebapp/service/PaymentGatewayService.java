@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface PaymentGatewayService {
 
-    Map createPayment(Order order);
+    Map<String, Object> createPayment(Order order);
 
     boolean checkTransactionStatus(Long orderId, Map<String, String> params);
 

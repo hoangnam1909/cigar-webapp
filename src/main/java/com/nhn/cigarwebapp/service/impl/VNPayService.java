@@ -61,42 +61,46 @@ public class VNPayService implements PaymentGatewayService {
     @Autowired
     private RestTemplate restTemplate;
 
+    private static final String DATE_FORMAT_PATTERN = "yyyyMMddHHmmss";
+    private static final String TIMEZONE = "Etc/GMT+7";
+    private static final String LOCALHOST_IP_ADDRESS = "127.0.0.1";
+
     @Override
-    public Map createPayment(Order order) {
+    public Map<String, Object> createPayment(Order order) {
         long amount = order.getTotalPrice().longValue();
 
-        Map<String, String> vnp_Params = new HashMap<>();
-        vnp_Params.put("vnp_Version", vnpVersion);
-        vnp_Params.put("vnp_Command", vnpCommandPay);
-        vnp_Params.put("vnp_TmnCode", vnpTmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf(amount * 100));
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        String vnp_CreateDate = formatter.format(cld.getTime());
-        vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+        Map<String, String> vnpParams = new HashMap<>();
+        vnpParams.put("vnp_Version", vnpVersion);
+        vnpParams.put("vnp_Command", vnpCommandPay);
+        vnpParams.put("vnp_TmnCode", vnpTmnCode);
+        vnpParams.put("vnp_Amount", String.valueOf(amount * 100));
+        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone(TIMEZONE));
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+        String vnpCreateDate = formatter.format(cld.getTime());
+        vnpParams.put("vnp_CreateDate", vnpCreateDate);
 
-        vnp_Params.put("vnp_CurrCode", vnpCurrCode);
-        vnp_Params.put("vnp_IpAddr", "127.0.0.1");
-        vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_OrderInfo", "Cigar For Boss Thanh toan don hang #" + order.getId());
-        vnp_Params.put("vnp_OrderType", "other");
-        vnp_Params.put("vnp_ReturnUrl", returnUrl + "/payment-result");
+        vnpParams.put("vnp_CurrCode", vnpCurrCode);
+        vnpParams.put("vnp_IpAddr", LOCALHOST_IP_ADDRESS);
+        vnpParams.put("vnp_Locale", "vn");
+        vnpParams.put("vnp_OrderInfo", "Cigar For Boss Thanh toan don hang #" + order.getId());
+        vnpParams.put("vnp_OrderType", "other");
+        vnpParams.put("vnp_ReturnUrl", returnUrl + "/payment-result");
 
         String referenceId = String.format("%s%s-%s",
                 vnpPrefixRefId,
                 order.getId(),
                 RandomStringUtils.randomNumeric(5));
-        vnp_Params.put("vnp_TxnRef", referenceId);
+        vnpParams.put("vnp_TxnRef", referenceId);
 
-        List fieldNames = new ArrayList(vnp_Params.keySet());
+        List<String> fieldNames = new ArrayList<>(vnpParams.keySet());
         Collections.sort(fieldNames);
         StringBuilder hashData = new StringBuilder();
         StringBuilder query = new StringBuilder();
-        Iterator itr = fieldNames.iterator();
+        Iterator<String> itr = fieldNames.iterator();
         while (itr.hasNext()) {
-            String fieldName = (String) itr.next();
-            String fieldValue = vnp_Params.get(fieldName);
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
+            String fieldName = itr.next();
+            String fieldValue = vnpParams.get(fieldName);
+            if ((fieldValue != null) && (!fieldValue.isEmpty())) {
                 //Build hash data
                 hashData.append(fieldName);
                 hashData.append('=');
@@ -112,14 +116,13 @@ public class VNPayService implements PaymentGatewayService {
                 }
             }
         }
-        System.err.println(hashData);
-        String queryUrl = query.toString();
-        String vnp_SecureHash = HashHelper.HmacSHA512(hashData.toString(), secretKey);
+        String vnpQueryUrl = query.toString();
+        String vnpSecureHash = HashHelper.HmacSHA512(hashData.toString(), secretKey);
 
-        queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-        String paymentUrl = vnpPayUrl + "?" + queryUrl;
+        vnpQueryUrl += "&vnp_SecureHash=" + vnpSecureHash;
+        String paymentUrl = vnpPayUrl + "?" + vnpQueryUrl;
 
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<>();
         map.put("payUrl", paymentUrl);
         map.put("referenceId", referenceId);
 
@@ -135,12 +138,12 @@ public class VNPayService implements PaymentGatewayService {
         if (params.containsKey(PaymentEnum.VNPAY_REFERENCE_ID)) {
             String referenceId = params.get(PaymentEnum.VNPAY_REFERENCE_ID);
 
-            String vnp_RequestId = RandomStringUtils.randomAlphanumeric(10);
-            Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+            String vnpRequestId = RandomStringUtils.randomAlphanumeric(10);
+            Calendar cld = Calendar.getInstance(TimeZone.getTimeZone(TIMEZONE));
+            SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT_PATTERN);
 
             VNPayQueryRequest request = VNPayQueryRequest.builder()
-                    .vnp_RequestId(vnp_RequestId)
+                    .vnp_RequestId(vnpRequestId)
                     .vnp_Version(vnpVersion)
                     .vnp_Command(vnpCommandQuery)
                     .vnp_TmnCode(vnpTmnCode)
@@ -148,28 +151,21 @@ public class VNPayService implements PaymentGatewayService {
                     .vnp_OrderInfo("Kiem tra ket qua thanh toan giao dich " + referenceId)
                     .vnp_TransactionDate(Long.valueOf(formatter.format(cld.getTime())))
                     .vnp_CreateDate(Long.valueOf(formatter.format(cld.getTime())))
-                    .vnp_IpAddr("127.0.0.1")
+                    .vnp_IpAddr(LOCALHOST_IP_ADDRESS)
                     .build();
 
             request.createSignature(secretKey);
-
-            System.err.println("in request");
-            System.err.println(request);
 
             String response = restTemplate.postForObject(
                     queryUrl,
                     request,
                     String.class);
-            System.err.println(response);
 
             try {
                 JsonNode jsonNode = objectMapper.readTree(response);
                 Map map = objectMapper.convertValue(jsonNode, Map.class);
                 if (map.get("vnp_ResponseCode").toString().equals("00")) {
-                    if (map.getOrDefault("vnp_TransactionStatus", "").toString().equals("00"))
-                        return true;
-                    else
-                        return false;
+                    return map.getOrDefault("vnp_TransactionStatus", "").toString().equals("00");
                 } else {
                     throw new IllegalArgumentException(map.get("vnp_Message").toString());
                 }
@@ -189,12 +185,12 @@ public class VNPayService implements PaymentGatewayService {
     public boolean checkTransactionStatus(Order order) {
         Payment payment = order.getPayment();
 
-        String vnp_RequestId = RandomStringUtils.randomAlphanumeric(12);
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        String vnpRequestId = RandomStringUtils.randomAlphanumeric(12);
+        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone(TIMEZONE));
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT_PATTERN);
 
         VNPayQueryRequest request = VNPayQueryRequest.builder()
-                .vnp_RequestId(vnp_RequestId)
+                .vnp_RequestId(vnpRequestId)
                 .vnp_Version(vnpVersion)
                 .vnp_Command(vnpCommandQuery)
                 .vnp_TmnCode(vnpTmnCode)
@@ -202,12 +198,10 @@ public class VNPayService implements PaymentGatewayService {
                 .vnp_OrderInfo("Kiem tra ket qua thanh toan don hang #" + order.getId())
                 .vnp_TransactionDate(Long.valueOf(formatter.format(cld.getTime())))
                 .vnp_CreateDate(Long.valueOf(formatter.format(cld.getTime())))
-                .vnp_IpAddr("127.0.0.1")
+                .vnp_IpAddr(LOCALHOST_IP_ADDRESS)
                 .build();
 
         request.createSignature(secretKey);
-
-        System.err.println(request);
 
         String response = restTemplate.postForObject(
                 queryUrl,
@@ -217,12 +211,8 @@ public class VNPayService implements PaymentGatewayService {
         try {
             JsonNode jsonNode = objectMapper.readTree(response);
             Map map = objectMapper.convertValue(jsonNode, Map.class);
-            System.err.println(map);
             if (map.get("vnp_ResponseCode").toString().equals("00")) {
-                if (map.getOrDefault("vnp_TransactionStatus", "").toString().equals("00"))
-                    return true;
-                else
-                    return false;
+                return map.getOrDefault("vnp_TransactionStatus", "").toString().equals("00");
             } else {
                 throw new IllegalArgumentException(map.get("vnp_Message").toString());
             }
