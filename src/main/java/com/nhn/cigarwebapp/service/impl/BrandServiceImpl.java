@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -73,7 +72,7 @@ public class BrandServiceImpl implements BrandService {
                 .stream()
                 .map(brandMapper::toResponse)
                 .sorted(Comparator.comparing(BrandResponse::getId))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -87,13 +86,17 @@ public class BrandServiceImpl implements BrandService {
     @Override
     @Cacheable(value = "Page<BrandAdminResponse>")
     public Page<BrandAdminResponse> getAdminBrands(Map<String, String> params) {
-        int PAGE_SIZE = 15;
+        int pageSize = 15;
 
         int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
-        int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
+        int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : pageSize;
 
         BrandSpecification specification = specificationMapper.brandSpecification(params);
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("id")));
+        Pageable pageable;
+        if (page == 0)
+            pageable = Pageable.unpaged();
+        else
+            pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("id")));
 
         return brandRepository.findAll(specification, pageable)
                 .map(brandMapper::toAdminResponse);
@@ -117,13 +120,6 @@ public class BrandServiceImpl implements BrandService {
                     params.put("brandId", brand.getId().toString());
                     return brandMapper.toResponseWithProduct(brand,
                             productService.getProducts(params).getContent());
-
-//                    Pageable pageable = PageRequest.of(0, 6);
-//                    List<ProductResponse> productsResponses = productRepository.findAllByBrandId(brand.getId(), pageable)
-//                            .getContent()
-//                            .stream().map(productMapper::toResponse)
-//                            .toList();
-//                    return brandMapper.toResponseWithProduct(brand, productsResponses);
                 })
                 .toList();
     }

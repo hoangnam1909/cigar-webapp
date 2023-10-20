@@ -20,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,19 +37,23 @@ public class CategoryServiceImpl implements CategoryService {
                 .stream()
                 .map(categoryMapper::toResponse)
                 .sorted(Comparator.comparing(CategoryResponse::getId))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     @Cacheable(key = "#params", value = "Page<CategoryResponse>")
     public Page<CategoryResponse> getAdminCategories(Map<String, String> params) {
-        int PAGE_SIZE = 15;
+        int pageSize = 15;
 
         int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
-        int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
+        int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : pageSize;
 
         CategorySpecification specification = specificationMapper.categorySpecification(params);
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("id")));
+        Pageable pageable;
+        if (page == 0)
+            pageable = Pageable.unpaged();
+        else
+            pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("id")));
 
         return categoryRepository.findAll(specification, pageable)
                 .map(categoryMapper::toResponse);
