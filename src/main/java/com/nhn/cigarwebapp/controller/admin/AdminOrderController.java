@@ -2,7 +2,6 @@ package com.nhn.cigarwebapp.controller.admin;
 
 import com.nhn.cigarwebapp.common.ResponseObject;
 import com.nhn.cigarwebapp.dto.request.admin.AdminOrderCreationRequest;
-import com.nhn.cigarwebapp.dto.request.order.OrderWithPaymentRequest;
 import com.nhn.cigarwebapp.dto.response.admin.OrderAdminResponse;
 import com.nhn.cigarwebapp.entity.Order;
 import com.nhn.cigarwebapp.service.OrderService;

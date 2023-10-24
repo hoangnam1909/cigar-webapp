@@ -148,7 +148,7 @@ public class VNPayService implements PaymentGatewayService {
                     .vnp_Command(vnpCommandQuery)
                     .vnp_TmnCode(vnpTmnCode)
                     .vnp_TxnRef(referenceId)
-                    .vnp_OrderInfo("Kiem tra ket qua thanh toan giao dich " + referenceId)
+                    .vnp_OrderInfo("Kiem tra ket qua thanh toan giao dich #" + referenceId)
                     .vnp_TransactionDate(Long.valueOf(formatter.format(cld.getTime())))
                     .vnp_CreateDate(Long.valueOf(formatter.format(cld.getTime())))
                     .vnp_IpAddr(LOCALHOST_IP_ADDRESS)
@@ -170,7 +170,7 @@ public class VNPayService implements PaymentGatewayService {
                     throw new IllegalArgumentException(map.get("vnp_Message").toString());
                 }
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(e.getMessage());
             }
         }
 

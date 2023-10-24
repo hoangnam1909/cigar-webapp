@@ -33,7 +33,7 @@ public class BrandController {
         else
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
-                            .msg("No content")
+                            .msg("No brands found")
                             .result(List.of())
                             .build());
     }
@@ -51,7 +51,7 @@ public class BrandController {
         else
             return ResponseEntity.ok()
                     .body(ResponseObject.builder()
-                            .msg("No content")
+                            .msg("No brand found")
                             .result(null)
                             .build());
 

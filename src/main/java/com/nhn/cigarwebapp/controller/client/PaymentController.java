@@ -50,33 +50,4 @@ public class PaymentController {
 //        }
     }
 
-//    @GetMapping("/confirm-payment")
-//    public ResponseEntity<?> confirmPayment(@RequestParam Map<String, String> params) {
-//        try {
-//            boolean paymentResult = momoService.confirmPayment(params);
-//
-//            if (paymentResult) {
-//                return ResponseEntity.ok()
-//                        .body(ResponseObject.builder()
-//                                .msg("Paid")
-//                                .result(true)
-//                                .build());
-//            } else {
-//                return ResponseEntity.ok()
-//                        .body(ResponseObject.builder()
-//                                .msg("Non-Payment")
-//                                .result(false)
-//                                .build());
-//            }
-//        } catch (Exception ex) {
-//            return ResponseEntity.badRequest()
-//                    .body(ResponseObject.builder()
-//                            .msg("We could not save your order")
-//                            .result(ex.getMessage())
-//                            .build());
-//        }
-//
-//        return ResponseEntity.notFound().build();
-//    }
-
 }

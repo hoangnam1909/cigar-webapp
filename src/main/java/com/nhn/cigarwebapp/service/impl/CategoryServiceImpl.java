@@ -66,7 +66,7 @@ public class CategoryServiceImpl implements CategoryService {
     })
     public void addCategory(CategoryRequest request) {
         Category category = categoryMapper.toEntity(request);
-        categoryRepository.saveAndFlush(category);
+        categoryRepository.save(category);
     }
 
     @Override
@@ -107,9 +107,9 @@ public class CategoryServiceImpl implements CategoryService {
         if (category.isPresent()) {
             categoryRepository.deleteById(id);
             return true;
+        } else {
+            throw new IllegalArgumentException(String.format("Category with id = %d do not exist", id));
         }
-
-        return false;
     }
 
 }

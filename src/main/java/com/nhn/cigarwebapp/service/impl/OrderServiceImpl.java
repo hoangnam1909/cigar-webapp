@@ -126,7 +126,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     @Caching(evict = {
-//            @CacheEvict(value = "OrderAdminResponse", allEntries = true),
             @CacheEvict(value = "List<CartProductResponse>", allEntries = true),
             @CacheEvict(value = "Page<OrderAdminResponse>", allEntries = true),
 

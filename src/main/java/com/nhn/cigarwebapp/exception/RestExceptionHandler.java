@@ -15,20 +15,21 @@ import java.util.Date;
 @RestControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
-//    @ExceptionHandler(value = {IllegalArgumentException.class})
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    protected ErrorResponseObject errorHandler(IllegalArgumentException ex, WebRequest request) {
-//        return ErrorResponseObject.builder()
-//                .message(ex.getMessage())
-//                .errorCode("400")
-//                .time(new Date())
-//                .build();
-//    }
+    @ExceptionHandler(value = {Exception.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    protected ResponseEntity<ErrorResponseObject> exceptionHandler(Exception ex, WebRequest request) {
+        return ResponseEntity.badRequest()
+                .body(ErrorResponseObject.builder()
+                        .message(ex.getMessage())
+                        .errorCode("500")
+                        .time(new Date())
+                        .build());
+
+    }
 
     @ExceptionHandler(value = {IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ResponseEntity<ErrorResponseObject> IllegalArgumentExceptionHandler(IllegalArgumentException ex, WebRequest request) {
-        System.err.println("hehe");
+    protected ResponseEntity<ErrorResponseObject> illegalArgumentExceptionHandler(IllegalArgumentException ex, WebRequest request) {
         return ResponseEntity.badRequest()
                 .body(ErrorResponseObject.builder()
                         .message(ex.getMessage())

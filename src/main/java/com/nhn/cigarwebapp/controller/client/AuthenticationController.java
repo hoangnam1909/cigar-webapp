@@ -24,8 +24,6 @@ public class AuthenticationController {
     private final HttpServletRequest servletRequest;
     private final AuthenticationService authenticationService;
     private final JwtService jwtService;
-    private final UserRepository userRepository;
-    private final UserMapper userMapper;
 
     @GetMapping
     public ResponseEntity<String> hello() {

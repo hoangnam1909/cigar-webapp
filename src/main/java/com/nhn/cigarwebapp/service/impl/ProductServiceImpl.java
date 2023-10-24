@@ -35,7 +35,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
     private EntityManager entityManager;
 
     @Value("${product.default-page-size}")
-    private int PAGE_SIZE;
+    private int pageSize;
 
     private final ProductMapper productMapper;
     private final ProductRepository productRepository;
@@ -66,7 +65,7 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
-            if (product.getActive())
+            if (Boolean.TRUE.equals(product.getActive()))
                 return productMapper.toResponse(product);
         }
 
@@ -77,7 +76,7 @@ public class ProductServiceImpl implements ProductService {
     @Cacheable(key = "#params", value = "Page<ProductResponse>")
     public Page<ProductResponse> getProducts(Map<String, String> params) {
         int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
-        int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
+        int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : pageSize;
         String sort = params.getOrDefault("sort", ProductSortEnum.DEFAULT);
 
         ProductSpecification specification = specificationMapper.productSpecification(params);
@@ -95,7 +94,6 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> productOptional = productRepository.findById(id);
 
         if (productOptional.isPresent()) {
-            Product product = productOptional.get();
             List<Product> products = entityManager
                     .createQuery(
                             "SELECT p " +
@@ -114,7 +112,7 @@ public class ProductServiceImpl implements ProductService {
             return products
                     .stream()
                     .map(productMapper::toResponse)
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         return List.of();
@@ -136,7 +134,7 @@ public class ProductServiceImpl implements ProductService {
     @Cacheable(key = "#params", value = "Page<ProductAdminResponse>")
     public Page<ProductAdminResponse> getAdminProducts(Map<String, String> params) {
         int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : 1;
-        int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
+        int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : pageSize;
         String sort = params.getOrDefault("sort", ProductSortEnum.ADMIN_DEFAULT);
 
         ProductSpecification specification = specificationMapper.productSpecification(params);

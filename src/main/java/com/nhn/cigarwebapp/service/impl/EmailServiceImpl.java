@@ -1,10 +1,13 @@
 package com.nhn.cigarwebapp.service.impl;
 
+import com.nhn.cigarwebapp.controller.admin.AdminOrderController;
 import com.nhn.cigarwebapp.entity.Order;
 import com.nhn.cigarwebapp.entity.User;
 import com.nhn.cigarwebapp.service.EmailService;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -21,9 +24,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
+    Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
+
     public static final String CHARACTER_ENCODING = "UTF-8";
     public static final String FROM_NAME = "Cigar For Boss";
-    public static final String TEXT_HTML_ENCODING = "text/html";
 
     private final JavaMailSender emailSender;
     private final TemplateEngine templateEngine;
@@ -38,42 +42,6 @@ public class EmailServiceImpl implements EmailService {
 
     @Value("${settings.cors_origin}")
     private String frontEndEndpoint;
-
-    @Override
-    @Async
-    public void sendSimpleMail(String subject, String body, String toEmail) {
-        SimpleMailMessage message = new SimpleMailMessage();
-
-        message.setTo(toEmail);
-        message.setSubject(subject);
-        message.setText(body);
-
-        javaMailSender.send(message);
-    }
-
-    @Override
-    @Async
-    public void sendHtmlEmail(String name, String to) {
-        try {
-            Context context = new Context();
-            /*context.setVariable("name", name);
-            context.setVariable("url", getVerificationUrl(host, token));*/
-            context.setVariables(Map.of("name", name));
-            String text = templateEngine.process("", context);
-            MimeMessage message = getMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, CHARACTER_ENCODING);
-            helper.setPriority(1);
-            helper.setSubject("New User Account Verification");
-            helper.setFrom(fromEmail, FROM_NAME);
-            helper.setTo(to);
-            helper.setText(text, true);
-
-            emailSender.send(message);
-        } catch (Exception exception) {
-            System.out.println(exception.getMessage());
-            throw new RuntimeException(exception.getMessage());
-        }
-    }
 
     @Override
     @Async
@@ -97,8 +65,7 @@ public class EmailServiceImpl implements EmailService {
 
             emailSender.send(message);
         } catch (Exception exception) {
-            System.out.println(exception.getMessage());
-            throw new RuntimeException(exception.getMessage());
+            logger.error(exception.getMessage());
         }
     }
 
@@ -124,8 +91,7 @@ public class EmailServiceImpl implements EmailService {
 
             emailSender.send(message);
         } catch (Exception exception) {
-            System.out.println(exception.getMessage());
-            throw new RuntimeException(exception.getMessage());
+            logger.error(exception.getMessage());
         }
     }
 

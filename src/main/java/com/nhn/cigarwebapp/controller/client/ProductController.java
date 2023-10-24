@@ -53,20 +53,12 @@ public class ProductController {
 
     @GetMapping("/count-product-on-sale")
     public ResponseEntity<ResponseObject> countProductsOnSale() {
-        try {
-            return ResponseEntity.ok()
-                    .body(ResponseObject.builder()
-                            .msg("Successfully")
-                            .result(productService.countProductsOnSale())
-                            .build());
-        } catch (Exception ex) {
-            logger.error(ex.getMessage());
-            return ResponseEntity.internalServerError()
-                    .body(ResponseObject.builder()
-                            .msg("Error!")
-                            .result("Internal Server Error")
-                            .build());
-        }
+        long counter = productService.countProductsOnSale();
+        return ResponseEntity.ok()
+                .body(ResponseObject.builder()
+                        .msg("Successfully")
+                        .result(counter)
+                        .build());
     }
 
     @GetMapping("/suggests/{id}")

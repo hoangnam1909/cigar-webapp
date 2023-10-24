@@ -36,77 +36,47 @@ public class AdminCategoryController {
 
     @PostMapping
     public ResponseEntity<ResponseObject> insertCategory(@RequestBody CategoryRequest request) {
-        try {
-            categoryService.addCategory(request);
-
-            return ResponseEntity.ok()
-                    .body(ResponseObject.builder()
-                            .msg("Your category have been saved")
-                            .result("")
-                            .build());
-        } catch (Exception ex) {
-            logger.error(ex.getMessage());
-            return ResponseEntity.internalServerError()
-                    .body(ResponseObject.builder()
-                            .msg("Error!")
-                            .result("Internal Server Error")
-                            .build());
-        }
+        categoryService.addCategory(request);
+        return ResponseEntity.ok()
+                .body(ResponseObject.builder()
+                        .msg("Your category have been saved")
+                        .result("")
+                        .build());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseObject> updateCategory(@PathVariable Long id,
                                                          @RequestBody CategoryRequest request) {
-        try {
-            CategoryResponse response = categoryService.updateCategory(id, request);
-
-            if (response != null)
-                return ResponseEntity.ok()
-                        .body(ResponseObject.builder()
-                                .msg("Your category have been saved")
-                                .result("")
-                                .build());
-            else
-                return ResponseEntity.badRequest()
-                        .body(ResponseObject.builder()
-                                .msg("Something went wrong")
-                                .result(null)
-                                .build());
-        } catch (Exception ex) {
-            logger.error(ex.getMessage());
-            return ResponseEntity.internalServerError()
+        CategoryResponse response = categoryService.updateCategory(id, request);
+        if (response != null)
+            return ResponseEntity.ok()
                     .body(ResponseObject.builder()
-                            .msg("Error!")
-                            .result("Internal Server Error")
+                            .msg("Your category have been saved")
+                            .result(null)
                             .build());
-        }
+        else
+            return ResponseEntity.badRequest()
+                    .body(ResponseObject.builder()
+                            .msg("Something went wrong")
+                            .result(null)
+                            .build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseObject> deleteCategory(@PathVariable(name = "id") String id) {
-        try {
-            boolean isDeleted = categoryService.deleteCategory(Long.valueOf(id));
-
-            if (isDeleted)
-                return ResponseEntity.ok()
-                        .body(ResponseObject.builder()
-                                .msg("Your category have been deleted")
-                                .result("")
-                                .build());
-            else
-                return ResponseEntity.badRequest()
-                        .body(ResponseObject.builder()
-                                .msg("Something went wrong")
-                                .result(null)
-                                .build());
-        } catch (Exception ex) {
-            logger.error(ex.getMessage());
-            return ResponseEntity.internalServerError()
+    public ResponseEntity<ResponseObject> deleteCategory(@PathVariable Long id) {
+        boolean isDeleted = categoryService.deleteCategory(id);
+        if (isDeleted)
+            return ResponseEntity.ok()
                     .body(ResponseObject.builder()
-                            .msg("Error!")
-                            .result("Internal Server Error")
+                            .msg("Your category have been deleted")
+                            .result("")
                             .build());
-        }
+        else
+            return ResponseEntity.badRequest()
+                    .body(ResponseObject.builder()
+                            .msg("Something went wrong")
+                            .result(null)
+                            .build());
     }
 
 }

@@ -1,16 +1,11 @@
 package com.nhn.cigarwebapp.service.impl;
 
-import com.nhn.cigarwebapp.common.SearchCriteria;
-import com.nhn.cigarwebapp.common.SearchOperation;
 import com.nhn.cigarwebapp.entity.Order;
 import com.nhn.cigarwebapp.entity.Payment;
-import com.nhn.cigarwebapp.entity.Payment_;
 import com.nhn.cigarwebapp.repository.OrderRepository;
 import com.nhn.cigarwebapp.repository.PaymentRepository;
 import com.nhn.cigarwebapp.service.PaymentGatewayService;
 import com.nhn.cigarwebapp.service.PaymentService;
-import com.nhn.cigarwebapp.specification.payment.PaymentEnum;
-import com.nhn.cigarwebapp.specification.payment.PaymentSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +13,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -108,28 +102,27 @@ public class PaymentServiceImpl implements PaymentService {
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
             Payment payment = order.getPayment();
-
-            if (payment.getPaymentDestination().getId().equals("cod")) {
-                throw new IllegalArgumentException("Can not recreate payment url with Cash on delivery");
-            } else if (payment.getPaymentDestination().getId().equals("momo")) {
-                Map momoResponse = momoService.createPayment(order);
-                System.err.println(momoResponse);
-
-                payment.setIsPaid(false);
-                payment.setReferenceId((String) momoResponse.get("requestId"));
-                payment.setPaymentOrderId((String) momoResponse.get("orderId"));
-                payment.setPaymentUrl((String) momoResponse.get("payUrl"));
-                System.err.println(momoResponse.get("payUrl"));
-
-                paymentRepository.save(payment);
-            } else if (payment.getPaymentDestination().getId().equals("vnpay")) {
-                Map vnPayResponse = vnPayService.createPayment(order);
-
-                payment.setIsPaid(false);
-                payment.setReferenceId((String) vnPayResponse.get("referenceId"));
-                payment.setPaymentUrl((String) vnPayResponse.get("payUrl"));
-
-                paymentRepository.save(payment);
+            if (Boolean.FALSE.equals(payment.getIsPaid())) {
+                switch (payment.getPaymentDestination().getId()) {
+                    case "cod" ->
+                            throw new IllegalArgumentException("Can not recreate payment url with Cash on delivery");
+                    case "momo" -> {
+                        Map<String, Object> momoResponse = momoService.createPayment(order);
+                        payment.setIsPaid(false);
+                        payment.setReferenceId((String) momoResponse.get("requestId"));
+                        payment.setPaymentOrderId((String) momoResponse.get("orderId"));
+                        payment.setPaymentUrl((String) momoResponse.get("payUrl"));
+                        paymentRepository.save(payment);
+                    }
+                    case "vnpay" -> {
+                        Map<String, Object> vnPayResponse = vnPayService.createPayment(order);
+                        payment.setIsPaid(false);
+                        payment.setReferenceId((String) vnPayResponse.get("referenceId"));
+                        payment.setPaymentUrl((String) vnPayResponse.get("payUrl"));
+                        paymentRepository.save(payment);
+                    }
+                    default -> throw new IllegalArgumentException("Payment destination is invalid");
+                }
             }
         } else {
             throw new IllegalArgumentException("Order id do not exist");
